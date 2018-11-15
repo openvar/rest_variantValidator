@@ -1,0 +1,8 @@
+#!/bin/bash
+# Tool for deploying the batchValidator source code. All files will be copied
+# to Python site-packages, replacing any modified code. 
+
+# To run this # tool, type './setup' at the command line.
+
+rsync -rv .// /local/rest_variantValidator/ --delete
+# setfacl -R -m u:wwwrun:rx /local/rest_variantValidator/

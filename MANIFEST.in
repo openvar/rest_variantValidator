@@ -1,0 +1,6 @@
+include *.txt
+recursive-include variantvalidator/data *
+recursive-include variantvalidator/logs *
+recursive-include variantvalidator/static *
+recursive-include variantvalidator/templates *
+recursive-include variantvalidator/spam_filter *
