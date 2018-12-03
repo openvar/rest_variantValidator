@@ -5,6 +5,7 @@ import re
 import sys
 from dns import resolver, reversename
 from datetime import date, datetime, timedelta
+import warnings
 
 # IMPORT FLASK MODULES
 from flask import Flask ,request, jsonify, abort, url_for, g, send_file #, session, g, redirect, , abort, render_template, flash, make_response, abort
@@ -27,8 +28,8 @@ __version__ = '0.1.0'
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # Import variant validator code
-import variantValidator
-from variantValidator import variantValidator, variantanalyser
+import VariantValidator
+from VariantValidator import variantValidator, variantanalyser
 
 # CREATE APP 
 app = Flask(__name__)
@@ -52,6 +53,12 @@ flask_log = Logging(app)
 # Create Mail instance
 mail = Mail(app)
 
+
+"""
+Login and DB admin code
+
+Access contol should we want to re-implement it 
+"""
 # Database models
 # Reference
 # https://blog.miguelgrinberg.com/post/restful-authentication-with-flask
@@ -127,9 +134,20 @@ def verify_password(username_or_token, password):
 			return False
 		else:
 			return True	
-
+			
 # Resources
 ############
+"""
+Essentially web pages that display json data
+"""
+
+
+
+"""
+Home page. Use to display simple functions. 
+
+To Do, implement an ordered dict
+"""
 class hellOworlD(Resource):
 	def get(self):	
 		return jsonify({
@@ -218,6 +236,9 @@ class add_user(Resource):
 			return jsonify({'New user added' : new_username})
 
 
+"""
+Validation using GRCh38
+"""
 class variantValidator38(Resource):
 	@auth.login_required
 	def get(self, variant_id, transcript_ids):	
@@ -247,28 +268,35 @@ class variantValidator38(Resource):
 			error = [{'validation_warnings': 'Validation error: Admin have been made aware of the issue'}]
 			return jsonify(validation=error)
 		# Look for warnings
-		for val in validation:
+		for key, val in validation.iteritems():
+			if key == 'flag':
+				continue					
 			if val['validation_warnings'] == 'Validation error':
 				import time
 				variant = batch_variant
-				error = 'Variant = ' + variant + ' and selected_assembly = GRCh38' + '/n' + str(val)
+				error = 'Variant = ' + variant + ' and selected_assembly = hg38' + '/n' + str(val)
 				# Email admin
 				msg = Message(recipients=["variantvalidator@gmail.com"],
 					sender='apiValidator',
 					body=error + '\n\n' + time.ctime(),
 					subject='Validation server error recorded')
 				# Send the email
-				mail.send(msg)			
+				mail.send(msg)
 		return jsonify(validation=validation)
 		
+
+
+"""
+Validation using hg38
+"""
 class variantValidatorHg38(Resource):
-	@auth.login_required
+	# @auth.login_required
 	def get(self, variant_id, transcript_ids):	
 		# Collect queries'
 		batch_variant = str(variant_id)
 		select_transcripts = str(transcript_ids)
 		# Assign assembly
-		selected_assembly = 'GRCh38'
+		selected_assembly = 'hg38'
 		# Submit to batch
 		try:
 			validation = variantValidator.validator(batch_variant, selected_assembly, select_transcripts)
@@ -290,7 +318,9 @@ class variantValidatorHg38(Resource):
 			error = [{'validation_warnings': 'Validation error: Admin have been made aware of the issue'}]
 			return jsonify(validation=error)
 		# Look for warnings
-		for val in validation:
+		for key, val in validation.iteritems():
+			if key == 'flag':
+				continue					
 			if val['validation_warnings'] == 'Validation error':
 				import time
 				variant = batch_variant
@@ -301,11 +331,15 @@ class variantValidatorHg38(Resource):
 					body=error + '\n\n' + time.ctime(),
 					subject='Validation server error recorded')
 				# Send the email
-				mail.send(msg)			
+				mail.send(msg)
 		return jsonify(validation=validation)
 
+
+"""
+Validation using GRCh37
+"""
 class variantValidator37(Resource):
-	@auth.login_required
+	# @auth.login_required
 	def get(self, variant_id, transcript_ids):	
 		# Collect queries'
 		batch_variant = str(variant_id)
@@ -333,28 +367,34 @@ class variantValidator37(Resource):
 			error = [{'validation_warnings': 'Validation error: Admin have been made aware of the issue'}]
 			return jsonify(validation=error)
 		# Look for warnings
-		for val in validation:
-			import time
+		for key, val in validation.iteritems():
+			if key == 'flag':
+				continue					
 			if val['validation_warnings'] == 'Validation error':
+				import time
 				variant = batch_variant
-				error = 'Variant = ' + variant + ' and selected_assembly = GRCh37' + '/n' + str(val)
+				error = 'Variant = ' + variant + ' and selected_assembly = hg38' + '/n' + str(val)
 				# Email admin
 				msg = Message(recipients=["variantvalidator@gmail.com"],
 					sender='apiValidator',
 					body=error + '\n\n' + time.ctime(),
 					subject='Validation server error recorded')
 				# Send the email
-				mail.send(msg)			
+				mail.send(msg)
 		return jsonify(validation=validation)
 		
+
+"""
+Validation using hg19
+"""
 class variantValidatorHg19(Resource):
-	@auth.login_required
+	# @auth.login_required
 	def get(self, variant_id, transcript_ids):	
 		# Collect queries'
 		batch_variant = str(variant_id)
 		select_transcripts = str(transcript_ids)
 		# Assign assembly
-		selected_assembly = 'GRCh37'
+		selected_assembly = 'hg19'
 		# Submit to batch
 		try:
 			validation = variantValidator.validator(batch_variant, selected_assembly, select_transcripts)
@@ -376,32 +416,50 @@ class variantValidatorHg19(Resource):
 			error = [{'validation_warnings': 'Validation error: Admin have been made aware of the issue'}]
 			return jsonify(validation=error)
 		# Look for warnings
-		for val in validation:
-			import time
+		for key, val in validation.iteritems():
+			if key == 'flag':
+				continue					
 			if val['validation_warnings'] == 'Validation error':
+				import time
 				variant = batch_variant
-				error = 'Variant = ' + variant + ' and selected_assembly = GRCh37'
+				error = 'Variant = ' + variant + ' and selected_assembly = hg38' + '/n' + str(val)
 				# Email admin
 				msg = Message(recipients=["variantvalidator@gmail.com"],
 					sender='apiValidator',
 					body=error + '\n\n' + time.ctime(),
 					subject='Validation server error recorded')
 				# Send the email
-				mail.send(msg)			
-		return jsonify(validation=validation)		
+				mail.send(msg)
+		return jsonify(validation=validation)	
 
+
+
+"""
+Return the transcripts for a gene 
+"""
 class gene2transcripts(Resource):
-	@auth.login_required
+	# @auth.login_required
 	def get(self, query):
 		g2t = variantValidator.gene2transcripts(query)
 		return jsonify(g2t)
 
+
+"""
+Simple function that returns the reference bases for a hgvs description
+"""
 class hgvs2reference(Resource):
-	@auth.login_required
+	# @auth.login_required
 	def get(self, query):
 		h2r = variantValidator.hgvs2ref(query)
 		return jsonify(h2r)		
 
+
+"""
+The following functions are admin functions. Legacy functions from when the API was locked
+Note: retain until we are certain we do not want to implement an account system 
+"""
+
+# Account data should we decide to re-implement it
 class myAccount(Resource):
 	@auth.login_required
 	def get(self):
