@@ -30,3 +30,5 @@ UTA_DB_URL = ConfigSectionMap("UTA")['uta_url']
 os.environ['UTA_DB_URL'] = UTA_DB_URL
 VALIDATOR_DATA = ConfigSectionMap("validatorDB")['validator_databases']
 os.environ['VALIDATOR_DATA'] = VALIDATOR_DATA
+PYLIFTOVER_DIR = ConfigSectionMap("pyLiftover")['pyliftover_dir']
+os.environ['PYLIFTOVER_DIR'] = PYLIFTOVER_DIR
