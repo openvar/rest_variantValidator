@@ -23,13 +23,16 @@ APP_STATIC = os.path.join(APP_ROOT, 'static')
 import VariantValidator
 from VariantValidator import variantValidator
 
+# Import variantFormatter
+import VariantFormatter
+import VariantFormatter.simpleVariantFormatter
+
 # Extract API related metadata
 config_dict =  VariantValidator.variantValidator.my_config()
 api_version = config_dict['variantvalidator_version']
 
 # CREATE APP 
 app = Flask(__name__, static_folder=APP_STATIC)
-# app = Flask(__name__, static_url_path=APP_STATIC)
 
 # configure
 app.config.from_object(__name__)
@@ -218,6 +221,67 @@ class download_database(Resource):
 		except IOError as e:
 			return jsonify({'error' : 'No such file: ' + file})
 			
+"""
+Simple interface for VariantFormatter
+"""
+class variantFormatter(Resource):
+# 	@swagger.operation(
+# 		notes='Submit a sequence variation to VariantFormatter',
+# 		nickname='VariantValidator',
+# 		parameters=[
+# 		  {
+# 			"name": "genome_build",
+# 			"description": "Possible values: GRCh37 or GRCh38",
+# 			"required": True,
+# 			"allowMultiple": False,
+# 			"dataType": 'string',
+# 			"paramType": "path"
+# 			  },
+# 		  {
+# 			"name": "variant_description",
+# 			"description": "Supported variant types: genomic HGVS e.g. NC_000017.10:g.48275363C>A, pseudo-VCF e.g. 17-50198002-C-A, 17:50198002:C:A (Note, for pVCF, multiple comma separated ALTs are supported). Multiple variants can be submitted, separated by the pipe '|' character. Recommended maximum is 10 variants per submission"
+# 			"required": True,
+# 			"allowMultiple": False,
+# 			"dataType": 'string',
+# 			"paramType": "path"
+# 			  },
+# 		  {
+# 			"name": "transcript_model",
+# 			"description": "Possible values: all = return data for all relevant transcripts; refseq = return data for RefSeq transcript models; refseq = return data for Ensembl transcript models:
+# 			"required": True,
+# 			"allowMultiple": False,
+# 			"dataType": 'string',
+# 			"paramType": "path"
+# 			  }	
+# 		  {
+# 			"name": "select_transcripts",
+# 			"description": "Possible values: all = return data for all relevant transcripts; single transcript id e.g. NM_000093.4; multiple transcript ids e.g. NM_000093.4|NM_001278074.1|NM_000093.3",
+# 			"required": False,
+# 			"allowMultiple": False,
+# 			"dataType": 'string',
+# 			"paramType": "path"
+# 			  }
+# 		  {
+# 			"name": "checkOnly",
+# 			"description": "Possible values: True or False. True will return ONLY the genomic variant data and will not provide transcript and protein level data",
+# 			"required": False,
+# 			"allowMultiple": False,
+# 			"dataType": 'string',
+# 			"paramType": "path"
+# 			  }				  			  			  
+# 		])
+	def get(self, variant_description, genome_build, transcript_model=None, select_transcripts=None, checkOnly=False):
+		if transcript_model == 'None' or transcript_model == 'none':
+			transcript_model = None		
+		if select_transcripts == 'None' or select_transcripts == 'none':
+			select_transcripts = None
+		if checkOnly == 'False' or checkOnly== 'false':
+			checkOnly = False
+		if checkOnly == 'True' or checkOnly== 'true':
+			checkOnly = True			
+		v_form = VariantFormatter.simpleVariantFormatter.format(variant_description, genome_build, transcript_model, select_transcripts, checkOnly)
+		return jsonify(v_form)	
+
 
 # ADD API resources to API handler
 api.add_resource(home, '/')
@@ -226,6 +290,7 @@ api.add_resource(download_database, '/data/download_database/<string:schema>')
 api.add_resource(variantValidator, '/variantvalidator/<string:genome_build>/<string:variant_description>/<string:select_transcripts>')
 api.add_resource(gene2transcripts, '/tools/gene2transcripts/<string:gene_symbol>')
 api.add_resource(hgvs2reference, '/tools/hgvs2reference/<string:hgvs_description>')
+api.add_resource(variantFormatter, '/variantformatter/<string:genome_build>/<string:variant_description>/<string:transcript_model>/<string:select_transcripts>/<string:checkOnly>')
 
 
 # Run the server (if file is called directly by python, server is internal dev server)
