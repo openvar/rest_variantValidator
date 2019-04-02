@@ -1,10 +1,1 @@
-v0.1a1
-######
-
-Replace SQLite database with MySQL database
-Add Error 500 catcher (bug catcher)
-Update several printed statements
-Pages for unsupported genome build (GRCh38)
-Bug fix applied for c.= variants
-Recommended variant description table integrated
-Update descriptions for unavailable RefSeqGene records
+v0.1.0
