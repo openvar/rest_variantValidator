@@ -27,6 +27,36 @@ To clone this software from GIT, use:
 $ git clone https://github.com/openvar/rest_variantValidator.git
 ```
 
+## Setting the configuration file
+in rest_/variantValidator/config, locate the config.ini and fill in the credentials
+
+    [mysql]
+    host = 127.0.0.1
+    database = validator
+    user = vvadmin  
+    password = var1ant
+
+    [EntrezID]
+    entrezid = <YOUR EMAIL ADDRESS>
+
+    [SeqRepo]
+    seqrepo_dir = <PATH TO SEQREPO DIR>
+
+    [UTA]
+    uta_url = postgresql://uta_admin:uta_admin@127.0.0.1/uta/<SCHEMA VERSION>
+
+    [Server]
+    # For development only, change this to a live server before deployment
+    server_url = http/127.0.0.1:5000
+
+    [validatorDB]
+    # Note, currently not deployed
+    validator_databases = /local/validator_databases
+
+    [pyLiftover]
+    # Note, optional
+    pyLiftover_dir = /local/pyLiftover/
+
 ## Create customised flask_restful_swagger html
 Copy the index.html file into /Path/to/Python/site-packages/flask_restful_swagger/static
 
