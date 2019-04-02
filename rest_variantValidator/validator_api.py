@@ -257,16 +257,16 @@ class variantFormatter(Resource):
               },
           {
             "name": "select_transcripts",
-            "description": "Possible values: all = return data for all relevant transcripts; single transcript id e.g. NM_000093.4; multiple transcript ids e.g. NM_000093.4|NM_001278074.1|NM_000093.3",
-            "required": False,
+            "description": "Possible values: None = return data for all relevant transcripts; single transcript id e.g. NM_000093.4; multiple transcript ids e.g. NM_000093.4|NM_001278074.1|NM_000093.3",
+            "required": True,
             "allowMultiple": False,
             "dataType": 'string',
             "paramType": "path"
               },
           {
             "name": "checkOnly",
-            "description": "Possible values: True or False. True will return ONLY the genomic variant data and will not provide transcript and protein level data",
-            "required": False,
+            "description": "Possible values: True or False. True will return ONLY the genomic variant descriptions and will not provide transcript and protein level descriptions",
+            "required": True,
             "allowMultiple": False,
             "dataType": 'string',
             "paramType": "path"
