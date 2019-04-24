@@ -167,7 +167,7 @@ class gene2transcripts(Resource):
         parameters=[
           {
             "name": "gene_symbol",
-            "description": "HGNC gene symbol or transcript ID (Supported transcript types: RefSeq; LRG_t) (Note, work needed on LRG_t types)",
+            "description": "HGNC gene symbol or transcript ID (Current supported transcript types: RefSeq)",
             "required": True,
             "allowMultiple": False,
             "dataType": 'string',
@@ -189,7 +189,7 @@ class hgvs2reference(Resource):
         parameters=[
           {
             "name": "hgvs_description",
-            "description": "Sequence variation description in the HGVS format. Intronic descriptions must be in the format Genomic_id(transcript_id):type.PositionVariation, e.g. NC_000017.11(NM_000088.3):c.589-1del (Work needed on intronic types!)",
+            "description": "Sequence variation description in the HGVS format. Intronic descriptions in the context of transcript reference sequences are currently unsupported",
             "required": True,
             "allowMultiple": False,
             "dataType": 'string',
