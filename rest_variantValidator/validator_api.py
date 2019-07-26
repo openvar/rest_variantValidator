@@ -113,8 +113,9 @@ class variantValidator(Resource):
 
     def get(self, genome_build, variant_description, select_transcripts):
         try:
-            validation = vval.validator(variant_description, genome_build, select_transcripts)
-        except:
+            validate = vval.validate(variant_description, genome_build, select_transcripts)
+            validation = validate.format_as_dict(with_meta=True)
+        except Exception as e:
             import traceback
             import time
             exc_type, exc_value, last_traceback = sys.exc_info()
@@ -133,7 +134,7 @@ class variantValidator(Resource):
             return error, 200, {'Access-Control-Allow-Origin': '*'}
 
         # Look for warnings
-        for key, val in validation.iteritems():
+        for key, val in validation.items():
             if key == 'flag' or key == 'metadata':
                 if key == 'flag' and str(val) == 'None':
                     import time
@@ -163,6 +164,7 @@ class variantValidator(Resource):
             except TypeError:
                 pass
         return validation, 200, {'Access-Control-Allow-Origin': '*'}
+
 
 
 """
