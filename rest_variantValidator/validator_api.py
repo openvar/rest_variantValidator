@@ -14,32 +14,40 @@ from flask_restful_swagger import swagger
 from flask_log import Logging
 from flask_mail import Mail, Message
 
-# Set up os paths data and log folders 
+# Set up os paths data and log folders
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 APP_STATIC = os.path.join(APP_ROOT, 'static')
 
 # Import variant validator code
 import VariantValidator
-from VariantValidator import variantValidator
+vval = VariantValidator.Validator()
 
 # Import variantFormatter
 import VariantFormatter
 import VariantFormatter.simpleVariantFormatter
 
 # Extract API related metadata
-config_dict =  VariantValidator.variantValidator.my_config()
+config_dict =  vval.my_config()
 api_version = config_dict['variantvalidator_version']
 vf_api_version = VariantFormatter.__version__
 
-# CREATE APP 
+# CREATE APP
 app = Flask(__name__, static_folder=APP_STATIC)
 # configure
 app.config.from_object(__name__)
 
-# Wrap the Api with swagger.docs. 
+# Wrap the Api with swagger.docs.
 BaseURL = os.environ.get('SERVER_NAME')
-api = swagger.docs(Api(app), apiVersion=str(api_version),
+if BaseURL is not None:
+    api = swagger.docs(Api(app), apiVersion=str(api_version),
                    basePath=BaseURL,
+                   resourcePath='/',
+                   produces=["application/json"],
+                   api_spec_url='/webservices/variantvalidator',
+                   description='VariantValidator web API'
+                   )
+else:
+    api = swagger.docs(Api(app), apiVersion=str(api_version),
                    resourcePath='/',
                    produces=["application/json"],
                    api_spec_url='/webservices/variantvalidator',
@@ -105,7 +113,7 @@ class variantValidator(Resource):
 
     def get(self, genome_build, variant_description, select_transcripts):
         try:
-            validation = VariantValidator.variantValidator.validator(variant_description, genome_build, select_transcripts)
+            validation = vval.validator(variant_description, genome_build, select_transcripts)
         except:
             import traceback
             import time
@@ -175,7 +183,7 @@ class gene2transcripts(Resource):
               }
         ])
     def get(self, gene_symbol):
-        g2t = VariantValidator.variantValidator.gene2transcripts(gene_symbol)
+        g2t = vval.gene2transcripts(gene_symbol)
         return g2t, 200, {'Access-Control-Allow-Origin': '*'}
 
 
@@ -197,31 +205,9 @@ class hgvs2reference(Resource):
               }
         ])
     def get(self, hgvs_description):
-        h2r = VariantValidator.variantValidator.hgvs2ref(hgvs_description)
-        return jsonify(h2r)
-
-
-"""
-Functions that will provide downloadable versions of the vv database once made
-"""
-class validator_data(Resource):
-    def get(self):
-        directory_path = os.environ.get('VALIDATOR_DATA')
-        versions = os.listdir(directory_path)
-        databases = {'available_database_versions' : versions}
-        return jsonify(databases)
-
-class download_database(Resource):
-    def get(self, query):
-        directory_path = os.environ.get('VALIDATOR_DATA')
-        file = query
-        full_path = directory_path + '/' + file
-        try:
-            return send_file(full_path,
-                        as_attachment=True,
-                        attachment_filename=file)
-        except IOError as e:
-            return jsonify({'error' : 'No such file: ' + file})
+        h2r = vval.hgvs2ref(hgvs_description)
+        # return jsonify(h2r)
+        return h2r, 200, {'Access-Control-Allow-Origin': '*'}
 
 """
 Simple interface for VariantFormatter
@@ -282,15 +268,15 @@ class variantFormatter(Resource):
         if checkOnly == 'True' or checkOnly== 'true':
             checkOnly = True
         v_form = VariantFormatter.simpleVariantFormatter.format(variant_description, genome_build, transcript_model, select_transcripts, checkOnly)
-        return jsonify(v_form)
+        # return jsonify(v_form)
+        return v_form, 200, {'Access-Control-Allow-Origin': '*'}
+
 
 
 # ADD API resources to API handler
 
 # VariantValidator
 api.add_resource(home, '/')
-api.add_resource(validator_data, '/data/validatordata')
-api.add_resource(download_database, '/data/download_database/<string:schema>')
 api.add_resource(variantValidator, '/variantvalidator/<string:genome_build>/<string:variant_description>/<string:select_transcripts>')
 api.add_resource(gene2transcripts, '/tools/gene2transcripts/<string:gene_symbol>')
 api.add_resource(hgvs2reference, '/tools/hgvs2reference/<string:hgvs_description>')

@@ -20,12 +20,9 @@ sys.path.insert(0, WSGI_ROOT)
 
 # Run the server (if file is called directly by python, server is internal dev server)
 if __name__ == '__main__':
-    import rest_variantValidator.validator_api
-    from rest_variantValidator.validator_api import app as application
+    from validator_api import app as application
     application.debug=True
     application.config['PROPAGATE_EXCEPTIONS'] = True
     application.run()
 else:
-    import rest_variantValidator
-    import rest_variantValidator.validator_api
-    from rest_variantValidator.validator_api import app as application
+    from validator_api import app as application
