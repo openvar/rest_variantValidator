@@ -10,6 +10,7 @@ import warnings
 # IMPORT FLASK MODULES
 from flask import Flask ,request, jsonify, abort, url_for, g, send_file, redirect, Blueprint #, session, g, redirect, , abort, render_template, flash, make_response, abort
 from flask_restful import Resource, Api, reqparse, abort, fields, marshal_with
+import vv_flask_restful_swagger as flask_restful_swagger
 from flask_restful_swagger import swagger
 from flask_log import Logging
 from flask_mail import Mail, Message
@@ -288,7 +289,7 @@ api.add_resource(variantFormatter, '/variantformatter/<string:genome_build>/<str
 
 
 # <LICENSE>
-# Copyright (C) 2019  Peter Causey-Freeman, University of Manchester
+# Copyright (C) 2019 VariantValidator Contributors
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as

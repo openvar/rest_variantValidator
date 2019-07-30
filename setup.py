@@ -42,18 +42,20 @@ setup(
 
     # List run-time dependencies here.  These will be installed by pip when the project is installed.
     install_requires=[
-        "VariantValidator >= 1.0.0",
-        "VariantFormatter >= 1.0.0",
-        "vv_flask-restful-swagger",
         "flask",
         "flask-log",
         "flask-mail",
         "flask-cors",
     ],
+    dependency_links=[
+        "git+https://github.com/openvar/variantValidator.git#egg=VariantValidator",
+        "git+https://github.com/openvar/variantFormatter.git#egg=VariantFormatter",
+        "git+https://github.com/openvar/vv_flask-restful-swagger#egg=vv_flask_restful_swagger",
+    ]
 )
 
 # <LICENSE>
-# Copyright (C) 2019  Peter Causey-Freeman, University of Manchester
+# Copyright (C) 2019 VariantValidator Contributors
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as

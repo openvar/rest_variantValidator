@@ -6,6 +6,8 @@ site.addsitedir('/local/python/2.7.12/lib/python2.7/site-packages/')
 import os
 import sys
 import logging
+from configparser import ConfigParser
+from VariantValidator.settings import CONFIG_DIR
 logging.basicConfig(stream=sys.stderr)
 
 # Set path to file
@@ -13,16 +15,34 @@ WSGI_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 sys.path.insert(0, WSGI_ROOT)
 
-# Import app from 1 level above
-# parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# os.sys.path.insert(0,parentdir)
-# import variantValidator_interactive
-
 # Run the server (if file is called directly by python, server is internal dev server)
 if __name__ == '__main__':
     from validator_api import app as application
-    application.debug=True
-    application.config['PROPAGATE_EXCEPTIONS'] = True
+    config = ConfigParser()
+    config.read(CONFIG_DIR)
+    if config["logging"]["log"] is True:
+        application.debug=True
+        application.config['PROPAGATE_EXCEPTIONS'] = True
+    else:
+        application.debug=False
+        application.config['PROPAGATE_EXCEPTIONS'] = False
     application.run()
 else:
     from validator_api import app as application
+
+# <LICENSE>
+# Copyright (C) 2019 VariantValidator Contributors
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# </LICENSE>
