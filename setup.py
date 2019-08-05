@@ -7,7 +7,7 @@ setup(
     name='rest_VariantValidator',
     version=open('VERSION.txt').read(),
     description='Rest API for VariantValidator',
-    long_description=open('README.txt').read(),
+    long_description=open('README.md').read(),
     url='https://github.com/openvar/variantFormatter',
     license="GNU AFFERO GENERAL PUBLIC LICENSE, Version 3 (https://www.gnu.org/licenses/agpl-3.0.en.html)",
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -46,12 +46,16 @@ setup(
         "flask-log",
         "flask-mail",
         "flask-cors",
+        "flask-restful",
+        "VariantValidator @ git+https://github.com/openvar/variantValidator.git#egg=VariantValidator",
+        "VariantFormatter @ git+https://github.com/openvar/variantFormatter.git#egg=VariantFormatter",
+        "vv_flask_restful_swagger @ git+https://github.com/openvar/vv-flask-restful-swagger#egg=vv_flask_restful_swagger",
     ],
-    dependency_links=[
-        "git+https://github.com/openvar/variantValidator.git#egg=VariantValidator",
-        "git+https://github.com/openvar/variantFormatter.git#egg=VariantFormatter",
-        "git+https://github.com/openvar/vv_flask-restful-swagger#egg=vv_flask_restful_swagger",
-    ]
+    # dependency_links=[
+    #     "git+https://github.com/openvar/variantValidator.git#egg=VariantValidator",
+    #     "git+https://github.com/openvar/variantFormatter.git#egg=VariantFormatter",
+    #     "git+https://github.com/openvar/vv_flask-restful-swagger#egg=vv_flask_restful_swagger"
+    # ]
 )
 
 # <LICENSE>
