@@ -4,7 +4,7 @@ services:
   vdb:
     build:
       context: .
-      dockerfile: ./vdb_docker.df
+      dockerfile: vdb_docker.df
     ports:
       - "3306:3306"
     expose:
@@ -19,18 +19,8 @@ services:
     image: biocommons/seqrepo:2018-08-21
     volumes:
       - seqdata:/usr/local/share/seqrepo
-#  vv:
-#    build: .
-#    depends_on:
-#      - vdb
-#      - uta
-#    volumes:
-#      - seqdata:/usr/local/share/seqrepo
-  app:
-    container_name: rest_variantValidator
-    build:
-      context: ./
-      dockerfile: ./Dockerfile
+  restvv:
+    build: .
     depends_on:
       - vdb
       - uta
@@ -38,8 +28,6 @@ services:
       - seqdata:/usr/local/share/seqrepo
     ports:
       - "5000:5000"
-#    expose:
-#      - "5000"
 
 volumes:
   seqdata:

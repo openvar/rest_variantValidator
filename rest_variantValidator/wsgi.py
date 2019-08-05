@@ -20,13 +20,13 @@ if __name__ == '__main__':
     from validator_api import app as application
     config = ConfigParser()
     config.read(CONFIG_DIR)
-    if config["logging"]["log"] is True:
-        application.debug=True
+    if config["logging"]["log"] == "True":
+        application.debug = True
         application.config['PROPAGATE_EXCEPTIONS'] = True
     else:
-        application.debug=False
+        application.debug = False
         application.config['PROPAGATE_EXCEPTIONS'] = False
-    application.run()
+    application.run(host='0.0.0.0')
 else:
     from validator_api import app as application
 
