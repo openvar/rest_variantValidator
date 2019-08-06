@@ -51,5 +51,16 @@ CustomLog /local/apache2/log/access_log for_pound
 
 ```
 
+## Run in dev mode
+To run rest_variantValidator on a dev server
+
+```bash
+$ python rest_variantValidator/app.py
+```
+
+In a web-browser navkgate to `0.0.0.0:5000`
+
+Exit the app by holding `ctrl + c`
+
 ## Additional resources
 We are compiling a number of jupyter notebook user guides for rest_variantValidator in [rest_variantValidator_manuals](https://github.com/openvar/rest_variantValidator_manuals)
