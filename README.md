@@ -45,11 +45,11 @@ Required software:
 Optional software:
 * Postgres version 9.5 or above
 
-For installation instructions please see [INSTALLATION.md](INSTALLATION.md)
+For installation instructions please see [INSTALLATION.md](./docs/INSTALLATION.md)
 
 # Operation and configuration
 
-Please see [MANUAL.md](MANUAL.md)
+Please see [MANUAL.md](./docs/MANUAL.md)
 
 ## License
 
