@@ -7,7 +7,7 @@ setup(
     name='rest_VariantValidator',
     version=open('VERSION.txt').read(),
     description='Rest API for VariantValidator',
-    long_description=open('README.txt').read(),
+    long_description=open('README.md').read(),
     url='https://github.com/openvar/variantFormatter',
     license="GNU AFFERO GENERAL PUBLIC LICENSE, Version 3 (https://www.gnu.org/licenses/agpl-3.0.en.html)",
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -42,18 +42,24 @@ setup(
 
     # List run-time dependencies here.  These will be installed by pip when the project is installed.
     install_requires=[
-        "VariantValidator >= 1.0.0",
-        "VariantFormatter >= 1.0.0",
-        "vv_flask-restful-swagger",
         "flask",
         "flask-log",
         "flask-mail",
         "flask-cors",
+        "flask-restful",
+        "VariantValidator @ git+https://github.com/openvar/variantValidator.git@develop_v1#egg=VariantValidator",
+        "VariantFormatter @ git+https://github.com/openvar/variantFormatter.git@master#egg=VariantFormatter",
+        "vv_flask_restful_swagger @ git+https://github.com/openvar/vv-flask-restful-swagger.git@master#egg=vv_flask_restful_swagger",
     ],
+    # dependency_links=[
+    #     "git+https://github.com/openvar/variantValidator.git#egg=VariantValidator",
+    #     "git+https://github.com/openvar/variantFormatter.git#egg=VariantFormatter",
+    #     "git+https://github.com/openvar/vv_flask-restful-swagger#egg=vv_flask_restful_swagger"
+    # ]
 )
 
 # <LICENSE>
-# Copyright (C) 2019  Peter Causey-Freeman, University of Manchester
+# Copyright (C) 2019 VariantValidator Contributors
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
