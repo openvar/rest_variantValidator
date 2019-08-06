@@ -5,6 +5,7 @@ flask
 flask-log
 flask-mail
 flask-restful
+gunicorn
 biocommons.seqrepo>=0.5.1
 httplib2>=0.9.0
 configparser>=3.5.0
@@ -15,7 +16,6 @@ requests
 pytest>=3.6
 pytest-cov
 codecov
-
 
 
 

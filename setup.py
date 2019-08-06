@@ -47,9 +47,9 @@ setup(
         "flask-mail",
         "flask-cors",
         "flask-restful",
-        "VariantValidator @ git+https://github.com/openvar/variantValidator@develop_v1#egg=VariantValidator",
-        "VariantFormatter @ git+https://github.com/openvar/variantFormatter@master#egg=VariantFormatter",
-        "vv_flask_restful_swagger @ git+https://github.com/openvar/vv-flask-restful-swagger@master#egg=vv_flask_restful_swagger",
+        "VariantValidator @ git+https://github.com/openvar/variantValidator.git@develop_v1#egg=VariantValidator",
+        "VariantFormatter @ git+https://github.com/openvar/variantFormatter.git@master#egg=VariantFormatter",
+        "vv_flask_restful_swagger @ git+https://github.com/openvar/vv-flask-restful-swagger.git@master#egg=vv_flask_restful_swagger",
     ],
     # dependency_links=[
     #     "git+https://github.com/openvar/variantValidator.git#egg=VariantValidator",

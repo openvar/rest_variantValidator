@@ -12,7 +12,7 @@ cd rest_variantValidator/
 
 ## Configure
 Edit the file configuration/docker.ini
-You will need to provide your email address and we recommend generating and using an []Entrez API key](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/)
+You will need to provide your email address and we recommend generating and using an [Entrez API key](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/)
 
 *Note: configuration can be updated (see below for details)*
 
@@ -29,19 +29,24 @@ validator database and could take up to 30 minutes depending on your connection.
 running this in the background as you need to see the logs and therefore when the databases are
 ready to be used.
 
+## Access rest_variantValidator
+In a web browser navigate to
+[0.0.0.0:8000](http://0.0.0.0:8000/)
 
-## Run
-Once installed and running it is possible to run just the container containing rest_variantValidator, either to 
-run the validator script
+## Stop the app
+`ctrl+c`
 
+## Stop the remove the containers
 ```bash
-docker-compose run restvv
+$ docker-compose down
 ```
 
-or go into the container via bash
+## Run
+You can go into the container via bash to use
+[VariantValidator](https://github.com/openvar/variantValidator/blob/develop_v1/docs/MANUAL.md) directly.
 
 ```bash
-docker-compose run restvv bash
+$ docker-compose run restvv bash
 ```
 
 Note, that each time one of these commands is run a new container is created. 
@@ -66,27 +71,27 @@ Instructions can be found in the VariantValidator [manual](https://github.com/op
 ## Check which docker containers are running
 
 ```bash
-docker ps -a
+$ docker ps -a
 ```
 
 ## List all docker containers
 ```bash
-docker container ls -a
+$ docker container ls -a
 ```
 
 ## Stop containers
 
 ```bash
-docker stop <container>
+$ docker stop <container>
 ```
 
 ## Delete containers
 
 ```bash
-docker rm <cointainer>
+$ docker rm <cointainer>
 ```
 
 ## Delete images
 ```bash
-docker rmi <image>
+$ docker rmi <image>
 ```

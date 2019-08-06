@@ -12,10 +12,11 @@ COPY . /app
 
 RUN apt-get update
 
+RUN pip install --upgrade pip
+
 RUN pip install -r REQUIREMENTS.txt
 
 RUN pip install -e .
 
 COPY configuration/docker.ini /root/.variantvalidator
-
-CMD python3 rest_variantValidator/wsgi.py
+CMD gunicorn -b 0.0.0.0:8000 app --threads=5 --worker-class=gthread --chdir ./rest_variantValidator/

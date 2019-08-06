@@ -1,9 +1,7 @@
 # This application uses the flask restful API framework
 import os
-from os import listdir
 import re
 import sys
-# from dns import resolver, reversename
 from datetime import date, datetime, timedelta
 import warnings
 
@@ -13,10 +11,6 @@ from flask_restful import Resource, Api, reqparse, abort, fields, marshal_with
 from vv_flask_restful_swagger import swagger
 from flask_log import Logging
 from flask_mail import Mail, Message
-
-# Set up os paths data and log folders
-APP_ROOT = os.path.dirname(os.path.abspath(__file__))
-APP_STATIC = os.path.join(APP_ROOT, 'static')
 
 # Import variant validator code
 import VariantValidator
@@ -32,14 +26,15 @@ api_version = config_dict['variantvalidator_version']
 vf_api_version = VariantFormatter.__version__
 
 # CREATE APP
-app = Flask(__name__, static_folder=APP_STATIC)
+application = Flask(__name__)
+
 # configure
-app.config.from_object(__name__)
+application.config.from_object(__name__)
 
 # Wrap the Api with swagger.docs.
 BaseURL = os.environ.get('SERVER_NAME')
 if BaseURL is not None:
-    api = swagger.docs(Api(app), apiVersion=str(api_version),
+    api = swagger.docs(Api(application), apiVersion=str(api_version),
                    basePath=BaseURL,
                    resourcePath='/',
                    produces=["application/json"],
@@ -47,7 +42,7 @@ if BaseURL is not None:
                    description='VariantValidator web API'
                    )
 else:
-    api = swagger.docs(Api(app), apiVersion=str(api_version),
+    api = swagger.docs(Api(application), apiVersion=str(api_version),
                    resourcePath='/',
                    produces=["application/json"],
                    api_spec_url='/webservices/variantvalidator',
@@ -55,9 +50,9 @@ else:
                    )
 
 # Create Logging instance
-flask_log = Logging(app)
+flask_log = Logging(application)
 # Create Mail instance
-mail = Mail(app)
+mail = Mail(application)
 
 
 # Resources
@@ -286,6 +281,19 @@ api.add_resource(hgvs2reference, '/tools/hgvs2reference/<string:hgvs_description
 # VariantFormatter
 api.add_resource(variantFormatter, '/variantformatter/<string:genome_build>/<string:variant_description>/<string:transcript_model>/<string:select_transcripts>/<string:checkOnly>')
 
+
+if __name__ == '__main__':
+    from configparser import ConfigParser
+    from VariantValidator.settings import CONFIG_DIR
+    config = ConfigParser()
+    config.read(CONFIG_DIR)
+    if config["logging"]["log"] == "True":
+        application.debug = True
+        application.config['PROPAGATE_EXCEPTIONS'] = True
+    else:
+        application.debug = False
+        application.config['PROPAGATE_EXCEPTIONS'] = False
+    application.run(host="0.0.0.0", port=5000)
 
 # <LICENSE>
 # Copyright (C) 2019 VariantValidator Contributors
