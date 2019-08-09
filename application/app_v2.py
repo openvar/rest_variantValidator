@@ -16,10 +16,19 @@ application = Api(app = flask_app)
 hello_space = application.namespace('hello', description='Simple API that returns a greeting')
 @hello_space.route("/")
 class HelloClass(Resource):
-	def get(self):
-		return jsonify({
-			"greeting": "Hello World"
-		})
+    def get(self):
+        return jsonify({
+            "greeting": "Hello World"
+        })
+
+
+name_space = application.namespace('name', description='Return a name provided by the user')
+@name_space.route("<string:name>")
+class NameClass(Resource):
+    def get(self, name):
+        return jsonify({
+            "My name is" : name
+        })
 
 
 # Allows app to be run in debug mode
