@@ -26,7 +26,7 @@ class HelloClass(Resource):
 
 
 name_space = api.namespace('name', description='Return a name provided by the user')
-@name_space.route("<string:name>")
+@name_space.route("/<string:name>")
 class NameClass(Resource):
     def get(self, name):
         return {
