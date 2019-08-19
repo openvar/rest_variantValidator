@@ -1,4 +1,4 @@
-git+https://github.com/openvar/variantValidator@develop_v1#egg=VariantValidator
+git+https://github.com/openvar/variantValidator@master#egg=VariantValidator
 git+https://github.com/openvar/variantFormatter@master#egg=VariantFormatter
 git+https://github.com/openvar/vv-flask-restful-swagger@master#egg=vv_flask_restful_swagger
 flask
