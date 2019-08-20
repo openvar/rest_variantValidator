@@ -265,7 +265,6 @@ class variantFormatter(Resource):
         if checkOnly == 'True' or checkOnly== 'true':
             checkOnly = True
         v_form = VariantFormatter.simpleVariantFormatter.format(variant_description, genome_build, transcript_model, select_transcripts, checkOnly)
-        # return jsonify(v_form)
         return v_form, 200, {'Access-Control-Allow-Origin': '*'}
 
 

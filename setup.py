@@ -51,7 +51,6 @@ setup(
         "VariantValidator",
         "VariantFormatter",
         "mysql-connector-python",
-        "flask",
         "flask-log",
         "flask-mail",
         "flask-restful",
