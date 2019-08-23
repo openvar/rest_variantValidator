@@ -4,7 +4,7 @@ Simple rest interface for VariantVlidator built using Flask Flask-RESTPlus and S
 
 # Import modules
 from flask import Flask, make_response
-from flask_restplus import Api, Resource, reqparse
+from flask_restplus import Api, Resource, reqparse, fields, abort
 import requests
 from dicttoxml import dicttoxml
 
@@ -14,15 +14,25 @@ from dicttoxml import dicttoxml
 # so application is recommended
 application = Flask(__name__)
 
+# By default, show all endpoints (collapsed)
+application.config.SWAGGER_UI_DOC_EXPANSION = 'list'
+
 # Define the API as api
-api = Api(app = application)
+api = Api(app = application,
+                version = "1.0",
+                title = "rest_variantValidator",
+                description = "### REST API for [VariantValidator](https://github.com/openvar/variantValidator) and"
+                              " [VariantFormatter](https://github.com/openvar/variantFormatter)<br>"
+                              "&nbsp;&nbsp;&nbsp;"
+                              "- [Source code](https://github.com/openvar/rest_variantValidator)")
 
 # Create a RequestParser object to identify specific content-type requests in HTTP URLs
 # The requestparser allows us to specify arguements passed via a URL, in this case, ....?content-type=application/json
 parser = reqparse.RequestParser()
 parser.add_argument('content-type',
                     type=str,
-                    help='Accepted:\n- application/json\n- application/xml')
+                    help='***Select the response format***',
+                    choices=['application/json', 'application/xml'])
 
 """
 Representations
@@ -49,11 +59,10 @@ def json(data, code, headers):
 # The first variable is the path of the namespace the second variable describes the space
 hello_space = api.namespace('hello', description='Simple API that returns a greeting')
 @hello_space.route("/")
-
 class HelloClass(Resource):
 
     # Add documentation about the parser
-    @api.doc(parser=parser)
+    @api.expect(parser, validate=True)
     def get(self):
 
         # Collect Arguements
@@ -80,11 +89,11 @@ class HelloClass(Resource):
 
 name_space = api.namespace('name', description='Return a name provided by the user')
 @name_space.route("/<string:name>")
+@name_space.param("name", "Enter name")
 class NameClass(Resource):
 
-
     # Add documentation about the parser
-    @api.doc(parser=parser)
+    @api.expect(parser, validate=True)
     def get(self, name):
 
         # Collect Arguements
@@ -109,18 +118,37 @@ class NameClass(Resource):
                 "My name is" : name
             }
 
-vv_space = api.namespace('VariantValidator', description='VariantValidator APIs')
+vv_space = api.namespace('VariantValidator', description='VariantValidator API Endpoints')
 @vv_space.route("/variantvalidator/<string:genome_build>/<string:variant_description>/<string:select_transcripts>")
-class VariantValidatorClass(Resource):
+@vv_space.param("select_transcripts", "***'all'***\n> Return all possible transcripts\n"
+                                      "\n***Single***\n>   NM_000093.4\n"
+                                      "\n***Multiple***\n>   NM_000093.4|NM_001278074.1|NM_000093.3")
+@vv_space.param("variant_description", "***HGVS***\n"
+                                       ">   NM_000088.3:c.589G>T\n"
+                                       ">   NC_000017.10:g.48275363C>A\n"
+                                       ">   NG_007400.1:g.8638G>T\n"
+                                       ">   LRG_1:g.8638G>T\n"
+                                       ">   LRG_1t1:c.589G>T\n"
+                                       "\n***Pseudo-VCF***\n"
+                                       ">   17-50198002-C-A\n"
+                                       ">   17:50198002:C:A\n"
+                                       ">   GRCh38-17-50198002-C-A\n"
+                                       ">   GRCh38:17:50198002:C:A\n"
+                                       "\n***Hybrid***\n"
+                                       ">   chr17:50198002C>A\n "
+                                       ">   chr17:50198002C>A(GRCh38)\n"
+                                       ">   chr17:g.50198002C>A\n"
+                                       ">   chr17:g.50198002C>A(GRCh38)")
+@vv_space.param("genome_build", "***Accepted:***\n>   GRCh37\n>   GRCh38\n>   hg19\n>   hg38")
 
+
+class VariantValidatorClass(Resource):
     # Add documentation about the parser
-    @api.doc(parser=parser)
+    @api.expect(parser, validate=True)
     def get(self, genome_build, variant_description, select_transcripts):
 
         # Make a request to the curent VariantValidator rest-API
-        url = '/'.join(['http://rest.variantvalidator.org/variantvalidator', genome_build, variant_description, select_transcripts])
-
-        # Likley error source, Test be switching off internet connection!
+        url = '/'.join(['https://rest.variantvalidator.org/variantvalidator', genome_build, variant_description, select_transcripts])
         try:
             validation = requests.get(url)
         except requests.exceptions.ConnectionError:
