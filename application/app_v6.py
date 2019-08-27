@@ -4,8 +4,9 @@ Simple rest interface for VariantVlidator built using Flask Flask-RESTPlus and S
 
 # Import modules
 from flask import Flask, make_response
-from flask_restplus import Api, Resource, reqparse
+from flask_restplus import Api, Resource, reqparse, fields, abort
 import requests
+from requests.exceptions import ConnectionError
 from dicttoxml import dicttoxml
 
 
@@ -23,6 +24,12 @@ parser = reqparse.RequestParser()
 parser.add_argument('content-type',
                     type=str,
                     help='Accepted:\n- application/json\n- application/xml')
+
+"""
+Register custom exceptions
+"""
+class RemoteConnectionError(Exception):
+    code=500
 
 """
 Representations
@@ -123,8 +130,8 @@ class VariantValidatorClass(Resource):
         # Likley error source, Test be switching off internet connection!
         try:
             validation = requests.get(url)
-        except requests.exceptions.ConnectionError:
-            abort(500, 'remote server currently unavailable', custom='https://rest.variantvalidator.org')
+        except ConnectionError:
+            raise RemoteConnectionError('https://rest.variantvalidator.org/variantvalidator currently unavailable')
         content = validation.json()
 
         # Collect Arguements
@@ -141,26 +148,17 @@ class VariantValidatorClass(Resource):
             # Return the api default output
             return content
 
+
 """
 Error handlers
 """
-@application.errorhandler(404)
-def not_found(e):
-    args = parser.parse_args()
-    error_message = {"error": "The requested endpoint was not found"}
-    if args['content-type'] == 'application/xml':
-        return xml(error_message, 400, None)
-    else:
-        return json(error_message, 400, None)
+@api.errorhandler
+def default_error_handler(e):
+    return {'message': 'unhandled error: contact https://variantvalidator.org/contact_admin/'}, 500
 
-@application.errorhandler(500)
-def connection_error(e):
-    args = parser.parse_args()
-    error_message = {"unexpected_error": "please contact https://variantvalidator.org/contact_admin/"}
-    if args['content-type'] == 'application/xml':
-        return xml(error_message, 500, None)
-    else:
-        return json(error_message, 500, None)
+@api.errorhandler(RemoteConnectionError)
+def remote_connection_error_handler(e):
+    return {'message': str(e)}, 500
 
 # Allows app to be run in debug mode
 if __name__ == '__main__':

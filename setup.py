@@ -54,6 +54,7 @@ setup(
         "flask-log",
         "flask-mail",
         "flask-restful",
+        "dicttoxml",
         "requests",
         "pyliftover",
         "vvhgvs",
