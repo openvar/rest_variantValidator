@@ -1,2 +1,2 @@
 class RemoteConnectionError(Exception):
-    code = 500
+    code = 504
