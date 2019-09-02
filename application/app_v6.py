@@ -29,7 +29,7 @@ parser.add_argument('content-type',
 Register custom exceptions
 """
 class RemoteConnectionError(Exception):
-    code=500
+    code=504
 
 """
 Representations
@@ -152,13 +152,51 @@ class VariantValidatorClass(Resource):
 """
 Error handlers
 """
-@api.errorhandler
-def default_error_handler(e):
-    return {'message': 'unhandled error: contact https://variantvalidator.org/contact_admin/'}, 500
 
-@api.errorhandler(RemoteConnectionError)
+# exceptions has now been imported from utils!
+
+
+@application.errorhandler(RemoteConnectionError)
 def remote_connection_error_handler(e):
-    return {'message': str(e)}, 500
+    # Collect Arguments
+    args = parser.parse_args()
+    if args['content-type'] != 'application/xml':
+        return json({'message': str(e)},
+                                504,
+                                None)
+    else:
+        return xml({'message': str(e)},
+                   504,
+                   None)
+
+
+@application.errorhandler(404)
+def not_found_error_handler():
+    # Collect Arguments
+    args = parser.parse_args()
+    if args['content-type'] != 'application/xml':
+        return json({'message': 'Requested Endpoint not found'},
+                                404,
+                                None)
+    else:
+        return xml({'message': 'Requested Endpoint not found'},
+                   404,
+                   None)
+
+
+@application.errorhandler(500)
+def default_error_handler():
+    # Collect Arguments
+    args = parser.parse_args()
+    if args['content-type'] != 'application/xml':
+        return json({'message': 'unhandled error: contact https://variantvalidator.org/contact_admin/'},
+                                500,
+                                None)
+    else:
+        return xml({'message': 'unhandled error: contact https://variantvalidator.org/contact_admin/'},
+                   500,
+                   None)
+
 
 # Allows app to be run in debug mode
 if __name__ == '__main__':

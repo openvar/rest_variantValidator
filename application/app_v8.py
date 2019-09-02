@@ -40,7 +40,7 @@ Register custom exceptions
 
 
 class RemoteConnectionError(Exception):
-    code = 500
+    code = 504
 
 
 """
@@ -215,20 +215,52 @@ class VariantValidatorClass(Resource):
 Error handlers
 """
 
-
-@api.errorhandler
-def default_error_handler():
-    return {'message': 'unhandled error: contact https://variantvalidator.org/contact_admin/'}, 500
+# exceptions has now been imported from utils!
 
 
-@api.errorhandler(RemoteConnectionError)
+@application.errorhandler(RemoteConnectionError)
 def remote_connection_error_handler(e):
-    return {'message': str(e)}, 500
+    # Collect Arguments
+    args = parser.parse_args()
+    if args['content-type'] != 'application/xml':
+        return application_json({'message': str(e)},
+                                504,
+                                None)
+    else:
+        return xml({'message': str(e)},
+                   504,
+                   None)
+
+
+@application.errorhandler(404)
+def not_found_error_handler():
+    # Collect Arguments
+    args = parser.parse_args()
+    if args['content-type'] != 'application/xml':
+        return application_json({'message': 'Requested Endpoint not found'},
+                                404,
+                                None)
+    else:
+        return xml({'message': 'Requested Endpoint not found'},
+                   404,
+                   None)
+
+
+@application.errorhandler(500)
+def default_error_handler():
+    # Collect Arguments
+    args = parser.parse_args()
+    if args['content-type'] != 'application/xml':
+        return application_json({'message': 'unhandled error: contact https://variantvalidator.org/contact_admin/'},
+                                500,
+                                None)
+    else:
+        return xml({'message': 'unhandled error: contact https://variantvalidator.org/contact_admin/'},
+                   500,
+                   None)
 
 
 # Allows app to be run in debug mode
-
-
 if __name__ == '__main__':
     application.debug = True  # Enable debugging mode
     application.run(host="127.0.0.1", port=5000)  # Specify a host and port fot the app

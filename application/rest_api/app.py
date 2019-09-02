@@ -51,32 +51,9 @@ def application_json(data, code, headers):
 Error handlers
 """
 
-
-# @api.errorhandler
-# def default_error_handler():
-#     return {'message': 'unhandled error: contact https://variantvalidator.org/contact_admin/'}, 500
-#
-#
-# # exceptions has now been imported from utils!
-# @api.errorhandler(exceptions.RemoteConnectionError)
-# def remote_connection_error_handler(e):
-#     return {'message': str(e)}, 500
-
-@api.errorhandler
-def default_error_handler():
-    # Collect Arguments
-    args = parser.parse_args()
-    if args['content-type'] != 'application/xml':
-        return application_json({'message': 'unhandled error: contact https://variantvalidator.org/contact_admin/'},
-                                500,
-                                None)
-    else:
-        return xml({'message': 'unhandled error: contact https://variantvalidator.org/contact_admin/'},
-                   500,
-                   None)
-
-
 # exceptions has now been imported from utils!
+
+
 @application.errorhandler(exceptions.RemoteConnectionError)
 def remote_connection_error_handler(e):
     # Collect Arguments
