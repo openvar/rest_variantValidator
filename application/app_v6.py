@@ -3,12 +3,30 @@ Simple rest interface for VariantVlidator built using Flask Flask-RESTPlus and S
 """
 
 # Import modules
-from flask import Flask, make_response
+from flask import Flask, make_response, request
 from flask_restplus import Api, Resource, reqparse, fields, abort
 import requests
 from requests.exceptions import ConnectionError
 from dicttoxml import dicttoxml
 
+"""
+Logging
+"""
+import logging
+import logging.handlers as handlers
+import time
+
+logger = logging.getLogger('rest_api')
+# We are setting 2 types of logging. To screen at the level DEBUG
+logger.setLevel(logging.DEBUG)
+
+# We will also log to a file
+# Log with a rotating file-handler. This sets the maximum size of the log to 0.5Mb and allows two additional logs
+# The logs are then deleted and replaced in rotation
+logHandler = handlers.RotatingFileHandler('rest_api.log', maxBytes=500000, backupCount=2)
+# We want to minimise the amount of information we log to capturing bugs
+logHandler.setLevel(logging.ERROR)
+logger.addHandler(logHandler)
 
 # Define the application as a Flask app with the name defined by __name__ (i.e. the name of the current module)
 # Most tutorials define application as "app", but I have had issues with this when it comes to deployment,
@@ -152,12 +170,21 @@ class VariantValidatorClass(Resource):
 """
 Error handlers
 """
-
-# exceptions has now been imported from utils!
+# Simple function that creates an error message that we will log
+def log_exception(type):
+    # We want to know the arguments passed and the path so we can replicate the error
+    params = dict(request.args)
+    params['path'] = request.path
+    # Create the message and log
+    message = '%s occurred at %s with params=%s' % (type, time.ctime(), params)
+    logger.exception(message, exc_info=True)
 
 
 @application.errorhandler(RemoteConnectionError)
 def remote_connection_error_handler(e):
+    # Add the Exception to the log ensuring that exc_info is True so that a traceback is also logged
+    log_exception('RemoteConnectionError')
+
     # Collect Arguments
     args = parser.parse_args()
     if args['content-type'] != 'application/xml':
@@ -186,6 +213,9 @@ def not_found_error_handler():
 
 @application.errorhandler(500)
 def default_error_handler():
+    # Add the Exception to the log ensuring that exc_info is True so that a traceback is also logged
+    log_exception('RemoteConnectionError')
+
     # Collect Arguments
     args = parser.parse_args()
     if args['content-type'] != 'application/xml':

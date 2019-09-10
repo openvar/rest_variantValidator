@@ -3,9 +3,27 @@ Simple rest interface for VariantValidator built using Flask Flask-RESTPlus and 
 """
 
 # Import modules
-from flask import Flask
+from flask import Flask, request
 from endpoints import api, representations, exceptions, request_parser
+import logging
+import logging.handlers as handlers
+import time
 
+
+"""
+Logging
+"""
+logger = logging.getLogger('rest_api')
+# We are setting 2 types of logging. To screen at the level DEBUG
+logger.setLevel(logging.DEBUG)
+
+# We will also log to a file
+# Log with a rotating file-handler. This sets the maximum size of the log to 0.5Mb and allows two additional logs
+# The logs are then deleted and replaced in rotation
+logHandler = handlers.RotatingFileHandler('rest_api.log', maxBytes=500000, backupCount=2)
+# We want to minimise the amount of information we log to capturing bugs
+logHandler.setLevel(logging.ERROR)
+logger.addHandler(logHandler)
 """
 Create a parser object locally
 """
@@ -49,13 +67,25 @@ def application_json(data, code, headers):
 
 """
 Error handlers
+    - exceptions has now been imported from utils!
 """
 
-# exceptions has now been imported from utils!
+
+# Simple function that creates an error message that we will log
+def log_exception(exception_type):
+    # We want to know the arguments passed and the path so we can replicate the error
+    params = dict(request.args)
+    params['path'] = request.path
+    # Create the message and log
+    message = '%s occurred at %s with params=%s' % (exception_type, time.ctime(), params)
+    logger.exception(message, exc_info=True)
 
 
 @application.errorhandler(exceptions.RemoteConnectionError)
 def remote_connection_error_handler(e):
+    # Add the Exception to the log ensuring that exc_info is True so that a traceback is also logged
+    log_exception('RemoteConnectionError')
+
     # Collect Arguments
     args = parser.parse_args()
     if args['content-type'] != 'application/xml':
@@ -84,6 +114,9 @@ def not_found_error_handler():
 
 @application.errorhandler(500)
 def default_error_handler():
+    # Add the Exception to the log ensuring that exc_info is True so that a traceback is also logged
+    log_exception('RemoteConnectionError')
+
     # Collect Arguments
     args = parser.parse_args()
     if args['content-type'] != 'application/xml':
