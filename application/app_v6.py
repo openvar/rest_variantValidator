@@ -18,7 +18,7 @@ import time
 
 logger = logging.getLogger('rest_api')
 # We are setting 2 types of logging. To screen at the level DEBUG
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 # We will also log to a file
 # Log with a rotating file-handler. This sets the maximum size of the log to 0.5Mb and allows two additional logs
