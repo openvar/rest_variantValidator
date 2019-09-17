@@ -6,7 +6,7 @@ Simple rest interface for VariantValidator built using Flask Flask-RESTPlus and 
 from flask import Flask, request
 from endpoints import api, representations, exceptions, request_parser
 import logging
-import logging.handlers as handlers
+from logging import handlers
 import time
 
 
@@ -24,6 +24,8 @@ logHandler = handlers.RotatingFileHandler('rest_api.log', maxBytes=500000, backu
 # We want to minimise the amount of information we log to capturing bugs
 logHandler.setLevel(logging.ERROR)
 logger.addHandler(logHandler)
+
+
 """
 Create a parser object locally
 """
@@ -54,7 +56,7 @@ Note
 
 
 @api.representation('application/xml')
-def xml(data, code, headers):
+def application_xml(data, code, headers):
     resp = representations.xml(data, code, headers)
     return resp
 
@@ -93,9 +95,9 @@ def remote_connection_error_handler(e):
                                 504,
                                 None)
     else:
-        return xml({'message': str(e)},
-                   504,
-                   None)
+        return application_xml({'message': str(e)},
+                               504,
+                               None)
 
 
 @application.errorhandler(404)
@@ -107,9 +109,9 @@ def not_found_error_handler():
                                 404,
                                 None)
     else:
-        return xml({'message': 'Requested Endpoint not found'},
-                   404,
-                   None)
+        return application_xml({'message': 'Requested Endpoint not found'},
+                               404,
+                               None)
 
 
 @application.errorhandler(500)
@@ -124,9 +126,9 @@ def default_error_handler():
                                 500,
                                 None)
     else:
-        return xml({'message': 'unhandled error: contact https://variantvalidator.org/contact_admin/'},
-                   500,
-                   None)
+        return application_xml({'message': 'unhandled error: contact https://variantvalidator.org/contact_admin/'},
+                               500,
+                               None)
 
 
 # Allows app to be run in debug mode

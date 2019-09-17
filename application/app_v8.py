@@ -9,7 +9,7 @@ import requests
 from requests.exceptions import ConnectionError
 from dicttoxml import dicttoxml
 import logging
-import logging.handlers as handlers
+from logging import handlers
 import time
 
 
@@ -76,7 +76,7 @@ Representations
 
 
 @api.representation('application/xml')
-def xml(data, code, headers):
+def application_xml(data, code, headers):
     data = dicttoxml(data)
     resp = make_response(data, code)
     resp.headers['Content-Type'] = 'application/xml'
@@ -123,7 +123,7 @@ class HelloClass(Resource):
                 200, None)
         # example: http://127.0.0.1:5000/name/name/bob?content-type=application/xml
         elif args['content-type'] == 'application/xml':
-            return xml({
+            return application_xml({
                 "greeting": "Hello World"
             },
                 200, None)
@@ -157,7 +157,7 @@ class NameClass(Resource):
                 200, None)
         # example: http://127.0.0.1:5000/name/name/bob?content-type=application/xml
         elif args['content-type'] == 'application/xml':
-            return xml({
+            return application_xml({
                 "My name is": name
             },
                 200, None)
@@ -225,7 +225,7 @@ class VariantValidatorClass(Resource):
             return application_json(content, 200, None)
         # example: http://127.0.0.1:5000.....?content-type=application/xml
         elif args['content-type'] == 'application/xml':
-            return xml(content, 200, None)
+            return application_xml(content, 200, None)
         else:
             # Return the api default output
             return content
@@ -258,9 +258,9 @@ def remote_connection_error_handler(e):
                                 504,
                                 None)
     else:
-        return xml({'message': str(e)},
-                   504,
-                   None)
+        return application_xml({'message': str(e)},
+                               504,
+                               None)
 
 
 @application.errorhandler(404)
@@ -272,9 +272,9 @@ def not_found_error_handler():
                                 404,
                                 None)
     else:
-        return xml({'message': 'Requested Endpoint not found'},
-                   404,
-                   None)
+        return application_xml({'message': 'Requested Endpoint not found'},
+                               404,
+                               None)
 
 
 @application.errorhandler(500)
@@ -289,9 +289,9 @@ def default_error_handler():
                                 500,
                                 None)
     else:
-        return xml({'message': 'unhandled error: contact https://variantvalidator.org/contact_admin/'},
-                   500,
-                   None)
+        return application_xml({'message': 'unhandled error: contact https://variantvalidator.org/contact_admin/'},
+                               500,
+                               None)
 
 
 # Allows app to be run in debug mode

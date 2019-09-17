@@ -1,5 +1,5 @@
 """
-Simple rest interface for VariantVlidator built using Flask Flask-RESTPlus and Swagger UI
+Simple rest interface for VariantValidator built using Flask Flask-RESTPlus and Swagger UI
 """
 
 # Import modules
