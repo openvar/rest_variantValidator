@@ -55,6 +55,7 @@ setup(
         "flask-mail",
         "flask-restful",
         "requests",
+        "mod_wsgi",
         "pyliftover",
         "vvhgvs",
         ],
