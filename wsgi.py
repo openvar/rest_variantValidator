@@ -1,5 +1,4 @@
-from app import application as application
-
+from rest_variantValidator.app import application as application
 if __name__ == '__main__':
     from configparser import ConfigParser
     from VariantValidator.settings import CONFIG_DIR
