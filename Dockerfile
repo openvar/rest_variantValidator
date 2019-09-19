@@ -19,4 +19,4 @@ RUN pip install -r REQUIREMENTS.txt
 RUN pip install -e .
 
 COPY configuration/docker.ini /root/.variantvalidator
-CMD gunicorn -b 0.0.0.0:8000 app --threads=5 --worker-class=gthread --chdir ./rest_variantValidator/
+CMD gunicorn -b 0.0.0.0:8000 app --workers=3 --threads=5 --worker-class=gthread --chdir ./rest_variantValidator/
