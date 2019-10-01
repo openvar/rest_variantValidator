@@ -1,7 +1,5 @@
 FROM postgres:latest
 
-# RUN apt-get update && apt-get install -y curl
-
 ENV POSTGRES_DB=uta
 
 ENV POSTGRES_USER=uta_admin
@@ -10,17 +8,4 @@ ENV POSTGRES_PASSWORD=uta_admin
 
 RUN apt-get update && apt-get install -y wget && rm -rf /var/lib/apt/lists/*
 
-RUN wget http://dl.biocommons.org/uta/uta_20180821.pgd.gz -O /docker-entrypoint-initdb.d/uta_20180821.pgd.gz
-
-
-# by default uta docker is built with uta_20170707
-# please provide custom versions with the command line parameter
-# --build-arg uta_version=uta_MYVERSION
-# ARG uta_version=uta_201700707
-# ARG uta_version=uta_20180821.pgd.gz
-# MAINTAINER reecehart@gmail.com
-# ENV UTA_VERSION=${uta_version}
-# LABEL description="PostgreSQL image with $UTA_VERSION installed (https://github.com/biocommons/uta/)"
-# ADD load-uta.sh /docker-entrypoint-initdb.d/
-# RUN pg_ctl -D /var/lib/postgresql/data -l logfile start
-# RUN gzip -cdq uta_20180821.pgd.gz | psql -U uta_admin -v ON_ERROR_STOP=1 -d uta -Eae
+RUN wget https://leicester.figshare.com/ndownloader/files/17797259 -O /docker-entrypoint-initdb.d/uta_20180821.sql.gz

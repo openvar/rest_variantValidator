@@ -16,6 +16,24 @@ You will need to provide your email address and we recommend generating and usin
 
 *Note: configuration can be updated (see below for details)*
 
+## Install and build
+
+*Note: some of these steps take >>1hr to complete depending on the speed of your internet connection, particularly 
+compiling SeqRepo*
+
+```bash
+# Build the containers
+$ docker-compose up --build -d
+
+# Load UTA
+$ docker-compose run uta
+
+# Load seqrepo
+$ docker-compose run seqrepo
+
+# Shutdown
+ctrl + c
+```
 
 ## Launch
 You can then launch the docker containers and run them using
@@ -24,26 +42,27 @@ You can then launch the docker containers and run them using
 docker-compose up
 ```
 
-Note, the first time this is run it will download each of the databases including the pre-populated
-validator database and could take up to 30 minutes depending on your connection. We do not recommend
-running this in the background as you need to see the logs and therefore when the databases are
-ready to be used.
+Note: We do not recommend running this in the background as you need to see the logs and therefore when the databases 
+are ready to be used.
 
 ## Access rest_variantValidator
 In a web browser navigate to
-[0.0.0.0:8000](http://0.0.0.0:8000/)
+[http://0.0.0.0:8000/webservices/variantvalidator.html](http://0.0.0.0:8000/webservices/variantvalidator.html)
 
 ## Stop the app
 `ctrl+c`
 
-## Stop the remove the containers
+***To re-launch the app, go to Launch***
+
+## Remove the containers
+***Note: This step removes the container database. Effectively an uninstall***
 ```bash
 $ docker-compose down
 ```
 
 ## Run
 You can go into the container via bash to use
-[VariantValidator](https://github.com/openvar/variantValidator/blob/develop_v1/docs/MANUAL.md) directly.
+[VariantValidator](https://github.com/openvar/variantValidator/blob/master/docs/MANUAL.md) directly.
 
 ```bash
 $ docker-compose run restvv bash
@@ -66,32 +85,4 @@ The container hosts a full install of VariantValidator.
 
 VariantValidator can be run on the commandline from within the container. 
 
-Instructions can be found in the VariantValidator [manual](https://github.com/openvar/variantValidator/blob/develop_v1/docs/MANUAL.md)
-
-## Check which docker containers are running
-
-```bash
-$ docker ps -a
-```
-
-## List all docker containers
-```bash
-$ docker container ls -a
-```
-
-## Stop containers
-
-```bash
-$ docker stop <container>
-```
-
-## Delete containers
-
-```bash
-$ docker rm <cointainer>
-```
-
-## Delete images
-```bash
-$ docker rmi <image>
-```
+Instructions can be found in the VariantValidator [manual](https://github.com/openvar/variantValidator/blob/master/docs/MANUAL.md)

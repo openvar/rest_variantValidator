@@ -47,6 +47,7 @@ setup(
         "flask-mail",
         "flask-cors",
         "flask-restful",
+        "gunicorn",
         "vvhgvs @ git+https://github.com/openvar/vv_hgvs.git@master#egg=vvhgvs",
         "VariantValidator @ git+https://github.com/openvar/variantValidator.git@master#egg=VariantValidator",
         "VariantFormatter @ git+https://github.com/openvar/variantFormatter.git@master#egg=VariantFormatter",

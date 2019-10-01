@@ -5,6 +5,7 @@ git+https://github.com/openvar/vv-flask-restful-swagger@master#egg=vv_flask_rest
 flask
 flask-log
 flask-mail
+flask-cors
 flask-restful
 gunicorn
 biocommons.seqrepo>=0.5.1
@@ -17,6 +18,3 @@ requests
 pytest>=3.6
 pytest-cov
 codecov
-
-
-
