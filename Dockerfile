@@ -1,22 +1,27 @@
 
+# Use an official Python runtime as a parent image
 FROM python:3.6
 
-#RUN seqrepo -r ${SEQREPO_DATA_DIR} pull -i ${SEQREPO_DATA_RELEASE}
-#RUN touch ${SEQREPO_DATA_DIR}/testing.txt
-
-#RUN apt update && apt install -y git
-
+# Set the working directory to /app
 WORKDIR /app
 
+# Copy the current directory contents into the container's /app directory
 COPY . /app
 
 RUN apt-get update
 
+# Updrade pip
 RUN pip install --upgrade pip
 
+# Install any needed packages specified in requirements.txt
 RUN pip install -r REQUIREMENTS.txt
 
+# Install the tool
 RUN pip install -e .
 
+# Copy the config file into the container home diorectory
 COPY configuration/docker.ini /root/.variantvalidator
-CMD gunicorn -b 0.0.0.0:8000 app --threads=5 --worker-class=gthread --chdir ./rest_variantValidator/
+
+# Start the application with gunicorn
+# CMD gunicorn --preload -b 0.0.0.0:8000 app --workers=3 --threads=5 --worker-class=gthread --chdir ./rest_variantValidator/
+CMD gunicorn --preload -b 0.0.0.0:8000 app --threads=5 --worker-class=gthread --chdir ./rest_variantValidator/

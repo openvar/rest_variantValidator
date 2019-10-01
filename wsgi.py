@@ -1,3 +1,6 @@
+"""mod_wsgi gateway wsgi file
+"""
+
 from rest_variantValidator.app import application as application
 if __name__ == '__main__':
     from configparser import ConfigParser
