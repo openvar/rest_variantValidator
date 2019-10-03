@@ -51,6 +51,10 @@ For installation instructions please see [INSTALLATION.md](./docs/INSTALLATION.m
 
 Please see [MANUAL.md](./docs/MANUAL.md)
 
+# Running in docker
+
+Please see [DOCKER.md](https://github.com/openvar/rest_variantValidator/blob/master/docs/DOCKER.md)
+
 ## License
 
 Please see [LICENSE.txt](LICENSE.txt)
