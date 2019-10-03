@@ -1,24 +1,21 @@
 # This application uses the flask restful API framework
 import os
-import re
-import sys
-from datetime import date, datetime, timedelta
-import warnings
 
 # IMPORT FLASK MODULES
-from flask import Flask ,request, jsonify, abort, url_for, g, send_file, redirect, Blueprint #, session, g, redirect, , abort, render_template, flash, make_response, abort
-from flask_restful import Resource, Api, reqparse, abort, fields, marshal_with
+from flask import Flask ,request, redirect
+from flask_restful import Resource, Api
 from vv_flask_restful_swagger import swagger
 from flask_log import Logging
-from flask_mail import Mail, Message
+
+# Import variantFormatter
+import VariantFormatter
+import VariantFormatter.simpleVariantFormatter
 
 # Import variant validator code
 import VariantValidator
 vval = VariantValidator.Validator()
 
-# Import variantFormatter
-import VariantFormatter
-import VariantFormatter.simpleVariantFormatter
+
 
 # Extract API related metadata
 config_dict =  vval.my_config()
@@ -51,8 +48,6 @@ else:
 
 # Create Logging instance
 flask_log = Logging(application)
-# Create Mail instance
-mail = Mail(application)
 
 
 # Resources
@@ -111,54 +106,11 @@ class variantValidator(Resource):
             validate = vval.validate(variant_description, genome_build, select_transcripts)
             validation = validate.format_as_dict(with_meta=True)
         except Exception as e:
-            import traceback
-            import time
-            exc_type, exc_value, last_traceback = sys.exc_info()
-            te = traceback.format_exc()
-            tbk = str(exc_type) + str(exc_value) + '\n\n' + str(te) + '\n\nVariant = ' + str(variant_description) + ' and selected_assembly = ' + str(genome_build) + '/n'
-            error = str(tbk)
-            # Email admin
-            msg = Message(recipients=["variantvalidator@gmail.com"],
-                sender='apiValidator',
-                body=error + '\n\n' + time.ctime(),
-                subject='Major error recorded')
-            # Send the email
-            mail.send(msg)
             error = {'flag' : ' Major error',
                     'validation_error': 'A major validation error has occurred. Admin have been made aware of the issue'}
             return error, 200, {'Access-Control-Allow-Origin': '*'}
-
-        # Look for warnings
-        for key, val in validation.items():
-            if key == 'flag' or key == 'metadata':
-                if key == 'flag' and str(val) == 'None':
-                    import time
-                    variant = variant_description
-                    error = 'Variant = ' + str(variant_description) + ' and selected_assembly = ' + str(genome_build) + '\n'
-                    # Email admin
-                    msg = Message(recipients=["variantvalidator@gmail.com"],
-                        sender='apiValidator',
-                        body=error + '\n\n' + time.ctime(),
-                        subject='Validation server error recorded')
-                    # Send the email
-                    mail.send(msg)
-                else:
-                    continue
-            try:
-                if val['validation_warnings'] == 'Validation error':
-                    import time
-                    variant = variant_description
-                    error = 'Variant = ' + str(variant_description) + ' and selected_assembly = ' + str(genome_build) + '\n'
-                    # Email admin
-                    msg = Message(recipients=["variantvalidator@gmail.com"],
-                        sender='apiValidator',
-                        body=error + '\n\n' + time.ctime(),
-                        subject='Validation server error recorded')
-                    # Send the email
-                    mail.send(msg)
-            except TypeError:
-                pass
-        return validation, 200, {'Access-Control-Allow-Origin': '*'}
+        else:
+            return validation, 200, {'Access-Control-Allow-Origin': '*'}
 
 
 
