@@ -30,14 +30,14 @@ compiling SeqRepo*
 # Build the containers
 $ docker-compose up --build -d
 
+# Load seqrepo
+$ docker-compose run seqrepo
+
 # Load UTA
 $ docker-compose run uta
 
 # Shutdown
 ctrl + c
-
-# Load seqrepo
-$ docker-compose run seqrepo
 ```
 
 ## Launch
