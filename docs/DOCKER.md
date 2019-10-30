@@ -3,16 +3,21 @@
 To install rest_variantValidator via Docker, first ensure you have both docker and docker-compose installed. 
 See their [documentation](https://docs.docker.com/compose/install/) for information.
 
-Then, clone the repository and move into that directory.
+Create a directory collate your cloned repositories. Move into the directory then, clone the repository. 
 
 ```bash
 $ git clone https://github.com/openvar/rest_variantValidator
-cd rest_variantValidator/
+```
+
+Once the repository has been cloned, cd into the rest_variantValidator directory that the clone creates.
+```bash
+$ cd rest_variantValidator/
 ``` 
 
 ## Configure
 Edit the file configuration/docker.ini
-You will need to provide your email address and we recommend generating and using an [Entrez API key](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/)
+You will need to provide your email address and we recommend generating and using an 
+[Entrez API key](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/)
 
 *Note: configuration can be updated (see below for details)*
 
