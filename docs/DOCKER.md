@@ -33,11 +33,11 @@ $ docker-compose up --build -d
 # Load UTA
 $ docker-compose run uta
 
-# Load seqrepo
-$ docker-compose run seqrepo
-
 # Shutdown
 ctrl + c
+
+# Load seqrepo
+$ docker-compose run seqrepo
 ```
 
 ## Launch
