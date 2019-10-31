@@ -56,7 +56,7 @@ ctrl + c
 You can then launch the docker containers and run them using
 
 ```bash
-$ docker-compose up --no-recreate
+$ docker-compose up
 ```
 
 Note: We do not recommend running this in the background as you need to see the logs and therefore when the databases 
@@ -111,8 +111,7 @@ If you are only running rest_variantValidator in docker, we recommend deleting a
 
 ```bash
 # Delete all containers
-$ docker system prune -a
-$ docker volume rm $(docker volume ls -qf dangling=true)
+$ docker system prune -a --volumes
 ```
 
 ***Once you have deleted the containers, got to Install and Build***
