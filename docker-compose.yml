@@ -21,19 +21,18 @@ services:
     image: biocommons/seqrepo:2018-08-21
     volumes:
       - seqdata:/usr/local/share/seqrepo
+    stdin_open: true
+    tty: true
   restvv:
     build: .
     depends_on:
       - vdb
       - uta
-      - seqrepo
     volumes:
       - seqdata:/usr/local/share/seqrepo
     ports:
       - "5000:5000"
       - "8000:8000"
-    # command:
-     #  gunicorn --preload -b 0.0.0.0:8000 app --workers=3 --threads=5 --worker-class=gthread --chdir ./rest_variantValidator/
 
 volumes:
   seqdata:
