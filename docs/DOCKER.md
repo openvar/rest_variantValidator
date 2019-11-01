@@ -37,16 +37,15 @@ compiling SeqRepo*
 
 ```bash
 # Pull images
-docker-compose pull
+$ docker-compose pull
 
 # Build
-docker-compose build --no-cache
+$ docker-compose build --no-cache
 
-# Build and load SeqRepo
-$ docker-compose run seqrepo
-
-# Load UTA
-$ docker-compose run uta
+# Build and load restvv and databases
+# This step can take >>1hour and is complete when you see the message
+# - "rest_variantvalidator_seqrepo_1 exited with code 0"
+$ docker-compose up
 
 # Shutdown
 ctrl + c
@@ -56,7 +55,7 @@ ctrl + c
 You can then launch the docker containers and run them using
 
 ```bash
-$ docker-compose up --no-recreate
+$ docker-compose up
 ```
 
 Note: We do not recommend running this in the background as you need to see the logs and therefore when the databases 
@@ -64,7 +63,7 @@ are ready to be used.
 
 ## Access rest_variantValidator
 In a web browser navigate to
-[http://0.0.0.0:8000/webservices/variantvalidator.html](http://0.0.0.0:8000/webservices/variantvalidator.html)
+[http://0.0.0.0:8080/webservices/variantvalidator.html](http://0.0.0.0:8080/webservices/variantvalidator.html)
 
 ## Stop the app
 `ctrl+c`
@@ -72,7 +71,7 @@ In a web browser navigate to
 ***To re-launch the app, go to Launch***
 
 ## Remove the containers
-***Note: This step removes the container database. Effectively an uninstall***
+***Note: This step removes the container database. Effectively an uninstall. See Updating rest_variantValidator***
 ```bash
 $ docker-compose down
 ```
@@ -85,16 +84,25 @@ You can go into the container via bash to use
 $ docker-compose run restvv bash
 ```
 
+and you can start the REST services manually, bound to one of 1 ports
+```bash
+# port 8080 (default)
+$ gunicorn --preload -b 0.0.0.0:8080 app --threads=5 --worker-class=gthread --chdir ./rest_variantValidator/
+ 
+# port 8000
+$ gunicorn --preload -b 0.0.0.0:8000 app --threads=5 --worker-class=gthread --chdir ./rest_variantValidator/
+
+# port 5000
+$ gunicorn --preload -b 0.0.0.0:5000 app --threads=5 --worker-class=gthread --chdir ./rest_variantValidator/
+```
+
+
 Note, that each time one of these commands is run a new container is created. 
 For more information on how to use docker-compose see their [documentation](https://docs.docker.com/compose/).
 
 It is possible to access both the UTA and Validator databases outside of docker as they expose the
  default PostgreSQL and MySQL ports (5432 and 3306 respectively). In the current set-up it is not possible to 
  access the seqrepo database outside of docker.
- 
-Finally, it should be noted that the current UTA docker container is not up-to-date and only contains the 
-2017-10-26 release. Therefore use caution when interpreting these results, and be advised the
- VariantValidator tests will fail. 
  
 
 ## Accessing VariantValidator and reconfiguring this container
@@ -111,8 +119,8 @@ If you are only running rest_variantValidator in docker, we recommend deleting a
 
 ```bash
 # Delete all containers
-$ docker system prune -a
-$ docker volume rm $(docker volume ls -qf dangling=true)
+$ docker-compose down
+$ docker system prune -a --volumes
 ```
 
 ***Once you have deleted the containers, got to Install and Build***
@@ -120,6 +128,7 @@ $ docker volume rm $(docker volume ls -qf dangling=true)
 Alternatively, you may wish to try and force the containers to re-build without deleting
 
 ```bash
+# Force re-build
 $ docker-compose down
 $ docker-compuse up --force-recreate
 ```
