@@ -33,6 +33,7 @@ services:
     ports:
       - "5000:5000"
       - "8000:8000"
+      - "8080:8080"
 
 volumes:
   seqdata:
