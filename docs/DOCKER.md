@@ -63,7 +63,7 @@ are ready to be used.
 
 ## Access rest_variantValidator
 In a web browser navigate to
-[http://0.0.0.0:8080/webservices/variantvalidator.html](http://0.0.0.0:8080/webservices/variantvalidator.html)
+[http://0.0.0.0:8000/webservices/variantvalidator.html](http://0.0.0.0:8000/webservices/variantvalidator.html)
 
 ## Stop the app
 `ctrl+c`
@@ -86,14 +86,15 @@ $ docker-compose run restvv bash
 
 and you can start the REST services manually, bound to one of 1 ports
 ```bash
-# port 8080 (default)
-$ gunicorn --preload -b 0.0.0.0:8080 app --threads=5 --worker-class=gthread --chdir ./rest_variantValidator/
+# port 8000 (default)
+$ gunicorn  -b 0.0.0.0:8000 app --threads=5 --worker-class=gthread --chdir ./rest_variantValidator/
  
 # port 8000
-$ gunicorn --preload -b 0.0.0.0:8000 app --threads=5 --worker-class=gthread --chdir ./rest_variantValidator/
+$ gunicorn  -b 0.0.0.0:8080 app --threads=5 --worker-class=gthread --chdir ./rest_variantValidator/
+
 
 # port 5000
-$ gunicorn --preload -b 0.0.0.0:5000 app --threads=5 --worker-class=gthread --chdir ./rest_variantValidator/
+$ gunicorn  -b 0.0.0.0:5000 app --threads=5 --worker-class=gthread --chdir ./rest_variantValidator/
 ```
 
 
