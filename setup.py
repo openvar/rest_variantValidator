@@ -5,7 +5,11 @@ from setuptools import setup, find_packages
 
 setup(
     name='rest_VariantValidator',
-    version=open('VERSION.txt').read(),
+#    version=open('VERSION.txt').read(),
+    use_scm_version=True,
+    zip_safe=True,
+    author="VariantValidator Contributors",
+    author_email = 'admin@variantvalidator.org',
     description='Rest API for VariantValidator',
     long_description=open('README.md').read(),
     url='https://github.com/openvar/variantFormatter',
@@ -56,6 +60,9 @@ setup(
         "VariantValidator @ git+https://github.com/openvar/variantValidator.git@master#egg=VariantValidator",
         "VariantFormatter @ git+https://github.com/openvar/variantFormatter.git@master#egg=VariantFormatter",
         "biocommons.seqrepo>=0.5.1",
+    ],
+    setup_requires=[
+        "setuptools_scm",
     ]
 )
 

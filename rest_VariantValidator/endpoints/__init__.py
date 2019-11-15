@@ -1,12 +1,12 @@
+import rest_VariantValidator
 from flask_restplus import Api
-
 # from .hello import api as ns_hello
 # from .name import api as ns_name
 from .variantvalidator_endpoints import api as ns_vv
 from .variantformatter_endpoints import api as ns_vf
 
 # Define the API as api
-api = Api(version="1.0.1",
+api = Api(version=rest_VariantValidator.__version__,
           title="rest_variantValidator",
           description="### REST API for [VariantValidator](https://github.com/openvar/variantValidator) and"
                       " [VariantFormatter](https://github.com/openvar/variantFormatter)"

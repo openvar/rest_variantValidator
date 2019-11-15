@@ -13,14 +13,14 @@ import time
 """
 Logging
 """
-logger = logging.getLogger('rest_api')
+logger = logging.getLogger('rest_VariantValidator')
 # We are setting 2 types of logging. To screen at the level DEBUG
 logger.setLevel(logging.INFO)
 
 # We will also log to a file
 # Log with a rotating file-handler. This sets the maximum size of the log to 0.5Mb and allows two additional logs
 # The logs are then deleted and replaced in rotation
-logHandler = handlers.RotatingFileHandler('rest_api.log', maxBytes=500000, backupCount=2)
+logHandler = handlers.RotatingFileHandler('rest_VariantValidator.log', maxBytes=500000, backupCount=2)
 # We want to minimise the amount of information we log to capturing bugs
 logHandler.setLevel(logging.ERROR)
 logger.addHandler(logHandler)
