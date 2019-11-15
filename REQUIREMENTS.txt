@@ -1,12 +1,8 @@
 git+https://github.com/openvar/vv_hgvs.git@master#egg=vvhgvs
 git+https://github.com/openvar/variantValidator@master#egg=VariantValidator
 git+https://github.com/openvar/variantFormatter@master#egg=VariantFormatter
-git+https://github.com/openvar/vv-flask-restful-swagger@master#egg=vv_flask_restful_swagger
 flask
-flask-log
-flask-mail
-flask-cors
-flask-restful
+flask-restplus
 gunicorn
 biocommons.seqrepo>=0.5.1
 httplib2>=0.9.0
@@ -15,6 +11,5 @@ pyliftover>=0.3
 biotools>=0.3.0
 mysql-connector-python
 requests
-pytest>=3.6
-pytest-cov
-codecov
+dicttoxml
+

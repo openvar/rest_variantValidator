@@ -1,0 +1,19 @@
+#Git ignorance file for variant validator
+#Testing script
+VariantValidator/vvTest.py
+
+# docker config
+configuration/docker.ini
+
+# Log
+rest_api.log
+
+#pycs
+rest_variantValidator/**/*.pyc
+build
+.idea
+dist
+rest_VariantValidator.egg-info
+.DS_Store
+
+

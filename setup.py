@@ -43,15 +43,19 @@ setup(
     # List run-time dependencies here.  These will be installed by pip when the project is installed.
     install_requires=[
         "flask",
-        "flask-log",
-        "flask-mail",
-        "flask-cors",
-        "flask-restful",
+        "flask-restplus",
         "gunicorn",
+        "httplib2>=0.9.0",
+        "configparser>=3.5.0",
+        "pyliftover>=0.3",
+        "biotools>=0.3.0",
+        "mysql-connector-python",
+        "requests",
+        " dicttoxml",
         "vvhgvs @ git+https://github.com/openvar/vv_hgvs.git@master#egg=vvhgvs",
         "VariantValidator @ git+https://github.com/openvar/variantValidator.git@master#egg=VariantValidator",
         "VariantFormatter @ git+https://github.com/openvar/variantFormatter.git@master#egg=VariantFormatter",
-        "vv_flask_restful_swagger @ git+https://github.com/openvar/vv-flask-restful-swagger.git@master#egg=vv_flask_restful_swagger",
+        "biocommons.seqrepo>=0.5.1",
     ]
 )
 

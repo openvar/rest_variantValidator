@@ -84,7 +84,7 @@ You can go into the container via bash to use
 $ docker-compose run restvv bash
 ```
 
-and you can start the REST services manually, bound to one of 1 ports
+and you can start the REST services manually, bound to one of the following ports
 ```bash
 # port 8000 (default)
 $ gunicorn  -b 0.0.0.0:8000 app --threads=5 --worker-class=gthread --chdir ./rest_variantValidator/
@@ -131,7 +131,7 @@ Alternatively, you may wish to try and force the containers to re-build without 
 ```bash
 # Force re-build
 $ docker-compose down
-$ docker-compuse up --force-recreate
+$ docker-compose up --force-recreate
 ```
 
 ***If you choose this option, make sure you see the container restvv being re-created and all Python packages being 

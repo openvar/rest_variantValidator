@@ -47,7 +47,7 @@ Optional software:
 
 For installation instructions please see [INSTALLATION.md](./docs/INSTALLATION.md)
 
-# Operation and configuration
+## Operation and configuration
 
 Please see [MANUAL.md](./docs/MANUAL.md)
 
@@ -58,6 +58,9 @@ Please see [DOCKER.md](https://github.com/openvar/rest_variantValidator/blob/mas
 ## License
 
 Please see [LICENSE.txt](LICENSE.txt)
+
+## Terms and conditions of use
+[Terms and conditions can be found here](https://github.com/openvar/variantValidator/blob/master/README.md)
 
 ## Cite us
 
