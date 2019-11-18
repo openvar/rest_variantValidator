@@ -5,7 +5,6 @@ from setuptools import setup, find_packages
 
 setup(
     name='rest_VariantValidator',
-#    version=open('VERSION.txt').read(),
     use_scm_version=True,
     zip_safe=True,
     author="VariantValidator Contributors",
