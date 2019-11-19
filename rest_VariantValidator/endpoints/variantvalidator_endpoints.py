@@ -39,8 +39,10 @@ api = Namespace('VariantValidator', description='VariantValidator API Endpoints'
                                   "\n***Hybrid***\n"
                                   ">   - chr17:50198002C>A\n "
                                   ">   - chr17:50198002C>A(GRCh38)\n"
+                                  ">   - chr17(GRCh38):50198002C>A\n"
                                   ">   - chr17:g.50198002C>A\n"
-                                  ">   - chr17:g.50198002C>A(GRCh38)")
+                                  ">   - chr17:g.50198002C>A(GRCh38)\n"
+                                  ">   - chr17(GRCh38):g.50198002C>A")
 @api.param("genome_build", "***Accepted:***\n"
                            ">   - GRCh37\n"
                            ">   - GRCh38\n"

@@ -58,12 +58,14 @@ Note
 @api.representation('application/xml')
 def application_xml(data, code, headers):
     resp = representations.xml(data, code, headers)
+    resp.headers['Content-Type'] = 'application/xml'
     return resp
 
 
 @api.representation('application/json')
 def application_json(data, code, headers):
     resp = representations.application_json(data, code, headers)
+    resp.headers['Content-Type'] = 'application/json'
     return resp
 
 
