@@ -49,7 +49,7 @@ setup(
         "flask-restful",
         "gunicorn",
         "vvhgvs @ git+https://github.com/openvar/vv_hgvs.git@1.2.5.vv1#egg=vvhgvs",
-        "VariantValidator @ git+https://github.com/openvar/variantValidator.git@v1.0.2#egg=VariantValidator",
+        "VariantValidator @ git+https://github.com/openvar/variantValidator.git@master#egg=VariantValidator",
         "VariantFormatter @ git+https://github.com/openvar/variantFormatter.git@v1.0.1#egg=VariantFormatter",
         "vv_flask_restful_swagger @ git+https://github.com/openvar/vv-flask-restful-swagger.git@master#egg=vv_flask_restful_swagger",
     ]
