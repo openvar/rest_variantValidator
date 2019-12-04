@@ -8,25 +8,34 @@ try:
     from .endpoints import api, representations, exceptions, request_parser
 except ModuleNotFoundError:
     from endpoints import api, representations, exceptions, request_parser
-import logging
 from logging import handlers
 import time
+import logging.config
+from configparser import ConfigParser
+from VariantValidator import settings as vv_settings
+import warnings
 
+# Change settings based on config
+config = ConfigParser()
+config.read(vv_settings.CONFIG_DIR)
 
 """
 Logging
 """
-logger = logging.getLogger('rest_VariantValidator')
-# We are setting 2 types of logging. To screen at the level DEBUG
-logger.setLevel(logging.INFO)
+if config['logging'].getboolean('log') is True:
+    logger = logging.getLogger('rest_VariantValidator')
+    # We are setting 2 types of logging. To screen at the level DEBUG
+    logger.setLevel(logging.INFO)
 
-# We will also log to a file
-# Log with a rotating file-handler. This sets the maximum size of the log to 0.5Mb and allows two additional logs
-# The logs are then deleted and replaced in rotation
-logHandler = handlers.RotatingFileHandler('rest_VariantValidator.log', maxBytes=500000, backupCount=2)
-# We want to minimise the amount of information we log to capturing bugs
-logHandler.setLevel(logging.ERROR)
-logger.addHandler(logHandler)
+    # We will also log to a file
+    # Log with a rotating file-handler. This sets the maximum size of the log to 0.5Mb and allows two additional logs
+    # The logs are then deleted and replaced in rotation
+    logHandler = handlers.RotatingFileHandler('rest_VariantValidator.log', maxBytes=500000, backupCount=2)
+    # We want to minimise the amount of information we log to capturing bugs
+    logHandler.setLevel(logging.ERROR)
+    logger.addHandler(logHandler)
+else:
+    pass
 
 
 """
