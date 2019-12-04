@@ -13,7 +13,6 @@ import time
 import logging.config
 from configparser import ConfigParser
 from VariantValidator import settings as vv_settings
-import warnings
 
 # Change settings based on config
 config = ConfigParser()
