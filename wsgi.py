@@ -1,7 +1,7 @@
 """mod_wsgi gateway wsgi file
 """
 
-from rest_variantValidator.app import application as application
+from rest_VariantValidator.app import application as application
 if __name__ == '__main__':
     from configparser import ConfigParser
     from VariantValidator.settings import CONFIG_DIR
@@ -13,4 +13,4 @@ if __name__ == '__main__':
     else:
         application.debug = False
         application.config['PROPAGATE_EXCEPTIONS'] = False
-    application.run(host="0.0.0.0", port=5000)
+    application.run(host="127.0.0.1", port=5000)
