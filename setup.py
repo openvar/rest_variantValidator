@@ -55,7 +55,6 @@ setup(
         "mysql-connector-python",
         "requests",
         "dicttoxml",
-        "locustio",
         "vvhgvs @ git+https://github.com/openvar/vv_hgvs.git@1.2.5.vv1#egg=vvhgvs",
         "VariantValidator @ git+https://github.com/openvar/variantValidator.git@master#egg=VariantValidator",
         "VariantFormatter @ git+https://github.com/openvar/variantFormatter.git@v1.0.1#egg=VariantFormatter",
