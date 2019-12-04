@@ -24,18 +24,19 @@ Logging
 if config['logging'].getboolean('log') is True:
     logger = logging.getLogger('rest_VariantValidator')
     # We are setting 2 types of logging. To screen at the level DEBUG
-    logger.setLevel(logging.INFO)
+    console_level = config['logging']['console'].upper()
+    log_console_level = logging.getLevelName(console_level)
+    logger.setLevel(log_console_level)
 
     # We will also log to a file
     # Log with a rotating file-handler. This sets the maximum size of the log to 0.5Mb and allows two additional logs
     # The logs are then deleted and replaced in rotation
     logHandler = handlers.RotatingFileHandler('rest_VariantValidator.log', maxBytes=500000, backupCount=2)
     # We want to minimise the amount of information we log to capturing bugs
-    logHandler.setLevel(logging.ERROR)
+    file_level = config['logging']['file'].upper()
+    log_file_level = logging.getLevelName(file_level)
+    logHandler.setLevel(log_file_level)
     logger.addHandler(logHandler)
-else:
-    pass
-
 
 """
 Create a parser object locally
