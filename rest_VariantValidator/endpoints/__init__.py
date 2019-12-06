@@ -2,18 +2,31 @@ import rest_VariantValidator
 import VariantValidator
 import VariantFormatter
 from flask_restplus import Api
-# from .hello import api as ns_hello
-# from .name import api as ns_name
+from flask import url_for
 from .variantvalidator_endpoints import api as ns_vv
 from .variantformatter_endpoints import api as ns_vf
 
 # Obtain VariantValidator related metadata
 vval = VariantValidator.Validator()
-config_dict =  vval.my_config()
+config_dict = vval.my_config()
+
+
+# Override standard specs_url to allow reverse-proxy access through mod_wsgi
+class CustomAPI(Api):
+    @property
+    def specs_url(self):
+        """
+        The Swagger specifications absolute url (ie. `swagger.json`)
+
+        This method returns the path relative to the APP required for reverse proxy access
+
+        :rtype: str
+        """
+        return url_for(self.endpoint('specs'), _external=False)
 
 
 # Define the API as api
-api = Api(version=rest_VariantValidator.__version__,
+api = CustomAPI(version=rest_VariantValidator.__version__,
           title="rest_VariantValidator",
           description="## By continuing to use this service you agree to our terms and conditions of Use\n"
                       "- [Terms and Conditions](https://github.com/openvar/variantValidator/blob"
@@ -31,8 +44,7 @@ api = Api(version=rest_VariantValidator.__version__,
                       + config_dict['seqrepo_db'].split('/')[-1]
           )
 
-# api.add_namespace(ns_hello)
-# api.add_namespace(ns_name)
+# Add the namespaces to the API
 api.add_namespace(ns_vv)
 api.add_namespace(ns_vf)
 
