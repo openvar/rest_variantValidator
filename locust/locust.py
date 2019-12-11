@@ -17,6 +17,10 @@ Perform test at http://127.0.0.1:8089 (docs at https://docs.locust.io/en/latest/
 
 # Run locust against app on a server
 
+$ locust -f locust/locust.py
+
+Perform test at http://127.0.0.1:8089 (docs at https://docs.locust.io/en/latest/quickstart.html)
+
 """
 
 class UserBehavior(TaskSet):
@@ -49,4 +53,4 @@ class UserBehavior(TaskSet):
 
 class WebsiteUser(HttpLocust):
     task_set = UserBehavior
-    wait_time = between(0, 10) # seconds
+    wait_time = between(1, 10) # seconds

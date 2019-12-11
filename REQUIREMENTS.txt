@@ -1,5 +1,5 @@
 git+https://github.com/openvar/vv_hgvs.git@master#egg=vvhgvs
-git+https://github.com/openvar/variantValidator@master#egg=VariantValidator
+git+https://github.com/openvar/variantValidator@v1.0.3#egg=VariantValidator
 git+https://github.com/openvar/variantFormatter@master#egg=VariantFormatter
 flask
 flask-restplus
