@@ -5,6 +5,7 @@ from flask_restplus import Api
 from flask import url_for
 from .variantvalidator_endpoints import api as ns_vv
 from .variantformatter_endpoints import api as ns_vf
+from .hello import api as ns_hello
 
 # Obtain VariantValidator related metadata
 vval = VariantValidator.Validator()
@@ -47,6 +48,7 @@ api = CustomAPI(version=rest_VariantValidator.__version__,
 # Add the namespaces to the API
 api.add_namespace(ns_vv)
 api.add_namespace(ns_vf)
+api.add_namespace(ns_hello)
 
 
 # <LICENSE>

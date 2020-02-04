@@ -12,5 +12,3 @@ biotools>=0.3.0
 mysql-connector-python
 requests
 dicttoxml
-
-
