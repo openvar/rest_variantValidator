@@ -43,7 +43,8 @@ api = Namespace('LOVD', description='LOVD API Endpoints')
 @api.param("checkonly", "***Accepted:***\n"
                         ">   - True (return ONLY the genomic variant descriptions and not transcript and protein"
                         " descriptions)\n"
-                        ">   - False")
+                        ">   - False\n"
+                        ">   - tx (Stop at transcript level, exclude protein")
 @api.param("liftover", "***Accepted***\n"
                         ">   - True - (liftover to all genomic loci)\n"
                         ">   - primary - (lift to primary assembly only)\n"
