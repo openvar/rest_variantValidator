@@ -47,13 +47,20 @@ Optional software:
 
 For installation instructions please see [INSTALLATION.md](./docs/INSTALLATION.md)
 
-# Operation and configuration
+## Operation and configuration
 
 Please see [MANUAL.md](./docs/MANUAL.md)
+
+# Running in docker
+
+Please see [DOCKER.md](https://github.com/openvar/rest_variantValidator/blob/master/docs/DOCKER.md)
 
 ## License
 
 Please see [LICENSE.txt](LICENSE.txt)
+
+## Terms and conditions of use
+[Terms and conditions can be found here](https://github.com/openvar/variantValidator/blob/master/README.md)
 
 ## Cite us
 

@@ -1,30 +1,5 @@
-[mysql]
-host = vdb
-database = validator
-user = vvadmin
-password = var1ant
-
-[seqrepo]
-version = 2018-08-21
-location = /usr/local/share/seqrepo
-
-[postgres]
-host = uta
-database = uta
-version = uta_20180821
-user = uta_admin
-password = uta_admin
-
-[logging]
-#Levels control verbosity and can be set to "CRITICAL" "ERROR" "WARNING" "INFO" or "DEBUG".
-log = True
-console = DEBUG
-file = ERROR
-
-[Entrez]
-email = admin@variantvalidator.org
-api_key = 'YOUR_API_KEY'
-
+class RemoteConnectionError(Exception):
+    code = 504
 
 # <LICENSE>
 # Copyright (C) 2019 VariantValidator Contributors

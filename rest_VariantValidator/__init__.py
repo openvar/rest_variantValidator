@@ -1,30 +1,16 @@
-[mysql]
-host = vdb
-database = validator
-user = vvadmin
-password = var1ant
+import pkg_resources
+import re
+import warnings
 
-[seqrepo]
-version = 2018-08-21
-location = /usr/local/share/seqrepo
-
-[postgres]
-host = uta
-database = uta
-version = uta_20180821
-user = uta_admin
-password = uta_admin
-
-[logging]
-#Levels control verbosity and can be set to "CRITICAL" "ERROR" "WARNING" "INFO" or "DEBUG".
-log = True
-console = DEBUG
-file = ERROR
-
-[Entrez]
-email = admin@variantvalidator.org
-api_key = 'YOUR_API_KEY'
-
+# Pull in use_scm_version=True enabled version number
+_is_released_version = False
+try:
+    __version__ = pkg_resources.get_distribution("rest_VariantValidator").version
+    if re.match(r"^\d+\.\d+\.\d+$", __version__) is not None:
+        _is_released_version = True
+except pkg_resources.DistributionNotFound as e:
+    warnings.warn("can't get __version__ because %s package isn't installed" % __package__, Warning)
+    __version__ = None
 
 # <LICENSE>
 # Copyright (C) 2019 VariantValidator Contributors
