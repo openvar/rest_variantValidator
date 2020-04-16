@@ -28,6 +28,28 @@ Edit the file configuration/docker.ini
 You will need to provide an email address and an 
 [Entrez API key](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/)
 
+*Note: If you have MySQl and or Postgres databases already running, you will need to alter the ports used in the 
+docker-comose.yml file. The relevant section is shown here*
+```yml
+services:
+  vdb:
+    build:
+      context: .
+      dockerfile: vdb_docker.df
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+  uta:
+    build:
+      context: .
+      dockerfile: uta_docker.df
+    ports:
+      - "5432:5432"
+    expose:
+      - "5432"
+``` 
+
 *Note: configuration can be updated (see below for details)*
 
 ## Install and build
