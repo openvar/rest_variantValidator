@@ -6,15 +6,17 @@ from . import representations
 # Import variantFormatter
 import VariantFormatter
 import VariantFormatter.simpleVariantFormatter
+import VariantValidator
+vval = VariantValidator.Validator()
 
 """
 Create a parser object locally
 """
 parser = request_parser.parser
 
-api = Namespace('VariantFormatter', description='Variantformatter API Endpoints')
-@api.route("/variantformatter/<string:genome_build>/<string:variant_description>/<string:transcript_model>/"
-           "<string:select_transcripts>/<string:checkonly>")
+api = Namespace('LOVD', description='LOVD API Endpoints')
+@api.route("/lovd/<string:genome_build>/<string:variant_description>/<string:transcript_model>/"
+           "<string:select_transcripts>/<string:checkonly>/<string:liftover>")
 @api.param("variant_description", "***Genomic HGVS***\n"
                                   ">   - NC_000017.10:g.48275363C>A\n"
                                   "\n***Pseudo-VCF***\n"
@@ -35,15 +37,22 @@ api = Namespace('VariantFormatter', description='Variantformatter API Endpoints'
                                  ">   NM_000093.4|NM_001278074.1|NM_000093.3")
 @api.param("genome_build", "***Accepted:***\n"
                            ">   - GRCh37\n"
-                           ">   - GRCh38")
+                           ">   - GRCh38\n"
+                           ">   - hg19\n"
+                           ">   - hg38\n")
 @api.param("checkonly", "***Accepted:***\n"
                         ">   - True (return ONLY the genomic variant descriptions and not transcript and protein"
                         " descriptions)\n"
+                        ">   - False\n"
+                        ">   - tx (Stop at transcript level, exclude protein)")
+@api.param("liftover", "***Accepted***\n"
+                        ">   - True - (liftover to all genomic loci)\n"
+                        ">   - primary - (lift to primary assembly only)\n"
                         ">   - False")
 class VariantValidatorClass(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
-    def get(self, genome_build, variant_description, transcript_model, select_transcripts, checkonly):
+    def get(self, genome_build, variant_description, transcript_model, select_transcripts, checkonly, liftover):
         if transcript_model == 'None' or transcript_model == 'none':
             transcript_model = None
         if select_transcripts == 'None' or select_transcripts == 'none':
@@ -52,9 +61,13 @@ class VariantValidatorClass(Resource):
             checkonly = False
         if checkonly == 'True' or checkonly == 'true':
             checkonly = True
+        if liftover == 'True' or liftover == 'true':
+            liftover = True
+        if liftover == 'False' or liftover == 'false':
+            liftover = False
 
-        content = VariantFormatter.simpleVariantFormatter.format(variant_description, genome_build, transcript_model, 
-                                                                 select_transcripts, checkonly)
+        content = VariantFormatter.simpleVariantFormatter.format(variant_description, genome_build, transcript_model,
+                                                                 select_transcripts, checkonly, liftover)
 
         # Collect Arguments
         args = parser.parse_args()
