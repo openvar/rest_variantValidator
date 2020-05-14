@@ -4,15 +4,13 @@ Simple rest interface for VariantValidator built using Flask Flask-RESTPlus and 
 
 # Import modules
 from flask import Flask, request
-try:
-    from .endpoints import api, representations, exceptions, request_parser
-except ModuleNotFoundError:
-    from endpoints import api, representations, exceptions, request_parser
+from rest_VariantValidator.endpoints import api, representations, exceptions, request_parser
 from logging import handlers
 import time
 import logging.config
 from configparser import ConfigParser
 from VariantValidator import settings as vv_settings
+
 
 # Change settings based on config
 config = ConfigParser()
