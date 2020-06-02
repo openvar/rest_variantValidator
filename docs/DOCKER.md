@@ -28,10 +28,13 @@ Edit the file configuration/docker.ini
 You will need to provide an email address and an 
 [Entrez API key](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/)
 
-*Note: If you have MySQl and or Postgres databases already running, you may encounter a build error e.g.  
-"listen tcp 0.0.0.0:33060: bind: address already in use" In this case you will need to alter the ports used in the 
-docker-comose.yml file.
-The relevant section is shown here*
+*Note: If you have MySQL and or Postgres databases already running, you may encounter an error during the following 
+build stage e.g.*  
+
+> "ERROR: for vdb  Cannot start service vdb: Ports are not available: listen tcp 0.0.0.0:3306: bind: address already in use" 
+
+*In this case you will need to alter the ports used in the docker-comose.yml file*
+*The relevant section is shown here with recommended changes*
 ```yml
 services:
   vdb:
@@ -52,7 +55,33 @@ services:
       - "5432"
 ``` 
 
-*Note: configuration can be updated (see below for details)*
+*Note: You may encounter a build error relating to other unavailable ports e.g.*  
+
+> "Cannot start service restvv: Ports are not available: listen tcp 0.0.0.0:8080: bind: address already in use" 
+
+*In this case you will need to alter the ports used in the docker-comose.yml file*
+*The relevant section is shown here with recommended changes*
+
+```yml
+  restvv:
+    build: .
+    depends_on:
+      - vdb
+      - uta
+    volumes:
+      - seqdata:/usr/local/share/seqrepo
+    ports:
+      - "5000:5000"
+      - "8000:8000"
+      # - "8080:8080"
+```
+
+*If you encounter these issues, stop the build by pressing `ctrl+c` then run*
+
+```bash
+$ docker-compose down
+$ docker-compose up --force-recreate
+```
 
 ## Install and build
 
@@ -81,22 +110,19 @@ You run the API directly in the docker container directly via bash
 ```bash
 $ docker-compose run restvv bash
 ```
-Then start the REST services manually, bound to one of the following commands. Note, if you get an error saying 
+tart the REST services manually, bound to one of the following commands. Note, if you get an error saying 
 there is a conflict on for example port 8000, try starting with an alternate version of the commands provided
 ```bash
-# port 8080
-$ gunicorn  -b 0.0.0.0:8080 app --workers=3 --threads=5  --chdir ./rest_VariantValidator/
+# Start
+$ docker-compose up
 
-# port 5000
-$ gunicorn  -b 0.0.0.0:5000 app --workers=3 --threads=5  --chdir ./rest_VariantValidator/
+# Shutdown
+ctrl + c
 
-# port 8000
-$ gunicorn  -b 0.0.0.0:8000 app --workers=3 --threads=5 --chdir ./rest_VariantValidator/
  ```
-
 ## Access rest_variantValidator
 In a web browser navigate to
-[http://0.0.0.0:8080](http://0.0.0.0:8080)
+[http://0.0.0.0:8000](http://0.0.0.0:8000)
 ***Note: you may need to change :8080 to one of :5000 or :8000 depending on the activation command***
 
 ## Stop the app and exit the container

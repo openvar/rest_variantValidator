@@ -24,4 +24,4 @@ COPY configuration/docker.ini /root/.variantvalidator
 
 # Start the application with gunicorn
 # CMD gunicorn -b 0.0.0.0:8000 app --workers=3 --threads=5 --worker-class=gthread --chdir ./rest_VariantValidator/
-# CMD gunicorn  -b 0.0.0.0:8000 app --workers=3 --threads=5 --chdir ./rest_VariantValidator/
+CMD gunicorn  -b 0.0.0.0:8000 app --workers=3 --threads=5 --chdir ./rest_VariantValidator/
