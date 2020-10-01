@@ -47,7 +47,6 @@ setup(
     install_requires=[
         "flask",
         "flask-restplus",
-        "Werkzeug==0.16.1",
         "gunicorn",
         "httplib2>=0.9.0",
         "configparser>=3.5.0",
@@ -56,9 +55,6 @@ setup(
         "mysql-connector-python",
         "requests",
         "dicttoxml",
-        "notebook",
-        "jupyter_contrib_nbextensions",
-        "jupyter_nbextensions_configurator",
         "vvhgvs @ git+https://github.com/openvar/vv_hgvs.git@1.2.5.vv1#egg=vvhgvs",
         "VariantValidator @ git+https://github.com/openvar/variantValidator.git@master#egg=VariantValidator",
         "VariantFormatter @ git+https://github.com/openvar/variantFormatter.git@master#egg=VariantFormatter",
