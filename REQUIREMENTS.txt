@@ -12,3 +12,7 @@ biotools>=0.3.0
 mysql-connector-python
 requests
 dicttoxml
+notebook
+jupyter_contrib_nbextensions
+jupyter_nbextensions_configurator
+Werkzeug==0.16.1

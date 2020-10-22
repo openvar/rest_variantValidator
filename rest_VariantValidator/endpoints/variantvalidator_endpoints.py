@@ -2,6 +2,7 @@
 from flask_restplus import Namespace, Resource
 from . import request_parser
 from . import representations
+from . import exceptions
 
 # Import VariantValidator  code
 import VariantValidator
@@ -77,7 +78,11 @@ class Gene2transcriptsClass(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
     def get(self, gene_query):
-        content = vval.gene2transcripts(gene_query)
+        try:
+            content = vval.gene2transcripts(gene_query)
+        except ConnectionError:
+            message = "Cannot connect to rest.genenames.org, please try again later"
+            raise exceptions.RemoteConnectionError(message)
 
         # Collect Arguments
         args = parser.parse_args()
