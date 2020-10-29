@@ -112,6 +112,11 @@ $ docker-compose run restvv bash
 ```
 tart the REST services manually, bound to one of the following commands. Note, if you get an error saying 
 there is a conflict on for example port 8000, try starting with an alternate version of the commands provided
+
+Note: When you start the rest services you may see the warning
+`rest_variantvalidator_seqrepo_1 exited with code 0`
+This does not mean that rest_vv is not running. Navigate to [http://0.0.0.0:8000](http://0.0.0.0:8000) and test to see 
+whether it is running
 ```bash
 # Start
 $ docker-compose up
