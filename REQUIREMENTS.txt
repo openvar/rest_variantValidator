@@ -1,6 +1,7 @@
 git+https://github.com/openvar/vv_hgvs.git@1.2.5.vv1#egg=vvhgvs
 git+https://github.com/openvar/variantValidator@master#egg=VariantValidator
 git+https://github.com/openvar/variantFormatter@master#egg=VariantFormatter
+Werkzeug==0.16.1
 flask
 flask-restplus
 gunicorn
@@ -15,4 +16,3 @@ dicttoxml
 notebook
 jupyter_contrib_nbextensions
 jupyter_nbextensions_configurator
-Werkzeug==0.16.1
