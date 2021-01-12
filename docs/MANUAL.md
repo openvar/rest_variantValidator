@@ -4,13 +4,13 @@
 
 To run rest_variantValidator
 
-### Python
+### In dev mode upsing Python
 
 ```bash
-$ python rest_variantValidator/wsgi.py
+$ python wsgi.py
 ```
 
-You will be provided with a link which will open rest_variantValidator in your web browser. 
+You will be provided with a link which will open rest_variantValidator in your web browser. [http://127.0.0.1:5000/](http://127.0.0.1:5000/)
 
 
 ## Swagger documented functions
@@ -30,37 +30,31 @@ Mounting rest_variantValidator to an Apache web server requires [mod_wsgi](https
 
 Example [Apache configuration](https://modwsgi.readthedocs.io/en/develop/user-guides/quick-configuration-guide.html)
 
+***Note: you will need to configure the file paths in the example below***
+
 ```apacheconf
 <IfModule wsgi_module>
 
-	WSGIPythonPath <PATH/TO/python>/lib:<PATH/TO/python>/site-packages
+	WSGIPythonPath /local/miniconda3/envs/vvenv/lib:/local/miniconda3/envs/vvenv/lib/python3.6/site-packages
 	WSGIDaemonProcess rest_variantValidator user=wwwrun group=www threads=5
-	WSGIScriptAlias / <PATH/TO>/rest_variantValidator/wsgi.py
-	WSGIPythonHome <PATH/TO/python>
+	WSGIScriptAlias / /local/py3Repos/rest_variantValidator/wsgi.py
+	WSGIPythonHome /local/miniconda3/envs/vvenv
     	    	
-    	<Directory <PATH/TO>/rest_variantValidator/>
+    	<Directory /local/py3Repos/rest_variantValidator/>
         	WSGIProcessGroup rest_variantValidator
          	WSGIApplicationGroup %{GLOBAL}
-         	Order deny,allow
-         	Allow from all
+            Order allow,deny
+            Allow from all
+            Header set Access-Control-Allow-Origin "*"
+            Header set Access-Control-Allow-Methods "GET"
      	</Directory>
 
 </IfModule>
-
+LogLevel crit
 CustomLog /local/apache2/log/access_log for_pound
 
+
 ```
-
-## Run in dev mode
-To run rest_variantValidator on a dev server
-
-```bash
-$ python rest_variantValidator/app.py
-```
-
-In a web-browser navkgate to `0.0.0.0:5000`
-
-Exit the app by holding `ctrl + c`
 
 ## Additional resources
 We are compiling a number of jupyter notebook user guides for rest_variantValidator in [rest_variantValidator_manuals](https://github.com/openvar/rest_variantValidator_manuals)

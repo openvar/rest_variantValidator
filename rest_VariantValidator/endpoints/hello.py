@@ -2,6 +2,9 @@ from flask_restplus import Namespace, Resource
 from . import request_parser
 from . import representations
 
+# Import VariantValidator  code
+import VariantValidator
+vval = VariantValidator.Validator()
 
 """
 Create a parser object locally
@@ -13,7 +16,8 @@ parser = request_parser.parser
 The assignment of api changes
 """
 
-api = Namespace('hello', description='Endpoint to check services are "alive"')
+api = Namespace('hello', description='Endpoint to check services are "alive" and display the current software and '
+                                     'database versions')
 
 """
 We also need to re-assign the route ans other decorated functions to api
@@ -29,24 +33,29 @@ class HelloClass(Resource):
 
         # Collect Arguments
         args = parser.parse_args()
+        config_dict = vval.my_config()
+        config_dict['seqrepo_db'] = config_dict['seqrepo_db'].split('/')[-1]
 
         # Overrides the default response route so that the standard HTML URL can return any specified format
         if args['content-type'] == 'application/json':
             # example: http://127.0.0.1:5000/name/name/bob?content-type=application/json
             return representations.application_json({
-                "status": "hello_world"
+                "status": "hello_world",
+                "metadata": config_dict
             },
                 200, None)
         # example: http://127.0.0.1:5000/name/name/bob?content-type=application/xml
         elif args['content-type'] == 'application/xml':
             return representations.xml({
-                 "status": "hello_world"
+                 "status": "hello_world",
+                 "metadata": config_dict
             },
                 200, None)
         else:
             # Return the api default output
             return {
-                 "status": "hello_world"
+                 "status": "hello_world",
+                 "metadata": config_dict
             }
 
 
