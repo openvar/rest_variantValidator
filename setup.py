@@ -45,7 +45,7 @@ setup(
 
     # List run-time dependencies here.  These will be installed by pip when the project is installed.
     install_requires=[
-        "werkzeug==0.16.1"
+        "werkzeug==0.16.1",
         "flask",
         "flask-restplus",
         "gunicorn",

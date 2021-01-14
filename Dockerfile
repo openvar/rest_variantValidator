@@ -1,6 +1,6 @@
 
 # Use an official Python runtime as a parent image
-FROM python:3.6
+FROM python:3.8
 
 # Set the working directory to /app
 WORKDIR /app
@@ -8,7 +8,11 @@ WORKDIR /app
 # Copy the current directory contents into the container's /app directory
 COPY . /app
 
+# Update apt-get
 RUN apt-get update
+
+# Install git
+RUN apt-get -y install git
 
 # Updrade pip
 RUN pip install --upgrade pip

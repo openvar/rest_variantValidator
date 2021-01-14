@@ -30,6 +30,7 @@ services:
       - uta
     volumes:
       - seqdata:/usr/local/share/seqrepo
+      - share:/usr/local/share
     ports:
       - "5000:5000"
       - "8000:8000"
@@ -38,3 +39,9 @@ services:
       - "8000"
 volumes:
   seqdata:
+  share:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '${HOME}/share'
