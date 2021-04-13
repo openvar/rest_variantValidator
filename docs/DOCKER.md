@@ -14,6 +14,7 @@ $ git clone https://github.com/openvar/rest_variantValidator
 ```
 
 Once the repository has been cloned, cd into the rest_variantValidator directory that the clone creates.
+
 ```bash
 $ cd rest_variantValidator/
 ``` 
@@ -44,7 +45,8 @@ $ docker-compose pull
 
 - Create a directory for sharing resources between your computer and the container
 ```bash
-$ mkdir ~/share
+$ mkdir ~/variantvalidator_data
+$ mkdir ~/variantvalidator_data/share
 ```
 i.e. a directory called share in your home directory
 

@@ -37,6 +37,7 @@ services:
     expose:
       - "5000"
       - "8000"
+
 volumes:
   seqdata:
   share:
@@ -44,4 +45,4 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '${HOME}/share'
+      device: '${HOME}/variantvalidator_data/share'
