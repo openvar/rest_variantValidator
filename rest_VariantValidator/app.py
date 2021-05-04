@@ -26,7 +26,7 @@ if config['logging'].getboolean('log') is True:
     log_console_level = logging.getLevelName(console_level)
     logger.setLevel(log_console_level)
 
-    if config['logging']['file'] is not False:
+    if config['logging']['file'].upper() is not "NOTSET":
         # We will also log to a file
         # Log with a rotating file-handler
         # This sets the maximum size of the log to 0.5Mb and allows two additional logs
