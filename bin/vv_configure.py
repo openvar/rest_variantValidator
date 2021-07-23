@@ -54,8 +54,6 @@ if __name__ == '__main__':
                 config.set(section, name, newval.strip())
                 values_changed = True
 
-        print()
-
     if newfile or values_changed:
         with open(settings['CONFIG_DIR'], 'w') as fh:
             config.write(fh)

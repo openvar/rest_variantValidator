@@ -9,25 +9,25 @@ services:
       - "33060:3306"
     expose:
       - "33060"
-  uta:
+  vvta:
     build:
       context: .
-      dockerfile: uta_docker.df
+      dockerfile: vvta_docker.df
     ports:
       - "54320:5432"
     expose:
       - "54320"
   seqrepo:
-    image: biocommons/seqrepo:2018-08-21
+    build:
+      context: .
+      dockerfile: vvsr_docker.df
     volumes:
       - seqdata:/usr/local/share/seqrepo
-    stdin_open: true
-    tty: true
   restvv:
     build: .
     depends_on:
       - vdb
-      - uta
+      - vvta
     volumes:
       - seqdata:/usr/local/share/seqrepo
       - share:/usr/local/share
@@ -39,10 +39,15 @@ services:
       - "8000"
 
 volumes:
-  seqdata:
   share:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
       device: '${HOME}/variantvalidator_data/share'
+  seqdata:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '${HOME}/variantvalidator_data/share/seqrepo'

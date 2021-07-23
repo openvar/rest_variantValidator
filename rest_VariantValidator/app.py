@@ -7,10 +7,16 @@ from flask import Flask, request
 from rest_VariantValidator.endpoints import api, representations, exceptions, request_parser
 from logging import handlers
 import time
+import os
+from pathlib import Path
 import logging.config
 from configparser import ConfigParser
 from VariantValidator import settings as vv_settings
 
+# Set document root
+ROOT = os.path.dirname(os.path.abspath(__file__))
+path = Path(ROOT)
+parent = path.parent.absolute()
 
 # Change settings based on config
 config = ConfigParser()
@@ -27,14 +33,18 @@ if config['logging'].getboolean('log') is True:
     logger.setLevel(log_console_level)
 
     # We will also log to a file
-    # Log with a rotating file-handler. This sets the maximum size of the log to 0.5Mb and allows two additional logs
+    # Log with a rotating file-handler
+    # This sets the maximum size of the log to 0.5Mb and allows two additional logs
     # The logs are then deleted and replaced in rotation
-    logHandler = handlers.RotatingFileHandler('rest_VariantValidator.log', maxBytes=500000, backupCount=2)
+    logHandler = handlers.RotatingFileHandler(str(parent) + '/rest_VariantValidator.log',
+                                              maxBytes=500000,
+                                              backupCount=2)
     # We want to minimise the amount of information we log to capturing bugs
     file_level = config['logging']['file'].upper()
     log_file_level = logging.getLevelName(file_level)
     logHandler.setLevel(log_file_level)
     logger.addHandler(logHandler)
+
 
 """
 Create a parser object locally

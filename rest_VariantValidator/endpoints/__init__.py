@@ -40,10 +40,10 @@ api = CustomAPI(version=rest_VariantValidator.__version__,
                       + VariantFormatter.__version__ + "\n"
                       " - [vv_hgvs](https://github.com/openvar/vv_hgvs) version "
                       + config_dict['variantvalidator_hgvs_version'] + "\n"
-                      " - [UTA](https://github.com/biocommons/uta) release "
-                      + config_dict['uta_schema'] + "\n"
-                      " - [SeqRepo](https://github.com/biocommons/biocommons.seqrepo) release "
-                      + config_dict['seqrepo_db'].split('/')[-1]
+                      " - [VVTA](https://www528.lamp.le.ac.uk/) release "
+                      + config_dict['vvta_version'] + "\n"
+                      " - [vvSeqRepo](https://www528.lamp.le.ac.uk/) release "
+                      + config_dict['vvseqrepo_db'].split('/')[-2]
           )
 
 # Add the namespaces to the API
