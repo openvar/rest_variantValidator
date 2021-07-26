@@ -1,6 +1,6 @@
-git+https://github.com/openvar/vv_hgvs.git@1.2.5.vv1#egg=vvhgvs
-git+https://github.com/openvar/variantValidator@v1.0.4#egg=VariantValidator
-git+https://github.com/openvar/variantFormatter@v1.0.2#egg=VariantFormatter
+git+https://github.com/openvar/vv_hgvs@master#egg=vvhgvs
+git+https://github.com/openvar/variantValidator@master#egg=VariantValidator
+git+https://github.com/openvar/variantFormatter@master#egg=VariantFormatter
 biopython==1.74
 flask
 flask-restplus
@@ -17,4 +17,6 @@ notebook
 jupyter_contrib_nbextensions
 jupyter_nbextensions_configurator
 Werkzeug==0.16.1
-
+pytest>=3.6
+pytest-cov
+codecov

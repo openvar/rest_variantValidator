@@ -56,25 +56,23 @@ i.e. a directory called share in your home directory
 $ docker-compose build --no-cache
 ```
 
-- Start the container
+- Complete build
     - The first time you do this, it will complete the build process, for example, populating the required the databases
-    - This step can take >>1hour and is complete when you see the message `rest_variantvalidator_seqrepo_1 exited with code 0"`
     - When this is completed you will need to shutdown the services and re-start (see below)
-
+    - The build takes a while because the  vv databases are large. However, this is a significant improvement on previou
+    s versions. Install time is approximately 30 minutes (depending on the speed of you computer and internet connection)
+    - The build has completed when you see the message ***"Successfully built <container number string>"***
+    - example: "Successfully built fc9b83c8d21fa8bdebd52e0e87b9fde967933a043dace1a31916f8106110c8d8
+"
+    - Then complete the following steps
 ```bash
+# Create the containers (This only takes a coule of minutes)
 $ docker-compose up
-```    
 
-- Shutdown services when you want to stop the container
-
-```bash
+# When you see the following message the containers have been created. 
+# "vvta_1     | 2021-07-23 16:29:17.590 UTC [1] LOG:  database system is ready to accept connections"
+# Initial shut down prior to re-launch and working with VarinatValidator in Docker
 ctrl + c
-```
-
-- Re-start services
-
-```bash
-$ docker-compose up
 ```
 
 ### Build errors you may encounter
@@ -152,8 +150,18 @@ $ docker-compose up --force-recreate
 ```
 
 ## Accessing and using rest_variantValidator
+Start the container
+```bash
+$ docker-compose up
+```
+
 In a web browser navigate to
 [http://0.0.0.0:8000](http://0.0.0.0:8000)
+
+When you are finished, stop the container
+```
+ctrl + c
+```
 
 ***Note: you may need to change :8080 to one of :5000 or :8000 depending on whether you altered the default port above***
 

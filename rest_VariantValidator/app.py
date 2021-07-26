@@ -36,14 +36,15 @@ if config['logging'].getboolean('log') is True:
     # Log with a rotating file-handler
     # This sets the maximum size of the log to 0.5Mb and allows two additional logs
     # The logs are then deleted and replaced in rotation
-    logHandler = handlers.RotatingFileHandler(str(parent) + '/rest_VariantValidator.log', 
-                                              maxBytes=500000, 
+    logHandler = handlers.RotatingFileHandler(str(parent) + '/rest_VariantValidator.log',
+                                              maxBytes=500000,
                                               backupCount=2)
     # We want to minimise the amount of information we log to capturing bugs
     file_level = config['logging']['file'].upper()
     log_file_level = logging.getLevelName(file_level)
     logHandler.setLevel(log_file_level)
     logger.addHandler(logHandler)
+
 
 """
 Create a parser object locally
@@ -107,8 +108,7 @@ def log_exception(exception_type):
 @application.errorhandler(exceptions.RemoteConnectionError)
 def remote_connection_error_handler(e):
     # Add the Exception to the log ensuring that exc_info is True so that a traceback is also logged
-    if config['logging'].getboolean('log') is True:
-        log_exception('RemoteConnectionError')
+    log_exception('RemoteConnectionError')
 
     # Collect Arguments
     args = parser.parse_args()
@@ -125,8 +125,7 @@ def remote_connection_error_handler(e):
 @application.errorhandler(404)
 def not_found_error_handler(e):
     # Add the Exception to the log ensuring that exc_info is True so that a traceback is also logged
-    if config['logging'].getboolean('log') is True:
-        log_exception('NotFoundError')
+    log_exception('NotFoundError')
 
     # Collect Arguments
     args = parser.parse_args()
@@ -143,8 +142,7 @@ def not_found_error_handler(e):
 @application.errorhandler(500)
 def default_error_handler(e):
     # Add the Exception to the log ensuring that exc_info is True so that a traceback is also logged
-    if config['logging'].getboolean('log') is True:
-        log_exception('InternalServerError')
+    log_exception('InternalServerError')
 
     # Collect Arguments
     args = parser.parse_args()
