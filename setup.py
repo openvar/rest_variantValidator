@@ -57,7 +57,7 @@ setup(
         "requests",
         "dicttoxml",
         "vvhgvs @ git+https://github.com/openvar/vv_hgvs.git@master#egg=vvhgvs",
-        "VariantValidator @ git+https://github.com/openvar/variantValidator.git@update_to_vvta#egg=VariantValidator",
+        "VariantValidator @ git+https://github.com/openvar/variantValidator.git@master#egg=VariantValidator",
         "VariantFormatter @ git+https://github.com/openvar/variantFormatter.git@master#egg=VariantFormatter",
         "biocommons.seqrepo>=0.5.1",
         "biopython==1.74",
