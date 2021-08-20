@@ -19,6 +19,10 @@ api = Namespace('VariantValidator', description='VariantValidator API Endpoints'
 @api.route("/variantvalidator/<string:genome_build>/<string:variant_description>/<string:select_transcripts>")
 @api.param("select_transcripts", "***Return all possible transcripts***\n"
                                  ">   all\n"
+                                 "\n***Return only 'select' transcripts***\n"
+                                 ">   select\n"
+                                 ">   mane_select\n"
+                                 ">   refseq_select\n"
                                  "\n***Single***\n"
                                  ">   NM_000093.4\n"
                                  "\n***Multiple***\n"
