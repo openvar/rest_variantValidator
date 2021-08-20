@@ -28,8 +28,14 @@ $ git pull
 ## Configuring the software
 
 Edit the file located in `configuration/docker.ini`
-You will need to provide an email address and an 
-[Entrez API key](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/)
+You will need to provide an email address
+
+**Optional (from VariantValidator v2.0.0 - September 2021)** Generate an Entrez API key. This will be necessary if you 
+do not update your container for more than 12 months; else leave as `None`. See 
+[Entrez API key](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/) for details
+
+Note: Reconfiguration can be achieved by accessing the docker container through bash. See below for entry and the 
+VariantValidator [manual](https://github.com/openvar/variantValidator/blob/master/docs/MANUAL.md) for details
 
 
 ## Build the container

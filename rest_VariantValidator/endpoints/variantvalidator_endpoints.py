@@ -19,6 +19,10 @@ api = Namespace('VariantValidator', description='VariantValidator API Endpoints'
 @api.route("/variantvalidator/<string:genome_build>/<string:variant_description>/<string:select_transcripts>")
 @api.param("select_transcripts", "***Return all possible transcripts***\n"
                                  ">   all\n"
+                                 "\n***Return only 'select' transcripts***\n"
+                                 ">   select\n"
+                                 ">   mane_select\n"
+                                 ">   refseq_select\n"
                                  "\n***Single***\n"
                                  ">   NM_000093.4\n"
                                  "\n***Multiple***\n"
@@ -127,7 +131,7 @@ class Hgvs2referenceClass(Resource):
 
 
 # <LICENSE>
-# Copyright (C) 2019 VariantValidator Contributors
+# Copyright (C) 2016-2021 VariantValidator Contributors
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
