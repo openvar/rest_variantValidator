@@ -34,7 +34,7 @@ class HelloClass(Resource):
         # Collect Arguments
         args = parser.parse_args()
         config_dict = vval.my_config()
-        config_dict['seqrepo_db'] = config_dict['seqrepo_db'].split('/')[-1]
+        config_dict['vvseqrepo_db'] = config_dict['vvseqrepo_db'].split('/')[-2]
 
         # Overrides the default response route so that the standard HTML URL can return any specified format
         if args['content-type'] == 'application/json':
