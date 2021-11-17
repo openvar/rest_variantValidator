@@ -1,4 +1,4 @@
-from locust import HttpLocust, TaskSet, task, between
+from locust import HttpUser, TaskSet, task, between
 import test_set
 
 """
@@ -23,7 +23,8 @@ Perform test at http://127.0.0.1:8089 (docs at https://docs.locust.io/en/latest/
 
 """
 
-class UserBehavior(TaskSet):
+
+class UserBehavior(HttpUser):
     """
     Endpoint load-testing for the VariantValidator REST API
 
@@ -51,6 +52,6 @@ class UserBehavior(TaskSet):
         self.client.get(url)
 
 
-class WebsiteUser(HttpLocust):
+class WebsiteUser(HttpUser):
     task_set = UserBehavior
-    wait_time = between(1, 10) # seconds
+    wait_time = between(1, 10)  # seconds
