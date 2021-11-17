@@ -1,5 +1,6 @@
 import random
 
+
 def variant_list():
     tests = [
         "NC_000016.9:g.2099572TC>T",
@@ -326,6 +327,7 @@ def variant_list():
     random_number = random.randint(0, 319)
     odd_job = tests[random_number]
     return odd_job
+
 
 def gene_list():
     tests = [

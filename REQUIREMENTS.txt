@@ -1,8 +1,8 @@
 git+https://github.com/openvar/vv_hgvs@master#egg=vvhgvs
 git+https://github.com/openvar/variantValidator@master#egg=VariantValidator
 git+https://github.com/openvar/variantFormatter@master#egg=VariantFormatter
-biopython==1.74
-flask
+biopython
+flask==1.1.1
 flask-restplus
 gunicorn
 biocommons.seqrepo>=0.5.1
