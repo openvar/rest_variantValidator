@@ -49,7 +49,7 @@ api = Namespace('LOVD', description='LOVD API Endpoints')
                         ">   - True - (liftover to all genomic loci)\n"
                         ">   - primary - (lift to primary assembly only)\n"
                         ">   - False")
-class VariantValidatorClass(Resource):
+class LOVDClass(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
     def get(self, genome_build, variant_description, transcript_model, select_transcripts, checkonly, liftover):
