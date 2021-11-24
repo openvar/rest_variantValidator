@@ -39,6 +39,7 @@ if config['logging'].getboolean('log') is True:
     logHandler = handlers.RotatingFileHandler(str(parent) + '/rest_VariantValidator.log',
                                               maxBytes=500000,
                                               backupCount=2)
+
     # We want to minimise the amount of information we log to capturing bugs
     file_level = config['logging']['file'].upper()
     log_file_level = logging.getLevelName(file_level)

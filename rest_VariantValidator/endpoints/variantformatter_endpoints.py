@@ -40,7 +40,7 @@ api = Namespace('VariantFormatter', description='Variantformatter API Endpoints'
                         ">   - True (return ONLY the genomic variant descriptions and not transcript and protein"
                         " descriptions)\n"
                         ">   - False")
-class VariantValidatorClass(Resource):
+class VariantFormatterClass(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
     def get(self, genome_build, variant_description, transcript_model, select_transcripts, checkonly):
