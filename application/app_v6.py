@@ -198,7 +198,7 @@ def remote_connection_error_handler(e):
 
 
 @application.errorhandler(404)
-def not_found_error_handler():
+def not_found_error_handler(e):
     # Collect Arguments
     args = parser.parse_args()
     if args['content-type'] != 'application/xml':
@@ -212,7 +212,7 @@ def not_found_error_handler():
 
 
 @application.errorhandler(500)
-def default_error_handler():
+def default_error_handler(e):
     # Add the Exception to the log ensuring that exc_info is True so that a traceback is also logged
     log_exception('RemoteConnectionError')
 
