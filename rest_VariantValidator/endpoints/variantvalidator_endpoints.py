@@ -103,6 +103,44 @@ class Gene2transcriptsClass(Resource):
             return content
 
 
+@api.route("/tools/gene2transcripts_v2/<string:gene_query>/<string:limit_transcripts>")
+@api.param("gene_query", "***HGNC gene symbol, HGNC ID or transcript ID***\n"
+                         "\nCurrent supported transcript IDs"
+                         "\n- RefSeq")
+@api.param("limit_transcripts",  "***Return all possible transcripts***\n"
+                                 ">   False\n"
+                                 "\n***Single***\n"
+                                 ">   NM_000093.4\n"
+                                 "\n***Multiple***\n"
+                                 ">   NM_000093.4|NM_001278074.1|NM_000093.3")
+class Gene2transcriptsV2Class(Resource):
+    # Add documentation about the parser
+    @api.expect(parser, validate=True)
+    def get(self, gene_query, limit_transcripts):
+
+        if "False" in limit_transcripts or "false" in limit_transcripts or limit_transcripts is False:
+            limit_transcripts = None
+        try:
+            content = vval.gene2transcripts(gene_query, select_transcripts=limit_transcripts)
+        except ConnectionError:
+            message = "Cannot connect to rest.genenames.org, please try again later"
+            raise exceptions.RemoteConnectionError(message)
+
+        # Collect Arguments
+        args = parser.parse_args()
+
+        # Overrides the default response route so that the standard HTML URL can return any specified format
+        if args['content-type'] == 'application/json':
+            # example: http://127.0.0.1:5000.....bob?content-type=application/json
+            return representations.application_json(content, 200, None)
+        # example: http://127.0.0.1:5000.....?content-type=application/xml
+        elif args['content-type'] == 'application/xml':
+            return representations.xml(content, 200, None)
+        else:
+            # Return the api default output
+            return content
+
+
 @api.route("/tools/hgvs2reference/<string:hgvs_description>")
 @api.param("hgvs_description", "***hgvs_description***\n"
                                "\nSequence variation description in the HGVS format\n"
