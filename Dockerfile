@@ -8,6 +8,9 @@ WORKDIR /app
 # Copy the current directory contents into the container's /app directory
 COPY . /app
 
+# Create logging directory
+RUN mkdir /usr/local/share/logs
+
 # Update apt-get
 RUN apt-get update
 

@@ -68,7 +68,7 @@ class VariantValidatorClass(Resource):
 
         # Refresh the content
         refreshed_content = {}
-        if variant_description is "":
+        if variant_description == "":
             refreshed_content = {"error": "Unsupported variant type"}
         else:
             # Validate using the VariantValidator Python Library
@@ -76,9 +76,9 @@ class VariantValidatorClass(Resource):
             content = validate.format_as_dict(with_meta=True)
 
             for k, v in content.items():
-                if k is "metadata":
+                if k == "metadata":
                     refreshed_content[k] = v
-                elif k is "flag":
+                elif k == "flag":
                     continue
                 else:
                     refreshed_content[v["submitted_variant"]] = {}
@@ -215,11 +215,11 @@ class LOVDClass(Resource):
                                                                      liftover)
 
             for k, v in content.items():
-                if k is "metadata":
+                if k == "metadata":
                     refreshed_content[k] = v
                 else:
                     for k2, v2 in v.items():
-                        if k2 is "flag" or k2 is "errors":
+                        if k2 == "flag" or k2 == "errors":
                             continue
 
                         # else

@@ -76,8 +76,9 @@ $ docker-compose build --no-cache
 $ docker-compose up
 
 # When you see the following message the containers have been created. 
-# "vvta_1     | 2021-07-23 16:29:17.590 UTC [1] LOG:  database system is ready to accept connections"
-# Initial shut down prior to re-launch and working with VarinatValidator in Docker
+"vvta_1     | 2021-07-23 16:29:17.590 UTC [1] LOG:  database system is ready to accept connections"
+
+# Then perforn an initial shut down prior to re-launch and working with VarinatValidator in Docker
 ctrl + c
 ```
 
