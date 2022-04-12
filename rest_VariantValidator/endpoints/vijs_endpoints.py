@@ -68,19 +68,17 @@ class VariantValidatorClass(Resource):
 
         # Refresh the content
         refreshed_content = {}
-        if variant_description is "":
+        if variant_description == "":
             refreshed_content = {"error": "Unsupported variant type"}
         else:
             # Validate using the VariantValidator Python Library
-            validate = vval.validate(variant_description, genome_build, select_transcripts='all')
+            validate = vval.validate(variant_description, genome_build, select_transcripts='all', liftover_level=None)
             content = validate.format_as_dict(with_meta=True)
 
-            # Collect Arguments
-            args = parser.parse_args()
             for k, v in content.items():
-                if k is "metadata":
+                if k == "metadata":
                     refreshed_content[k] = v
-                elif k is "flag":
+                elif k == "flag":
                     continue
                 else:
                     refreshed_content[v["submitted_variant"]] = {}
@@ -156,6 +154,9 @@ class VariantValidatorClass(Resource):
                                 else:
                                     refreshed_content[v["submitted_variant"]]['correction'] = None
 
+        # Collect Arguments
+        args = parser.parse_args()
+
         # Overrides the default response route so that the standard HTML URL can return any specified format
         if args['content-type'] == 'application/json':
             # example: http://127.0.0.1:5000.....bob?content-type=application/json
@@ -168,13 +169,10 @@ class VariantValidatorClass(Resource):
             return refreshed_content
 
 
-@api.route("/genomic_descriptions/<string:genome_build>/<string:variant_description>/<string:transcript_model>")
+@api.route("/genomic_descriptions/<string:genome_build>/<string:variant_description>/")
 @api.param("variant_description", "***Genomic HGVS***\n"
                                   ">   - NC_000017.10:g.48275363C>A\n"
                                   ">   - *Recommended maximum is 60 variants per submission*\n")
-@api.param("transcript_model", "***Accepted:***\n"
-                               ">   - refseq (return data for RefSeq transcript models)\n"
-                               ">   - all (currently refseq only)")
 @api.param("genome_build", "***Accepted:***\n"
                            ">   - GRCh37\n"
                            ">   - GRCh38\n"
@@ -183,9 +181,8 @@ class VariantValidatorClass(Resource):
 class LOVDClass(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
-    def get(self, genome_build, variant_description, transcript_model):
-        if transcript_model == 'None' or transcript_model == 'none':
-            transcript_model = None
+    def get(self, genome_build, variant_description):
+        transcript_model = 'all'
         select_transcripts = None
         checkonly = True
         liftover = False
@@ -217,14 +214,12 @@ class LOVDClass(Resource):
                                                                      checkonly,
                                                                      liftover)
 
-            # Collect Arguments
-            args = parser.parse_args()
             for k, v in content.items():
-                if k is "metadata":
+                if k == "metadata":
                     refreshed_content[k] = v
                 else:
                     for k2, v2 in v.items():
-                        if k2 is "flag" or k2 is "errors":
+                        if k2 == "flag" or k2 == "errors":
                             continue
 
                         # else
@@ -252,6 +247,9 @@ class LOVDClass(Resource):
                         else:
                             refreshed_content[k2]["correction"] = v2["g_hgvs"]
 
+        # Collect Arguments
+        args = parser.parse_args()
+
         # Overrides the default response route so that the standard HTML URL can return any specified format
         if args['content-type'] == 'application/json':
             # example: http://127.0.0.1:5000.....bob?content-type=application/json
@@ -265,7 +263,7 @@ class LOVDClass(Resource):
 
 
 # <LICENSE>
-# Copyright (C) 2016-2021 VariantValidator Contributors
+# Copyright (C) 2016-2022 VariantValidator Contributors
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as

@@ -29,6 +29,7 @@ services:
       - vdb
       - vvta
     volumes:
+      - logs:/usr/local/share/logs
       - seqdata:/usr/local/share/seqrepo
       - share:/usr/local/share
     ports:
@@ -51,3 +52,9 @@ volumes:
       type: 'none'
       o: 'bind'
       device: '${HOME}/variantvalidator_data/share/seqrepo'
+  logs:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '${HOME}/variantvalidator_data/share/logs'

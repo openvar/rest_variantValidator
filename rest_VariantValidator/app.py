@@ -36,6 +36,11 @@ if config['logging'].getboolean('log') is True:
     # Log with a rotating file-handler
     # This sets the maximum size of the log to 0.5Mb and allows two additional logs
     # The logs are then deleted and replaced in rotation
+    try:
+        parent = config['logging']['log_to']
+    except KeyError:
+        pass
+
     logHandler = handlers.RotatingFileHandler(str(parent) + '/rest_VariantValidator.log',
                                               maxBytes=500000,
                                               backupCount=2)
@@ -164,7 +169,7 @@ if __name__ == '__main__':
 
 
 # <LICENSE>
-# Copyright (C) 2016-2021 VariantValidator Contributors
+# Copyright (C) 2016-2022 VariantValidator Contributors
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
