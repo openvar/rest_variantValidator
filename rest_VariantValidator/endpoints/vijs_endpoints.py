@@ -203,7 +203,7 @@ class LOVDClass(Resource):
 
         # Refresh the content
         refreshed_content = {}
-        if variant_description is "":
+        if variant_description == "":
             refreshed_content = {"error": "Unsupported variant type"}
         else:
             # Validate using the VariantValidator Python Library

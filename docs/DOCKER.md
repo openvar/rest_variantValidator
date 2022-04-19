@@ -54,7 +54,7 @@ $ docker-compose pull
 $ mkdir ~/variantvalidator_data
 $ mkdir ~/variantvalidator_data/share
 ```
-i.e. a directory called share in your home directory
+*i.e.* a directory called `variantvalidator_data/share` in your `home` directory
 
 - Build
 

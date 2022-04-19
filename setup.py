@@ -46,7 +46,6 @@ setup(
     # List run-time dependencies here.  These will be installed by pip when the project is installed.
     install_requires=[
         "werkzeug==0.16.1",
-        "flask",
         "flask-restplus",
         "gunicorn",
         "httplib2>=0.9.0",
@@ -61,6 +60,9 @@ setup(
         "VariantFormatter @ git+https://github.com/openvar/variantFormatter.git@master#egg=VariantFormatter",
         "biocommons.seqrepo>=0.5.1",
         "biopython",
+        "flask==1.1.1",
+        "Werkzeug==0.16.1",
+        "itsdangerous==2.0.1",
     ],
     setup_requires=[
         "setuptools_scm",
