@@ -43,27 +43,6 @@ setup(
         "sequencevariants",
     ],
 
-    # List run-time dependencies here.  These will be installed by pip when the project is installed.
-    install_requires=[
-        "werkzeug==0.16.1",
-        "flask-restplus",
-        "gunicorn",
-        "httplib2>=0.9.0",
-        "configparser>=3.5.0",
-        "pyliftover>=0.3",
-        "biotools>=0.3.0",
-        "mysql-connector-python",
-        "requests",
-        "dicttoxml",
-        "vvhgvs @ git+https://github.com/openvar/vv_hgvs.git@master#egg=vvhgvs",
-        "VariantValidator @ git+https://github.com/openvar/variantValidator.git@master#egg=VariantValidator",
-        "VariantFormatter @ git+https://github.com/openvar/variantFormatter.git@master#egg=VariantFormatter",
-        "biocommons.seqrepo>=0.5.1",
-        "biopython",
-        "flask==1.1.1",
-        "Werkzeug==0.16.1",
-        "itsdangerous==2.0.1",
-    ],
     setup_requires=[
         "setuptools_scm",
     ]
