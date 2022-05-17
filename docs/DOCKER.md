@@ -64,22 +64,34 @@ $ docker-compose build --no-cache
 
 - Complete build
     - The first time you do this, it will complete the build process, for example, populating the required the databases
-    - When this is completed you will need to shutdown the services and re-start (see below)
     - The build takes a while because the  vv databases are large. However, this is a significant improvement on previou
-    s versions. Install time is approximately 30 minutes (depending on the speed of you computer and internet connection)
-    - The build has completed when you see the message ***"Successfully built <container number string>"***
-    - example: "Successfully built fc9b83c8d21fa8bdebd52e0e87b9fde967933a043dace1a31916f8106110c8d8
-"
-    - Then complete the following steps
+    s versions. Build time is ~30 minutes (depending on the speed of you computer and internet connection)
+    - The build has completed when you see the message ***"naming to docker.io/library/rest_variantvalidator_restvv"***
+
 ```bash
-# Create the containers (This only takes a coule of minutes)
-$ docker-compose up
+# If you have previously installed this software you will need to remove old SeqRepo databases
+$ rm -r -f ~/variantvalidator_data/share/seqrepo/<Previos_SeqRepo_Directory>
 
-# When you see the following message the containers have been created. 
-"vvta_1     | 2021-07-23 16:29:17.590 UTC [1] LOG:  database system is ready to accept connections"
+# Create the vvta container (This takes ~10 minutes to complete)
+$ docker-compose up vvta
 
-# Then perforn an initial shut down prior to re-launch and working with VarinatValidator in Docker
+# When you see the following message the container has been created. 
+"database system is ready to accept connections"
+
+# Then perforn shut down 
 ctrl + c
+
+# Create the vdb container (This takes a few of minutes) and needs to be created first
+$ docker-compose up vdb
+
+# When you see the following message the container has been created. 
+"database system is ready to accept connections"
+
+# Then perforn shut down 
+ctrl + c
+
+# Launch the full application
+$ docker-compose up
 ```
 
 ### Build errors you may encounter
@@ -306,12 +318,15 @@ Update requires that the restvv container is deleted from your system. This is n
 If you are only running rest_variantValidator in docker, we recommend deleting and re-building all containers
 
 ```bash
-# Delete all containers
-$ docker-compose down
+# Remove the specific containers
+$ docker-compose rm
+
+# OR Delete all containers on your system
+$ docker-compose rm
 $ docker system prune -a --volumes
 ```
 
-***Once you have deleted the containers, got to Install and Build***
+***Once you have deleted the containers, go to Install and Build***
 
 Alternatively, you may wish to try and force the containers to re-build without deleting
 
