@@ -1,4 +1,5 @@
-"""mod_wsgi gateway wsgi file
+"""
+mod_wsgi gateway wsgi file
 """
 
 from rest_VariantValidator.app import application as application
@@ -13,4 +14,4 @@ if __name__ == '__main__':
     else:
         application.debug = False
         application.config['PROPAGATE_EXCEPTIONS'] = False
-    application.run(host="127.0.0.1", port=5000)
+    application.run(host="127.0.0.1", port=8080)
