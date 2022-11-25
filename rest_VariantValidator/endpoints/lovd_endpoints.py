@@ -1,4 +1,6 @@
 # Import modules
+import json
+import ast
 from flask_restx import Namespace, Resource
 from . import request_parser
 from . import representations
@@ -8,6 +10,14 @@ import VariantFormatter
 import VariantFormatter.simpleVariantFormatter
 import VariantValidator
 vval = VariantValidator.Validator()
+
+
+def ordereddict_to_dict(value):
+    for k, v in value.items():
+        if isinstance(v, dict):
+            value[k] = ordereddict_to_dict(v)
+    return dict(value)
+
 
 """
 Create a parser object locally
@@ -69,6 +79,11 @@ class LOVDClass(Resource):
         content = VariantFormatter.simpleVariantFormatter.format(variant_description, genome_build, transcript_model,
                                                                  select_transcripts, checkonly, liftover)
 
+        to_dict = ordereddict_to_dict(content)
+        content = str(to_dict)
+        content = content.replace("'", '"')
+        content = ast.literal_eval(content)
+
         # Collect Arguments
         args = parser.parse_args()
 
@@ -78,7 +93,7 @@ class LOVDClass(Resource):
             return representations.application_json(content, 200, None)
         # example: http://127.0.0.1:5000.....?content-type=application/xml
         elif args['content-type'] == 'application/xml':
-            return representations.xml(content, 200, None)
+            return representations.xml(str(content), 200, None)
         else:
             # Return the api default output
             return content
