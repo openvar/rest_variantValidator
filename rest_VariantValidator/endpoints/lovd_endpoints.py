@@ -1,5 +1,5 @@
 # Import modules
-from flask_restplus import Namespace, Resource
+from flask_restx import Namespace, Resource
 from . import request_parser
 from . import representations
 
