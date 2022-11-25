@@ -37,6 +37,17 @@ do not update your container for more than 12 months; else leave as `None`. See
 Note: Reconfiguration can be achieved by accessing the docker container through bash. See below for entry and the 
 VariantValidator [manual](https://github.com/openvar/variantValidator/blob/master/docs/MANUAL.md) for details
 
+- Edit the `vdb_docker.df` file 
+
+You need to select your chip set e.g. Arm or Intel and remove the relevant hash. Default is intel
+
+```
+# For Arm chips e.g. Apple M1
+# FROM biarms/mysql:5.7
+
+# For Intel chips
+FROM mysql:5.7
+```
 
 ## Build the container
 
