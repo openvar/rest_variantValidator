@@ -53,6 +53,7 @@ $ docker-compose pull
 ```bash
 $ mkdir ~/variantvalidator_data
 $ mkdir ~/variantvalidator_data/share
+$ mkdir ~/variantvalidator_data/share/logs
 ```
 *i.e.* a directory called `variantvalidator_data/share` in your `home` directory
 
@@ -66,7 +67,7 @@ $ docker-compose build --no-cache
     - The first time you do this, it will complete the build process, for example, populating the required the databases
     - The build takes a while because the  vv databases are large. However, this is a significant improvement on previou
     s versions. Build time is ~30 minutes (depending on the speed of you computer and internet connection)
-    - The build has completed when you see the message ***"naming to docker.io/library/rest_variantvalidator_restvv"***
+    - The build has completed when you see the message ***"Use 'docker scan' to run Snyk tests against images to find vulnerabilities and learn how to fix them"***
 
 ```bash
 # If you have previously installed this software you will need to remove old SeqRepo databases
@@ -216,6 +217,7 @@ $ exit
     - Note: Under the terms and conditions of our [license](https://github.com/openvar/rest_variantValidator/blob/master/LICENSE.txt) changes to the code and improvements must be made available to the community so that we can integrate them for the good of all our users 
     - See instructions on VariantValidator development in Docker 
 
+3. For other commands that you can run using bash, see the [VariantValidator DOCKER.md](https://github.com/openvar/variantValidator/blob/master/docs/DOCKER.md)
 
 ## Developing VariantValidator in Docker
 The container has been configured with git installed. This means that you can clone Repos directly into the container
