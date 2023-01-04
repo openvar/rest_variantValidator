@@ -1,6 +1,6 @@
 
 # Use an official Python runtime as a parent image
-FROM python:3.8
+FROM python:3.10
 
 # Set the working directory to /app
 WORKDIR /app
@@ -30,5 +30,4 @@ RUN pip install -e .
 COPY configuration/docker.ini /root/.variantvalidator
 
 # Start the application with gunicorn
-# CMD gunicorn -b 0.0.0.0:8000 app --workers=3 --threads=5 --worker-class=gthread --chdir ./rest_VariantValidator/
 CMD gunicorn  -b 0.0.0.0:8000 app --threads=5 --chdir ./rest_VariantValidator/
