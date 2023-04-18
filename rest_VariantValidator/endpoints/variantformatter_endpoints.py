@@ -26,9 +26,14 @@ api = Namespace('VariantFormatter', description='Variantformatter API Endpoints'
                                   ">   - *Recommended maximum is 10 variants per submission*")
 @api.param("transcript_model", "***Accepted:***\n"
                                ">   - refseq (return data for RefSeq transcript models)\n"
-                               ">   - all (currently refseq only)")
+                               ">   - ensembl (return data for ensembl transcript models)\n"
+                               ">   - all")
 @api.param("select_transcripts", "***Return all possible transcripts***\n"
-                                 ">   None or all\n"
+                                 ">   None or all (all transcripts at the latest versions)\n"
+                                 ">   raw (all transcripts all version)\n"
+                                 ">   select (select transcripts)\n"
+                                 ">   mane (MANE select transcripts)\n"
+                                 ">   mane_select (MANE select and MANE Plus Clinical transcripts)\n"
                                  "\n***Single***\n"
                                  ">   NM_000093.4\n"
                                  "\n***Multiple***\n"
