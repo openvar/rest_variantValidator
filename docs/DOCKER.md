@@ -64,6 +64,7 @@ $ docker-compose pull
 ```bash
 $ mkdir ~/variantvalidator_data
 $ mkdir ~/variantvalidator_data/share
+$ mkdir ~/variantvalidator_data/share/seqrepo/
 $ mkdir ~/variantvalidator_data/share/logs
 ```
 *i.e.* a directory called `variantvalidator_data/share` in your `home` directory
@@ -87,13 +88,13 @@ $ rm -r -f ~/variantvalidator_data/share/seqrepo/<Previos_SeqRepo_Directory>
 # Create the vvta container (This takes ~10 minutes to complete)
 $ docker-compose up vvta
 
-# When you see the following message the container has been created. 
+# When you see the following message the container has been created (Can take ~30 min or so). 
 "database system is ready to accept connections"
 
 # Then perforn shut down 
 ctrl + c
 
-# Create the vdb container (This takes a few of minutes) and needs to be created first
+# Create the vdb container (This takes a few of minutes)
 $ docker-compose up vdb
 
 # When you see the following message the container has been created. 
