@@ -105,25 +105,32 @@ class Gene2transcriptsClass(Resource):
             return content
 
 
-@api.route("/tools/gene2transcripts_v2/<string:gene_query>/<string:limit_transcripts>")
+@api.route("/tools/gene2transcripts_v2/<string:gene_query>/<string:limit_transcripts>/<string:transcript_set>")
 @api.param("gene_query", "***HGNC gene symbol, HGNC ID or transcript ID***\n"
                          "\nCurrent supported transcript IDs"
-                         "\n- RefSeq")
+                         "\n- RefSeq or Ensembl")
 @api.param("limit_transcripts",  "***Return all possible transcripts***\n"
                                  ">   False\n"
                                  "\n***Single***\n"
-                                 ">   NM_000093.4\n"
+                                 ">   NM_000088.4\n"
                                  "\n***Multiple***\n"
-                                 ">   NM_000093.4|NM_001278074.1|NM_000093.3")
+                                 ">   NM_000088.4|NM_000088.3\n"
+                                 "\n***Limit to select transcripts***\n"
+                                 ">    mane_select = MANE Select transcript only\n"
+                                 ">    mane = Mane Select and MANE Plus Clinical\n"
+                                 ">    select = All transcripts that have been classified as canonical")
+@api.param("transcript_set", "***RefSeq or Ensembl***\n"
+                             "\nall = all transcripts, refseq = RefSeq only, ensembl = Ensembl only")
 class Gene2transcriptsV2Class(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
-    def get(self, gene_query, limit_transcripts):
+    def get(self, gene_query, limit_transcripts, transcript_set):
 
         if "False" in limit_transcripts or "false" in limit_transcripts or limit_transcripts is False:
             limit_transcripts = None
         try:
-            content = vval.gene2transcripts(gene_query, select_transcripts=limit_transcripts)
+            content = vval.gene2transcripts(gene_query, select_transcripts=limit_transcripts,
+                                            transcript_set=transcript_set)
         except ConnectionError:
             message = "Cannot connect to rest.genenames.org, please try again later"
             raise exceptions.RemoteConnectionError(message)
