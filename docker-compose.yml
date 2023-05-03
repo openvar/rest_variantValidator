@@ -25,9 +25,13 @@ services:
       - seqdata:/usr/local/share/seqrepo
   restvv:
     build: .
+    entrypoint: /bin/bash
+    command: ["-c", "sleep infinity"]
+    restart: always
     depends_on:
       - vdb
       - vvta
+      - seqrepo
     volumes:
       - logs:/usr/local/share/logs
       - seqdata:/usr/local/share/seqrepo

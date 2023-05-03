@@ -41,14 +41,6 @@ VariantValidator [manual](https://github.com/openvar/variantValidator/blob/maste
 
 You need to select your chip set e.g. Arm or Intel and remove the relevant hash. Default is intel
 
-```
-# For Arm chips e.g. Apple M1
-# FROM biarms/mysql:5.7
-
-# For Intel chips
-FROM mysql:5.7
-```
-
 ## Build the container
 
 *Note: some of these steps take >>1hr to complete depending on the speed of your internet connection, particularly 
@@ -74,13 +66,14 @@ $ mkdir ~/variantvalidator_data/share/logs
 ```bash
 $ docker-compose build --no-cache
 ```
-
+ 
 - Complete build
     - The first time you do this, it will complete the build process, for example, populating the required the databases
     - The build takes a while because the  vv databases are large. However, this is a significant improvement on previou
     s versions. Build time is ~30 minutes (depending on the speed of you computer and internet connection)
     - The build has completed when you see the message ***"Use 'docker scan' to run Snyk tests against images to find vulnerabilities and learn how to fix them"***
 
+- Test each container and completes builds if necessary
 ```bash
 # If you have previously installed this software you will need to remove old SeqRepo databases
 $ rm -r -f ~/variantvalidator_data/share/seqrepo/<Previos_SeqRepo_Directory>
@@ -98,10 +91,16 @@ ctrl + c
 $ docker-compose up vdb
 
 # When you see the following message the container has been created. 
-"database system is ready to accept connections"
+" /usr/sbin/mysqld: ready for connections"
 
 # Then perforn shut down 
 ctrl + c
+
+# Create the SeqRepo comtainer
+docker-compose up seqrepo
+
+# This will auto exit once complete and you will see
+"exited with code 0"
 
 # Launch the full application
 $ docker-compose up
@@ -181,10 +180,14 @@ $ docker-compose down
 $ docker-compose up --force-recreate
 ```
 
-## Accessing and using rest_variantValidator
-Start the container
+## Start the container
 ```bash
-$ docker-compose up
+$ docker-compose up -d
+```
+
+## Start the server
+```bash
+$ docker exec -it rest_variantvalidator-restvv-1 gunicorn -b 0.0.0.0:8000 app --threads=5 --chdir ./rest_VariantValidator/
 ```
 
 In a web browser navigate to
@@ -207,10 +210,10 @@ It is possible to access both the UTA and Validator databases outside of docker 
 ## Accessing VariantValidator directly through bash and reconfiguring a container post build
 The container hosts a full install of VariantValidator. 
 
-To start this version you use the command
+To start this version you start the container in detached mode and access it using
 
 ```bash
-$ docker-compose run restvv bash
+$ docker-compose exec restvv bash
 ```
 
 When you are finished exit the container
@@ -236,10 +239,10 @@ The container has been configured with git installed. This means that you can cl
 
 To develop VariantValidator in the container
 
-Start the container 
+Start the container in detached mode
 
 ```bash
-$ docker-compose run restvv bash
+$ docker-compose exec restvv bash
 ```
 
 ON YOUR COMPUTER change into the share directory
@@ -316,7 +319,7 @@ $ git checkout name_of_branch
 Navigating to the Repo is identical
 
 ```bash
-$ docker-compose run restvv bash
+$ docker-compose exec restvv bash
 $ cd /usr/local/share/DevelopmentRepos/rest_variantValidator
 ```
 
