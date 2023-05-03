@@ -102,8 +102,13 @@ docker-compose up seqrepo
 # This will auto exit once complete and you will see
 "exited with code 0"
 
-# Launch the full application
-$ docker-compose up
+# Start the container
+$ docker-compose up -d
+
+# Start the server
+$ docker exec -it rest_variantvalidator-restvv-1 gunicorn -b 0.0.0.0:8000 app --threads=5 --chdir ./rest_VariantValidator/
+
+# Now go to Running the app (below) if you have no build errors
 ```
 
 ### Build errors you may encounter
@@ -180,13 +185,13 @@ $ docker-compose down
 $ docker-compose up --force-recreate
 ```
 
-## Start the container
-```bash
-$ docker-compose up -d
-```
+## Running the app
 
-## Start the server
 ```bash
+# Start the container
+$ docker-compose up -d
+
+# Start the server
 $ docker exec -it rest_variantvalidator-restvv-1 gunicorn -b 0.0.0.0:8000 app --threads=5 --chdir ./rest_VariantValidator/
 ```
 
