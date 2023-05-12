@@ -2,12 +2,12 @@
 
 ## Prerequisites
 
-To install rest_variantValidator via Docker, first ensure you have both docker and docker-compose installed. 
+To install rest_variantValidator via Docker, first ensure that you have both docker and docker-compose installed. 
 See their [documentation](https://docs.docker.com/compose/install/) for information.
 
 
 ## Clone the rest_VariantValidator Repository
-Create a directory collate your cloned repositories. Move into the directory then, clone the repository. 
+Create a directory to collate your cloned repositories. Move into the directory, then clone the repository. 
 
 ```bash
 $ git clone https://github.com/openvar/rest_variantValidator
@@ -39,7 +39,7 @@ VariantValidator [manual](https://github.com/openvar/variantValidator/blob/maste
 
 - Edit the `vdb_docker.df` file 
 
-You need to select your chip set e.g. Arm or Intel and remove the relevant hash. Default is intel
+You need to select your chip set e.g. ARM or Intel and remove the relevant hash. Default is Intel.
 
 ## Build the container
 
