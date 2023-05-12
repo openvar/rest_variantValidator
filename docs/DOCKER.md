@@ -87,7 +87,7 @@ $ docker-compose up vvta
 # Then perforn shut down 
 ctrl + c
 
-# Create the vdb container (This takes a few of minutes)
+# Create the vdb container (This takes a few minutes)
 $ docker-compose up vdb
 
 # When you see the following message the container has been created. 
