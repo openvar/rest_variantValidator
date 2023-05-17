@@ -37,10 +37,6 @@ do not update your container for more than 12 months; else leave as `None`. See
 Note: Reconfiguration can be achieved by accessing the docker container through bash. See below for entry and the 
 VariantValidator [manual](https://github.com/openvar/variantValidator/blob/master/docs/MANUAL.md) for details
 
-- Edit the `vdb_docker.df` file 
-
-You need to select your chip set e.g. ARM or Intel and remove the relevant hash. Default is Intel.
-
 ## Build the container
 
 *Note: some of these steps take >>1hr to complete depending on the speed of your internet connection, particularly 
