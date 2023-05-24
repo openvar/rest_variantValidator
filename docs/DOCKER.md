@@ -16,7 +16,7 @@ $ git clone https://github.com/openvar/rest_variantValidator
 Once the repository has been cloned, cd into the rest_variantValidator directory that the clone creates.
 
 ```bash
-$ cd rest_variantValidator/
+$ cd rest_variantValidator
 ``` 
 
 If you have cloned the repository previously, update it prior to installing/re-installing using Docker
