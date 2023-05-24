@@ -1,5 +1,3 @@
-
-# Use an official Python runtime as a parent image
 FROM python:3.10
 
 # Set the working directory to /app
@@ -29,5 +27,11 @@ RUN pip install -e .
 # Copy the config file into the container home diorectory
 COPY configuration/docker.ini /root/.variantvalidator
 
-# Start the application with gunicorn
-CMD gunicorn  -b 0.0.0.0:8000 app --threads=5 --chdir ./rest_VariantValidator/
+# Expose the port
+EXPOSE 8000
+
+# Define the entrypoint as an empty command
+ENTRYPOINT []
+
+# Start the container with CMD
+CMD ["gunicorn", "-b", "0.0.0.0:8000", "app", "--threads=5", "--chdir", "./rest_VariantValidator/"]
