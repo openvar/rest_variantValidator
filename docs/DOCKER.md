@@ -330,28 +330,27 @@ However, instead of running `pip install -e`, we can test the install using the 
 python rest_variantValidator/app.py
 ```
 
-## Updating rest_variantValidator using docker-compose
+## Updating rest_variantValidator
+To update a container, use
+
+```bash
+$ docker-compose down
+$ docker-compose build <service name> --no-cache
+$ docker-compose up <service name>
+```
+
+## Deleting rest_variantValidator
 Update requires that the restvv container is deleted from your system. This is not achieved by removing the container
 
 If you are only running rest_variantValidator in docker, we recommend deleting and re-building all containers
 
 ```bash
 # Remove the specific containers
-$ docker-compose rm
+$ docker-compose rm <service name e.g. vvta> 
 
 # OR Delete all containers on your system
-$ docker-compose rm
-$ docker system prune -a --volumes
-```
-
-***Once you have deleted the containers, go to Install and Build***
-
-Alternatively, you may wish to try and force the containers to re-build without deleting
-
-```bash
-# Force re-build
 $ docker-compose down
-$ docker-compose up --force-recreate
+$ docker system prune -a --volumes
 ```
 
 ***If you choose this option, make sure you see the container restvv being re-created and all Python packages being 
