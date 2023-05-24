@@ -17,6 +17,7 @@ services:
       - "54321:5432"
     expose:
       - "54321"
+    shm_size: 2g
   seqrepo:
     build:
       context: .
