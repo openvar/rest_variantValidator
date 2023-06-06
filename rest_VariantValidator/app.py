@@ -37,10 +37,9 @@ if config['logging'].getboolean('log') is True:
     # This sets the maximum size of the log to 0.5Mb and allows two additional logs
     # The logs are then deleted and replaced in rotation
     try:
-        parent = config['logging']['log_to']
+        parent = config['logging']['file_path']
     except KeyError:
         pass
-
     logHandler = handlers.RotatingFileHandler(str(parent) + '/rest_VariantValidator.log',
                                               maxBytes=500000,
                                               backupCount=2)

@@ -27,9 +27,6 @@ RUN pip install -e .
 # Copy the config file into the container home diorectory
 COPY configuration/docker.ini /root/.variantvalidator
 
-# Expose the port
-EXPOSE 8000
-
 # Define the entrypoint as an empty command
 ENTRYPOINT []
 

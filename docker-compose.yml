@@ -8,7 +8,8 @@ services:
     ports:
       - "33061:3306"
     expose:
-      - "33061"
+      - "33061"  # Expose port for external access
+
   vvta:
     build:
       context: .
@@ -16,14 +17,16 @@ services:
     ports:
       - "54321:5432"
     expose:
-      - "54321"
+      - "54321"  # Expose port for external access
     shm_size: 2g
+
   seqrepo:
     build:
       context: .
       dockerfile: vvsr_docker.df
     volumes:
-      - seqdata:/usr/local/share/seqrepo
+      - seqdata:/usr/local/share/seqrepo  # Mount volume for sequence data
+
   restvv:
     build: .
     entrypoint: /bin/bash
@@ -34,16 +37,16 @@ services:
       - vvta
       - seqrepo
     volumes:
-      - logs:/usr/local/share/logs
-      - seqdata:/usr/local/share/seqrepo
-      - share:/usr/local/share
+      - logs:/usr/local/share/logs  # Mount volume for logs
+      - seqdata:/usr/local/share/seqrepo  # Mount volume for sequence data
+      - share:/usr/local/share  # Mount volume for shared data
     ports:
       - "5000:5000"
       - "5050:5050"
       - "8000:8000"
       - "8080:8080"
     expose:
-      - "5000"
+      - "5000"  # Expose ports for external access
       - "5050"
       - "8000"
       - "8080"
@@ -54,16 +57,16 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '${HOME}/variantvalidator_data/share'
+      device: '${HOME}/variantvalidator_data/share'  # Mount host directory for shared data
   seqdata:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '${HOME}/variantvalidator_data/share/seqrepo'
+      device: '${HOME}/variantvalidator_data/share/seqrepo'  # Mount host directory for sequence data
   logs:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '${HOME}/variantvalidator_data/share/logs'
+      device: '${HOME}/variantvalidator_data/share/logs'  # Mount host directory for logs
