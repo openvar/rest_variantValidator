@@ -1,21 +1,99 @@
-git+https://github.com/openvar/vv_hgvs@master#egg=vvhgvs
-git+https://github.com/openvar/variantValidator@master#egg=VariantValidator
-git+https://github.com/openvar/variantFormatter@master#egg=VariantFormatter
-biopython
-gunicorn
-biocommons.seqrepo>=0.5.1
-httplib2>=0.9.0
-configparser>=3.5.0
-pyliftover>=0.3
-biotools>=0.3.0
-requests
-dicttoxml
-pytest>=3.6
-pytest-cov
-codecov
-flask-restx
-flask-socketio
-flask == 1.1.4
-jinja2==2.11.3
-Werkzeug==1.0.1
-markupsafe==2.0.1
+aniso8601==9.0.1
+appdirs==1.4.4
+appnope==0.1.3
+attrs==22.1.0
+beautifulsoup4==4.11.1
+bidict==0.22.0
+biocommons.seqrepo==0.6.5
+biopython==1.79
+biotools==1.2.12
+bioutils==0.5.7
+blinker==1.6.2
+brotlipy @ file:///Users/runner/miniforge3/conda-bld/brotlipy_1666764759924/work
+bs4==0.0.1
+certifi==2022.9.24
+cffi @ file:///Users/runner/miniforge3/conda-bld/cffi_1666754817555/work
+charset-normalizer @ file:///home/conda/feedstock_root/build_artifacts/charset-normalizer_1661170624537/work
+click==8.1.3
+codecov==2.1.12
+coloredlogs==15.0.1
+configparser @ file:///home/conda/feedstock_root/build_artifacts/configparser_1660952164778/work
+coverage==6.5.0
+cryptography @ file:///Users/runner/miniforge3/conda-bld/cryptography_1667424024887/work
+cssselect==1.2.0
+decorator==5.1.1
+dicttoxml==1.7.4
+dnspython @ file:///home/conda/feedstock_root/build_artifacts/dnspython_1646621171513/work
+enum34==1.1.10
+exceptiongroup==1.0.1
+fake-useragent==0.1.14
+Flask==2.3.2
+Flask-HTTPAuth==4.7.0
+flask-restx==1.0.3
+Flask-SocketIO==5.3.1
+Flask-SQLAlchemy==2.5.1
+gunicorn==20.1.0
+httplib2 @ file:///home/conda/feedstock_root/build_artifacts/httplib2_1667305570420/work
+humanfriendly==10.0
+idna @ file:///home/conda/feedstock_root/build_artifacts/idna_1663625384323/work
+importlib-metadata==5.0.0
+iniconfig==1.1.1
+ipython==5.10.0
+itsdangerous==2.1.2
+Jinja2==3.1.2
+jsonschema==4.17.0
+lxml==4.9.1
+MarkupSafe==2.1.3
+mysql-connector-python==8.0.31
+numpy @ file:///Users/runner/miniforge3/conda-bld/numpy_1666788277198/work
+packaging==21.3
+parse==1.19.0
+Parsley==1.3
+passlib==1.7.4
+pexpect==4.8.0
+pickleshare==0.7.5
+pluggy==1.0.0
+prompt-toolkit==1.0.18
+protobuf==3.20.1
+psycopg2==2.9.5
+psycopg2-binary==2.9.5
+ptyprocess==0.7.0
+pycparser @ file:///home/conda/feedstock_root/build_artifacts/pycparser_1636257122734/work
+pyee==8.2.2
+Pygments==2.5.2
+pyliftover==0.4
+PyMySQL==1.0.2
+pyOpenSSL @ file:///home/conda/feedstock_root/build_artifacts/pyopenssl_1665350324128/work
+pyparsing @ file:///home/conda/feedstock_root/build_artifacts/pyparsing_1652235407899/work
+pyppeteer==1.0.2
+pyquery==1.4.3
+pyrsistent==0.19.2
+pysam==0.20.0
+PySocks @ file:///home/conda/feedstock_root/build_artifacts/pysocks_1661604839144/work
+pytest==7.2.0
+pytest-cov==4.0.0
+python-engineio==4.3.4
+python-socketio==5.7.2
+pytz==2022.6
+requests @ file:///home/conda/feedstock_root/build_artifacts/requests_1661872987712/work
+requests-html==0.10.0
+-e git+https://github.com/openvar/VariantsInJournals.git@e8922a98dd4b583c0a3857cf5b5fd023499e3552#egg=rest_VariantValidator
+simplegeneric==0.8.1
+six==1.16.0
+soupsieve==2.3.2.post1
+SQLAlchemy==1.4.44
+sqlparse==0.4.3
+tabulate==0.9.0
+tomli==2.0.1
+tqdm==4.64.1
+traitlets==5.5.0
+urllib3 @ file:///home/conda/feedstock_root/build_artifacts/urllib3_1658789158161/work
+-e git+https://github.com/openvar/variantFormatter.git@5f6251aa656ec7bc18199d6587a746ef88f990d6#egg=VariantFormatter
+-e git+https://github.com/openvar/variantValidator.git@aa87b9746ec2790f96ff4b27182c998453730753#egg=VariantValidator
+-e git+https://github.com/openvar/vv_hgvs.git@69b1a7c107f3bba1bb43ef1de19c22ba62ff4c80#egg=vvhgvs
+w3lib==2.0.1
+wcwidth==0.2.5
+websockets==10.4
+Werkzeug==2.3.6
+yoyo-migrations==8.1.0
+zipp==3.10.0
