@@ -1,0 +1,29 @@
+[mysql]
+host = 127.0.0.1
+port = 3306
+database = validator
+user = USER
+password = PASSWORD
+
+[seqrepo]
+version = PATH TO SEQREPO VERSION
+location = PATH TO SEQREPO
+require_threading = True
+
+[postgres]
+host = 127.0.0.1
+database = vvta
+port = 5432
+version = VVTA VERSION
+user = USERNAME
+password = PASSWORD
+
+[logging]
+log = True
+console = INFO
+file = WARNING
+
+[Entrez]
+email = None
+api_key = None
+
