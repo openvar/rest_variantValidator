@@ -13,7 +13,6 @@ dicttoxml
 pytest>=3.6
 pytest-cov
 codecov
-dicttoxml
 
 # Core web components
 flask-restx==1.0.3
