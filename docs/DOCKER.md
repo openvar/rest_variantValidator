@@ -89,7 +89,7 @@ $ docker-compose up vdb
 # When you see the following message the container has been created. 
 " /usr/sbin/mysqld: ready for connections"
 
-# Then perforn shut down 
+# Then perform shut down 
 ctrl + c
 
 # Create the SeqRepo comtainer
