@@ -28,3 +28,4 @@ RUN gzip modified_file.sql
 
 # Step 5: Move the modified and compressed file to the desired location
 RUN mv modified_file.sql.gz /docker-entrypoint-initdb.d/vvta_2022_11_noseq.sql.gz
+
