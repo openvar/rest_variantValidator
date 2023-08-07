@@ -24,11 +24,11 @@ RUN pip install -r REQUIREMENTS.txt
 # Install the tool
 RUN pip install -e .
 
-# Copy the config file into the container home diorectory
+# Copy the config file into the container home directory
 COPY configuration/docker.ini /root/.variantvalidator
 
 # Define the entrypoint as an empty command
 ENTRYPOINT []
 
-# Start the container with CMD
-CMD ["gunicorn", "-b", "0.0.0.0:8000", "app", "--threads=5", "--chdir", "./rest_VariantValidator/"]
+# Start the container with CMD and set Gunicorn timeout to 600 seconds
+CMD ["gunicorn", "-b", "0.0.0.0:8000", "--timeout", "600", "app", "--threads=5", "--chdir", "./rest_VariantValidator/"]
