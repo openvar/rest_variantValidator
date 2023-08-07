@@ -102,7 +102,7 @@ docker-compose up seqrepo
 $ docker-compose up -d
 
 # Start the server
-$ docker exec -it rest_variantvalidator-restvv-1 gunicorn -b 0.0.0.0:8000 app --threads=5 --chdir ./rest_VariantValidator/
+$ docker exec -it rest_variantvalidator-restvv-1 gunicorn  -b 0.0.0.0:8000 --timeout 600 app --threads=5 --chdir ./rest_VariantValidator/
 
 # Now go to Running the app (below) if you have no build errors
 ```
@@ -188,7 +188,7 @@ $ docker-compose up --force-recreate
 $ docker-compose up -d
 
 # Start the server
-$ docker exec -it rest_variantvalidator-restvv-1 gunicorn -b 0.0.0.0:8000 app --threads=5 --chdir ./rest_VariantValidator/
+$ docker exec -it rest_variantvalidator-restvv-1 gunicorn  -b 0.0.0.0:8000 --timeout 600 app --threads=5 --chdir ./rest_VariantValidator/
 ```
 
 In a web browser navigate to
