@@ -1,9 +1,7 @@
 # Import modules
-import json
 import ast
 from flask_restx import Namespace, Resource
-from . import request_parser
-from . import representations
+from ..utils import request_parser, representations
 
 # Import variantFormatter
 import VariantFormatter
@@ -96,8 +94,8 @@ class LOVDClass(Resource):
         if args['content-type'] == 'application/json':
             # example: http://127.0.0.1:5000.....bob?content-type=application/json
             return representations.application_json(content, 200, None)
-        # example: http://127.0.0.1:5000.....?content-type=application/xml
-        elif args['content-type'] == 'application/xml':
+        # example: http://127.0.0.1:5000.....?content-type=text/xml
+        elif args['content-type'] == 'text/xml':
             return representations.xml(str(content), 200, None)
         else:
             # Return the api default output

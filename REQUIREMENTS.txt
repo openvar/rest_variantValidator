@@ -1,3 +1,4 @@
+setuptools==58.2.0
 git+https://github.com/openvar/vv_hgvs@master#egg=vvhgvs
 git+https://github.com/openvar/variantValidator@master#egg=VariantValidator
 git+https://github.com/openvar/variantFormatter@master#egg=VariantFormatter

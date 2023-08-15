@@ -1,6 +1,5 @@
 from flask_restx import Namespace, Resource
-from . import request_parser
-from . import representations
+from ..utils import request_parser, representations
 
 # Import VariantValidator  code
 import VariantValidator
@@ -44,8 +43,8 @@ class HelloClass(Resource):
                 "metadata": config_dict
             },
                 200, None)
-        # example: http://127.0.0.1:5000/name/name/bob?content-type=application/xml
-        elif args['content-type'] == 'application/xml':
+        # example: http://127.0.0.1:5000/name/name/bob?content-type=text/xml
+        elif args['content-type'] == 'text/xml':
             return representations.xml({
                  "status": "hello_world",
                  "metadata": config_dict

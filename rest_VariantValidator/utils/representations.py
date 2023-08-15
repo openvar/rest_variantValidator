@@ -16,7 +16,7 @@ Note
 def xml(data, code, headers):
     data = dicttoxml(data)
     resp = make_response(data, code)
-    resp.headers['Content-Type'] = 'application/xml'
+    resp.headers['Content-Type'] = 'text/xml'
     return resp
 
 
