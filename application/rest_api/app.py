@@ -55,7 +55,7 @@ Note
 # Requires the module make_response from flask and dict-to-xml
 
 
-@api.representation('application/xml')
+@api.representation('text/xml')
 def application_xml(data, code, headers):
     resp = representations.xml(data, code, headers)
     return resp
@@ -90,7 +90,7 @@ def remote_connection_error_handler(e):
 
     # Collect Arguments
     args = parser.parse_args()
-    if args['content-type'] != 'application/xml':
+    if args['content-type'] != 'text/xml':
         return application_json({'message': str(e)},
                                 504,
                                 None)
@@ -104,7 +104,7 @@ def remote_connection_error_handler(e):
 def not_found_error_handler():
     # Collect Arguments
     args = parser.parse_args()
-    if args['content-type'] != 'application/xml':
+    if args['content-type'] != 'text/xml':
         return application_json({'message': 'Requested Endpoint not found'},
                                 404,
                                 None)
@@ -121,7 +121,7 @@ def default_error_handler():
 
     # Collect Arguments
     args = parser.parse_args()
-    if args['content-type'] != 'application/xml':
+    if args['content-type'] != 'text/xml':
         return application_json({'message': 'unhandled error: contact https://variantvalidator.org/contact_admin/'},
                                 500,
                                 None)

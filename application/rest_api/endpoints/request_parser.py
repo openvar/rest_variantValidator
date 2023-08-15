@@ -7,4 +7,4 @@ parser = reqparse.RequestParser()
 parser.add_argument('content-type',
                     type=str,
                     help='***Select the response format***',
-                    choices=['application/json', 'application/xml'])
+                    choices=['application/json', 'text/xml'])

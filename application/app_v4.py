@@ -25,11 +25,11 @@ Representations
 """
 # Add additional representations using the @api.representation decorator
 # Requires the module make_response from flask and json2xml
-@api.representation('application/xml')
+@api.representation('text/xml')
 def xml(data, code, headers):
     data = dicttoxml(data)
     resp = make_response(data, code)
-    resp.headers['Content-Type'] = 'application/xml'
+    resp.headers['Content-Type'] = 'text/xml'
     return resp
 
 

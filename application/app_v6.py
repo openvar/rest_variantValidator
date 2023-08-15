@@ -41,7 +41,7 @@ api = Api(app = application)
 parser = reqparse.RequestParser()
 parser.add_argument('content-type',
                     type=str,
-                    help='Accepted:\n- application/json\n- application/xml')
+                    help='Accepted:\n- application/json\n- text/xml')
 
 """
 Register custom exceptions
@@ -57,11 +57,11 @@ Representations
 """
 # Add additional representations using the @api.representation decorator
 # Requires the module make_response from flask and dicttoxml
-@api.representation('application/xml')
+@api.representation('text/xml')
 def xml(data, code, headers):
     data = dicttoxml(data)
     resp = make_response(data, code)
-    resp.headers['Content-Type'] = 'application/xml'
+    resp.headers['Content-Type'] = 'text/xml'
     return resp
 
 @api.representation('application/json')
@@ -91,8 +91,8 @@ class HelloClass(Resource):
                 "greeting" : "Hello World"
             },
                 200, None)
-        # example: http://127.0.0.1:5000/name/name/bob?content-type=application/xml
-        elif args['content-type'] == 'application/xml':
+        # example: http://127.0.0.1:5000/name/name/bob?content-type=text/xml
+        elif args['content-type'] == 'text/xml':
             return xml({
                  "greeting" : "Hello World"
             },
@@ -122,8 +122,8 @@ class NameClass(Resource):
                 "My name is" : name
             },
                 200, None)
-        # example: http://127.0.0.1:5000/name/name/bob?content-type=application/xml
-        elif args['content-type'] == 'application/xml':
+        # example: http://127.0.0.1:5000/name/name/bob?content-type=text/xml
+        elif args['content-type'] == 'text/xml':
             return xml({
                 "My name is": name
             },
@@ -159,8 +159,8 @@ class VariantValidatorClass(Resource):
         if args['content-type'] == 'application/json':
             # example: http://127.0.0.1:5000.....bob?content-type=application/json
             return json(content, 200, None)
-        # example: http://127.0.0.1:5000.....?content-type=application/xml
-        elif args['content-type'] == 'application/xml':
+        # example: http://127.0.0.1:5000.....?content-type=text/xml
+        elif args['content-type'] == 'text/xml':
             return xml(content, 200, None)
         else:
             # Return the api default output
@@ -187,7 +187,7 @@ def remote_connection_error_handler(e):
 
     # Collect Arguments
     args = parser.parse_args()
-    if args['content-type'] != 'application/xml':
+    if args['content-type'] != 'text/xml':
         return json({'message': str(e)},
                                 504,
                                 None)
@@ -201,7 +201,7 @@ def remote_connection_error_handler(e):
 def not_found_error_handler(e):
     # Collect Arguments
     args = parser.parse_args()
-    if args['content-type'] != 'application/xml':
+    if args['content-type'] != 'text/xml':
         return json({'message': 'Requested Endpoint not found'},
                                 404,
                                 None)
@@ -218,7 +218,7 @@ def default_error_handler(e):
 
     # Collect Arguments
     args = parser.parse_args()
-    if args['content-type'] != 'application/xml':
+    if args['content-type'] != 'text/xml':
         return json({'message': 'unhandled error: contact https://variantvalidator.org/contact_admin/'},
                                 500,
                                 None)

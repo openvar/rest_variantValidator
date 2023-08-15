@@ -37,8 +37,8 @@ class HelloClass(Resource):
                 "greeting": "Hello World"
             },
                 200, None)
-        # example: http://127.0.0.1:5000/name/name/bob?content-type=application/xml
-        elif args['content-type'] == 'application/xml':
+        # example: http://127.0.0.1:5000/name/name/bob?content-type=text/xml
+        elif args['content-type'] == 'text/xml':
             return representations.xml({
                  "greeting": "Hello World"
             },
