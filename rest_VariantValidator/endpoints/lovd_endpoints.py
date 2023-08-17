@@ -1,7 +1,7 @@
 # Import modules
 import ast
 from flask_restx import Namespace, Resource
-from ..utils import request_parser, representations
+from rest_VariantValidator.utils import request_parser, representations
 
 # Import variantFormatter
 import VariantFormatter
