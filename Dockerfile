@@ -18,9 +18,6 @@ RUN apt-get -y install git
 # Updrade pip
 RUN pip install --upgrade pip
 
-# Install any needed packages specified in requirements.txt
-RUN pip install -r REQUIREMENTS.txt
-
 # Install the tool
 RUN pip install -e .
 

@@ -1,5 +1,5 @@
 # Import modules
-from flask import make_response
+from flask import make_response, jsonify
 from dicttoxml import dicttoxml
 
 """
@@ -16,12 +16,12 @@ Note
 def xml(data, code, headers):
     data = dicttoxml(data)
     resp = make_response(data, code)
-    resp.headers['Content-Type'] = 'application/xml'
+    resp.headers['Content-Type'] = 'text/xml'
     return resp
 
 
 def application_json(data, code, headers):
-    resp = make_response(data, code)
+    resp = make_response(jsonify(data), code)
     resp.headers['Content-Type'] = 'application/json'
     return resp
 
