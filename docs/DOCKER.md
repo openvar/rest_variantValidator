@@ -93,18 +93,39 @@ $ docker-compose up vdb
 ctrl + c
 
 # Create the SeqRepo comtainer
-docker-compose up seqrepo
+$ docker-compose up seqrepo
 
 # This will auto exit once complete and you will see
 "exited with code 0"
+```
 
-# Start the container
-$ docker-compose up -d
+### Test the build
+```bash
+# Start the container in bash mode
+$ docker-compose exec restvv bash
 
-# Start the server
+# Run PyTest (all tests should pass)
+$ pytest
+
+# Exit the container
+$ exit
+```
+
+# Start the container and run the server
+```bash
+# Start the container in detached mode
+$ docker-compose up -d 
+
+# Run the server
 $ docker exec -it rest_variantvalidator-restvv-1 gunicorn  -b 0.0.0.0:8000 --timeout 600 app --threads=5 --chdir ./rest_VariantValidator/
+```
 
-# Now go to Running the app (below) if you have no build errors
+In a web browser navigate to
+[http://0.0.0.0:8000](http://0.0.0.0:8000)
+
+When you are finished, stop the container
+```
+ctrl + c
 ```
 
 ### Build errors you may encounter
