@@ -6,7 +6,6 @@ from flask import url_for
 from .variantvalidator_endpoints import api as ns_vv
 from .variantformatter_endpoints import api as ns_vf
 from .lovd_endpoints import api as ns_lovd
-from .vijs_endpoints import api as ns_vijs
 from .hello import api as ns_hello
 
 # Obtain VariantValidator related metadata
@@ -51,7 +50,6 @@ api = CustomAPI(version=rest_VariantValidator.__version__,
 api.add_namespace(ns_vv)
 api.add_namespace(ns_vf)
 api.add_namespace(ns_lovd)
-api.add_namespace(ns_vijs)
 api.add_namespace(ns_hello)
 
 

@@ -11,5 +11,5 @@ RUN apt-get update && apt-get install -y \
 
 RUN rm -rf /var/lib/apt/lists/*
 
-RUN wget https://www528.lamp.le.ac.uk/vvdata/validator/validator_2022_11.sql.gz -O /docker-entrypoint-initdb.d/validator_2022_11.sql.gz
+RUN wget https://www528.lamp.le.ac.uk/vvdata/validator/validator_2023_08.sql.gz -O /docker-entrypoint-initdb.d/validator_2023_08.sql.gz
 

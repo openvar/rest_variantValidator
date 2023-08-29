@@ -1,0 +1,93 @@
+# Project metadata
+[project]
+name = "rest_VariantValidator"
+dynamic = ["version"]  # Use dynamic version based on the setuptools_scm plugin
+description = "REST API interface for VariantValidator"
+license = {file = "LICENSE.txt"}  # Specify the license file
+authors = [{name = "VariantValidator Contributors", email = "admin@variantvalidator.org"}]  # Author information
+readme = "README.md"  # Specify the README file
+keywords = ["bioinformatics",
+            "computational biology",
+            "genome variants",
+            "genome variation",
+            "genomic variants",
+            "genomic variation",
+            "genomics",
+            "hgvs",
+            "HGVS",
+            "sequencevariants"]  # Keywords associated with the project
+
+requires-python = ">=3.9"  # Minimum required Python version
+
+# List of project dependencies
+dependencies = [
+    # Dependencies that will be installed via PyPi
+    "httplib2>=0.9.0",
+    "configparser>=3.5.0",
+    "dicttoxml==1.7.16",
+    "gunicorn==21.2.0",
+    "flask-restx==1.1.0",
+    "Flask==2.3.2",
+    "Jinja2==3.1.2",
+    "Werkzeug==2.3.7",
+    "MarkupSafe==2.1.3",
+
+    # Dependencies from other repositories, specified with their repository URLs and package names
+    "vvhgvs@git+https://github.com/openvar/vv_hgvs@master#egg=vvhgvs",
+    "VariantFormatter@git+https://github.com/openvar/variantFormatter@master#egg=VariantFormatter",
+    "VariantValidator@git+https://github.com/openvar/variantValidator@master#egg=VariantValidator"
+]
+
+# Project classifiers
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Build Tools",
+    "License :: OSI Approved :: AGPL-3.0",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11"
+]
+
+# URLs associated with the project
+[project.urls]
+"Homepage" = "https://variantvalidator.org/"
+"Source" = "https://github.com/openvar/rest_variantValidator"
+"Bug Reports" = "https://github.com/openvar/variantValidator/issues"
+"Say Thanks!" = "https://www.buymeacoffee.com/VariantValidatr"
+
+# Scripts and data files
+[scripts]
+# Define scripts that will be available after installation, with their entry points
+# After install, these scripts will be accessible for the user to run
+update_vdb = "bin/update_vdb:main"
+variant_validator = "bin/variant_validator:main"
+vv_configure = "bin/vv_configure:main"
+
+# Specify additional data files included in the distribution
+data = [
+    { include = "configuration", glob = "configuration/empty_vv_db.sql" }
+]
+
+# Setuptools configuration
+[tool.setuptools]
+# Specify the main Python modules to be included in the distribution
+py-modules = ["rest_VariantValidator"]
+
+# Setuptools SCM configuration
+[tool.setuptools_scm]
+
+# Setuptools package discovery configuration
+[tool.setuptools.packages.find]
+# Define where to look for packages (root directory)
+where = ["."]
+# Specify patterns to include and exclude for package discovery
+include = ["rest_VariantValidator*"]
+exclude = ["batch", "locust"]
+
+# Build system configuration
+[build-system]
+# Specify required dependencies for the build system
+requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
+# Specify the build backend to use
+build-backend = "setuptools.build_meta"

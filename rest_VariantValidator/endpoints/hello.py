@@ -1,6 +1,6 @@
 from flask_restx import Namespace, Resource
-from . import request_parser
-from . import representations
+from rest_VariantValidator.utils import request_parser, representations, exceptions
+from flask import abort
 
 # Import VariantValidator  code
 import VariantValidator
@@ -44,8 +44,8 @@ class HelloClass(Resource):
                 "metadata": config_dict
             },
                 200, None)
-        # example: http://127.0.0.1:5000/name/name/bob?content-type=application/xml
-        elif args['content-type'] == 'application/xml':
+        # example: http://127.0.0.1:5000/name/name/bob?content-type=text/xml
+        elif args['content-type'] == 'text/xml':
             return representations.xml({
                  "status": "hello_world",
                  "metadata": config_dict
@@ -57,6 +57,26 @@ class HelloClass(Resource):
                  "status": "hello_world",
                  "metadata": config_dict
             }
+
+
+@api.route('/trigger_error/<int:error_code>')
+class ExceptionClass(Resource):
+    @api.expect(parser, validate=True)
+    def get(self, error_code):
+        print("WUWUWU")
+        print(error_code)
+        if error_code == 400:
+            abort(400, "Bad Request")
+        elif error_code == 403:
+            abort(403, "Forbidden")
+        elif error_code == 404:
+            abort(404, "Not Found")
+        elif error_code == 500:
+            abort(500, "Internal Server Error")
+        elif error_code == 999:
+            print("HERE")
+            raise exceptions.RemoteConnectionError('https://rest.variantvalidator.org/variantvalidator currently '
+                                                   'unavailable')
 
 
 # <LICENSE>
