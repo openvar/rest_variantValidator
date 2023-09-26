@@ -50,12 +50,10 @@ $ docker-compose pull
 
 - Create a directory for sharing resources between your computer and the container
 ```bash
-$ mkdir ~/variantvalidator_data
-$ mkdir ~/variantvalidator_data/share
-$ mkdir ~/variantvalidator_data/share/seqrepo/
-$ mkdir ~/variantvalidator_data/share/logs
+$ mkdir -p ~/variantvalidator_data/seqdata 
+$ mkdir -p ~/variantvalidator_data/logs
 ```
-*i.e.* a directory called `variantvalidator_data/share` in your `home` directory
+*i.e.,* a directory called `variantvalidator_data/seqdata` in your `home` directory
 
 - Build
 
@@ -71,53 +69,23 @@ $ docker-compose build --no-cache
 
 - Test each container and completes builds if necessary
 ```bash
-# If you have previously installed this software you will need to remove old SeqRepo databases
-$ rm -r -f ~/variantvalidator_data/share/seqrepo/<Previos_SeqRepo_Directory>
-
-# Create the vvta container (This takes ~10 minutes to complete)
-$ docker-compose up vvta
-
-# When you see the following message the container has been created (Can take ~30 min or so). 
-"database system is ready to accept connections"
-
-# Then perforn shut down 
-ctrl + c
-
-# Create the vdb container (This takes a few minutes)
-$ docker-compose up vdb
-
-# When you see the following message the container has been created. 
-" /usr/sbin/mysqld: ready for connections"
-
-# Then perform shut down 
-ctrl + c
-
-# Create the SeqRepo comtainer
-$ docker-compose up seqrepo
-
-# This will auto exit once complete and you will see
-"exited with code 0"
+# Start vvta containers (This takes ~10 minutes to complete)
+$ docker-compose up -d rv-vvta
+$ docker-compose up -d rv-vdb
+$ docker-compose up -d rv-seqrepo
+$ docker-compose up -d rest-variantvalidator
 ```
 
 ### Test the build
 ```bash
-# Start the container in bash mode
-$ docker-compose exec restvv bash
-
 # Run PyTest (all tests should pass)
-$ pytest
-
-# Exit the container
-$ exit
+$ docker exec rest_variantvalidator-rest-variantvalidator-1 pytest
 ```
 
-# Start the container and run the server
+# Run the server
 ```bash
 # Start the container in detached mode
-$ docker-compose up -d 
-
-# Run the server
-$ docker exec -it rest_variantvalidator-restvv-1 gunicorn  -b 0.0.0.0:8000 --timeout 600 app --threads=5 --chdir ./rest_VariantValidator/
+$ docker exec -it rest_variantvalidator-rest-variantvalidator-1 gunicorn  -b 0.0.0.0:8000 --timeout 600 app --threads=5 --chdir ./rest_VariantValidator/
 ```
 
 In a web browser navigate to
@@ -127,6 +95,8 @@ When you are finished, stop the container
 ```
 ctrl + c
 ```
+
+***Note: you may need to change :8080 to one of :5000 or :8000 depending on whether you altered the default port above***
 
 ### Build errors you may encounter
 
@@ -160,12 +130,8 @@ services:
 
 ``` 
 - hash (`#`) the conflicting port and add the new ports as shown above
-- force-recreate the container
 
-```bash
-$ docker-compose down
-$ docker-compose up --force-recreate
-```
+Once complete, re-build as above
 
 ***You may encounter a build error relating to other unavailable ports***  
 
@@ -195,38 +161,13 @@ If you encounter these issues, stop the build by pressing `ctrl+c`
 
 - hash (`#`) the conflicting port and add the new ports as shown above
 - Change the command in Dockerfile to reflect the changes e.g. `CMD gunicorn  -b 0.0.0.0:8080 app --threads=5 --chdir ./rest_VariantValidator/`
-- force-recreate the container
 
-```bash
-$ docker-compose down
-$ docker-compose up --force-recreate
-```
-
-## Running the app
-
-```bash
-# Start the container
-$ docker-compose up -d
-
-# Start the server
-$ docker exec -it rest_variantvalidator-restvv-1 gunicorn  -b 0.0.0.0:8000 --timeout 600 app --threads=5 --chdir ./rest_VariantValidator/
-```
-
-In a web browser navigate to
-[http://0.0.0.0:8000](http://0.0.0.0:8000)
-
-When you are finished, stop the container
-```
-ctrl + c
-```
-
-***Note: you may need to change :8080 to one of :5000 or :8000 depending on whether you altered the default port above***
-
+Once complete, re-build as above
 
 ## Accessing the VariantValidator databases externally
 It is possible to access both the UTA and Validator databases outside of docker as they expose the
- default PostgreSQL and MySQL ports (5432 and 3306 respectively). In the current set-up it is not possible to 
- access the seqrepo database outside of docker.
+ default PostgreSQL and MySQL ports (5432 and 3306 respectively). You can also access the seqrepo database outside of 
+docker. Navigate to ~/variantvalidator_data/seqdata 
  
 
 ## Accessing VariantValidator directly through bash and reconfiguring a container post build
@@ -235,7 +176,7 @@ The container hosts a full install of VariantValidator.
 To start this version you start the container in detached mode and access it using
 
 ```bash
-$ docker-compose exec restvv bash
+$ docker-compose exec rest_variantvalidator-rest-variantvalidator-1 bash
 ```
 
 When you are finished exit the container
@@ -244,17 +185,15 @@ When you are finished exit the container
 $ exit
 ```
 
-#### What you can do in bash mode
+#### Running the VariantValidator shell script
 
-1. Run VariantValidator can be run on the commandline from within the container
-    - Instructions can be found in the VariantValidator [manual](https://github.com/openvar/variantValidator/blob/master/docs/MANUAL.md) under sections **Database updates** and **Operation**
-    
-2. Start the REST services in development mode, bound to port 5000 
-    - For example, this is useful if you want to develop new methods and test them
-    - Note: Under the terms and conditions of our [license](https://github.com/openvar/rest_variantValidator/blob/master/LICENSE.txt) changes to the code and improvements must be made available to the community so that we can integrate them for the good of all our users 
-    - See instructions on VariantValidator development in Docker 
+Once installed and running it is possible to run VariantValidator via a bash shell using the running the container
 
-3. For other commands that you can run using bash, see the [VariantValidator DOCKER.md](https://github.com/openvar/variantValidator/blob/master/docs/DOCKER.md)
+**Example**
+```bash
+# Note: The variant description must be contained in '' or "". See MANUAL.md for more examples
+$ docker exec -it rest_variantvalidator-rest-variantvalidator-1 python bin/variant_validator.py -v 'NC_000017.11:g.50198002C>A' -g GRCh38 -t mane -s individual -f json -m
+```
 
 ## Developing VariantValidator in Docker
 The container has been configured with git installed. This means that you can clone Repos directly into the container
@@ -264,7 +203,7 @@ To develop VariantValidator in the container
 Start the container in detached mode
 
 ```bash
-$ docker-compose exec restvv bash
+$ docker-compose exec rest_variantvalidator-rest-variantvalidator-1 bash
 ```
 
 ON YOUR COMPUTER change into the share directory
@@ -345,7 +284,7 @@ $ docker-compose exec restvv bash
 $ cd /usr/local/share/DevelopmentRepos/rest_variantValidator
 ```
 
-However, instead of running `pip install -e`, we can test the install using the Python development server
+However, instead of running `pip install -e .`, we can test the install using the Python development server
 
 ```bash
 python rest_variantValidator/app.py
