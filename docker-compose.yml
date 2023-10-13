@@ -1,50 +1,49 @@
 version: '3'
 
 services:
-  vdb:
+  rv-vdb:
     build:
       context: .
-      dockerfile: vdb_docker.df
+      dockerfile: db_dockerfiles/vdb/Dockerfile
     ports:
       - "33061:3306"
     expose:
       - "33061"  # Expose port for external access
 
-  vvta:
+  rv-vvta:
     build:
       context: .
-      dockerfile: vvta_docker.df
+      dockerfile: db_dockerfiles/vvta/Dockerfile
     ports:
       - "54321:5432"
     expose:
       - "54321"  # Expose port for external access
     shm_size: 2g
 
-  seqrepo:
+  rv-seqrepo:
     build:
       context: .
-      dockerfile: vvsr_docker.df
+      dockerfile: db_dockerfiles/seqrepo/Dockerfile
     volumes:
       - seqdata:/usr/local/share/seqrepo  # Mount volume for sequence data
 
-  restvv:
+  rest-variantvalidator:
     build: .
     entrypoint: /bin/bash
     command: ["-c", "sleep infinity"]
     restart: always
     depends_on:
-      - vdb
-      - vvta
-      - seqrepo
+      - rv-vdb
+      - rv-vvta
+      - rv-seqrepo
     volumes:
-      - logs:/usr/local/share/logs  # Mount volume for logs
+      - vv-logs:/usr/local/share/logs  # Mount volume for logs
       - seqdata:/usr/local/share/seqrepo  # Mount volume for sequence data
-      - share:/usr/local/share  # Mount volume for shared data
     ports:
       - "5000:5000"
       - "5050:5050"
       - "8000:8000"
-      - "8080:8080"
+      - "9000:9000"
     expose:
       - "5000"  # Expose ports for external access
       - "5050"
@@ -52,21 +51,15 @@ services:
       - "8080"
 
 volumes:
-  share:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: '${HOME}/variantvalidator_data/share'  # Mount host directory for shared data
   seqdata:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '${HOME}/variantvalidator_data/share/seqrepo'  # Mount host directory for sequence data
-  logs:
+      device: '${HOME}/variantvalidator_data/seqdata'
+  vv-logs:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '${HOME}/variantvalidator_data/share/logs'  # Mount host directory for logs
+      device: '${HOME}/variantvalidator_data/logs'
