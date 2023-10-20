@@ -1,0 +1,4 @@
+name: tl1_vv_env
+dependencies:
+  - python==3.12
+  - pip
