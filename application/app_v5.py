@@ -1,10 +1,10 @@
 """
-Simple rest interface for VariantValidator built using Flask Flask-RESTPlus and Swagger UI
+Simple rest interface for VariantValidator built using Flask Flask-RESTX and Swagger UI
 """
 
 # Import modules
 from flask import Flask, make_response
-from flask_restplus import Api, Resource, reqparse
+from flask_restx import Api, Resource, reqparse
 import requests
 from dicttoxml import dicttoxml
 
@@ -28,7 +28,7 @@ parser.add_argument('content-type',
 Representations
  - Adds a response-type into the "Response content type" drop-down menu displayed in Swagger
  - When selected, the APP will return the correct response-header and content type
- - The default for flask-restplus is aspplication/json
+ - The default for flask-restx is aspplication/json
 """
 # Add additional representations using the @api.representation decorator
 # Requires the module make_response from flask and dicttoxml
@@ -45,7 +45,7 @@ def json(data, code, headers):
     resp.headers['Content-Type'] = 'application/json'
     return resp
 
-# Define a name-space to be read Swagger UI which is built in to Flask-RESTPlus
+# Define a name-space to be read Swagger UI which is built in to Flask-RESTX
 # The first variable is the path of the namespace the second variable describes the space
 hello_space = api.namespace('hello', description='Simple API that returns a greeting')
 @hello_space.route("/")
