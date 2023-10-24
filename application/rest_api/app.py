@@ -1,5 +1,5 @@
 """
-Simple rest interface for VariantValidator built using Flask Flask-RESTPlus and Swagger UI
+Simple rest interface for VariantValidator built using Flask Flask-RESTX and Swagger UI
 """
 
 # Import modules
@@ -46,7 +46,7 @@ application.config.SWAGGER_UI_DOC_EXPANSION = 'list'
 Representations
  - Adds a response-type into the "Response content type" drop-down menu displayed in Swagger
  - When selected, the APP will return the correct response-header and content type
- - The default for flask-RESTPlus is application/json
+ - The default for flask-RESTX is application/json
  
 Note 
  - The decorators are assigned to the functions

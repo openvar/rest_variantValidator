@@ -1,4 +1,4 @@
-from flask_restplus import Api
+from flask_restx import Api
 
 from .hello import api as ns_hello
 from .name import api as ns_name
