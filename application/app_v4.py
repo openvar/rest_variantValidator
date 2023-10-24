@@ -4,7 +4,7 @@ Simple rest interface for VariantVlidator built using Flask Flask-RESTPlus and S
 
 # Import modules
 from flask import Flask, make_response
-from flask_restplus import Api, Resource
+from flask_restx import Api, Resource
 import requests
 from dicttoxml import dicttoxml
 
@@ -21,7 +21,7 @@ api = Api(app = application)
 Representations
  - Adds a response-type into the "Response content type" drop-down menu displayed in Swagger
  - When selected, the APP will return the correct response-header and content type
- - The default for flask-restplus is aspplication/json
+ - The default for flask-restx is aspplication/json
 """
 # Add additional representations using the @api.representation decorator
 # Requires the module make_response from flask and json2xml
