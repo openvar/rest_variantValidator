@@ -91,7 +91,7 @@ $ docker exec rest_variantvalidator_rest-variantvalidator_1 pytest
 # Run the server
 ```bash
 # Start the container in detached mode
-$ docker exec -it rest_variantvalidator_rest-variantvalidator_1 gunicorn -b 0.0.0.0:8000 --timeout 600 app.wsgi:application --threads=5 --chdir ./rest_VariantValidator/
+$ docker exec -it rest_variantvalidator_rest-variantvalidator_1 gunicorn  -b 0.0.0.0:8000 --timeout 600 app --threads=5 --chdir ./rest_VariantValidator/
 ```
 
 In a web browser navigate to
