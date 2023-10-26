@@ -14,4 +14,4 @@ if __name__ == '__main__':
     else:
         application.debug = False
         application.config['PROPAGATE_EXCEPTIONS'] = False
-    application.run(host="127.0.0.1", port=8080)
+    application.run(host="127.0.0.1", port=8000)

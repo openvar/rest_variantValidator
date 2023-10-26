@@ -10,16 +10,21 @@ COPY . /app
 RUN mkdir /usr/local/share/logs
 
 # Update apt-get
-RUN apt-get update
+RUN apt update
 
-# Install git
-RUN apt-get -y install git
+# Install apt managed sofware
+RUN apt -y install git \
+    postgresql-client \
+    sqlite3
+
+# Manage git buffer
+RUN git config http.postBuffer 500000000
 
 # Updrade pip
 RUN pip install --upgrade pip
 
 # Install the tool
-RUN pip install -e .
+RUN pip install .
 
 # Copy the config file into the container home directory
 COPY configuration/docker.ini /root/.variantvalidator
