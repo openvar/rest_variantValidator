@@ -65,27 +65,33 @@ $ docker-compose build --no-cache
     - The first time you do this, it will complete the build process, for example, populating the required the databases
     - The build takes a while because the  vv databases are large. However, this is a significant improvement on previou
     s versions. Build time is ~30 minutes (depending on the speed of you computer and internet connection)
-    - The build has completed when you see the message ***"Use 'docker scan' to run Snyk tests against images to find vulnerabilities and learn how to fix them"***
+    - The build has completed when you see 
 
-- Test each container and completes builds if necessary
+```
+Creating rest_variantvalidator_rv-vvta_1 ... done
+Creating rest_variantvalidator_rv-vdb_1 ... done
+Creating rest_variantvalidator_rv-seqrepo_1 ... done
+Creating rest_variantvalidator_rest-variantvalidator_1 ... done
+```
+
+Use this command to complete the build and wait for the above messages
 ```bash
-# Start vvta containers (This takes ~10 minutes to complete)
-$ docker-compose up -d rv-vvta
-$ docker-compose up -d rv-vdb
-$ docker-compose up -d rv-seqrepo
-$ docker-compose up -d rest-variantvalidator
+$ docker-compose up -d rv-vvta && \
+  docker-compose up -d rv-vdb && \
+  docker-compose up -d rv-seqrepo && \
+  docker-compose up -d rest-variantvalidator
 ```
 
 ### Test the build
 ```bash
 # Run PyTest (all tests should pass)
-$ docker exec rest_variantvalidator-rest-variantvalidator-1 pytest
+$ docker exec rest_variantvalidator_rest-variantvalidator_1 pytest
 ```
 
 # Run the server
 ```bash
 # Start the container in detached mode
-$ docker exec -it rest_variantvalidator-rest-variantvalidator-1 gunicorn  -b 0.0.0.0:8000 --timeout 600 app --threads=5 --chdir ./rest_VariantValidator/
+$ docker exec -it rest_variantvalidator_rest-variantvalidator_1 gunicorn -b 0.0.0.0:8000 --timeout 600 app.wsgi:application --threads=5 --chdir ./rest_VariantValidator/
 ```
 
 In a web browser navigate to
