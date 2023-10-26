@@ -17,6 +17,9 @@ RUN apt -y install git \
     postgresql-client \
     sqlite3
 
+# Manage git buffer
+RUN git config http.postBuffer 500000000
+
 # Updrade pip
 RUN pip install --upgrade pip
 
