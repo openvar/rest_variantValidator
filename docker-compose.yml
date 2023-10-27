@@ -39,6 +39,7 @@ services:
     volumes:
       - vv-logs:/usr/local/share/logs  # Mount volume for logs
       - seqdata:/usr/local/share/seqrepo  # Mount volume for sequence data
+      - rest-vv-app:/app/rest_VariantValidator  # Mount the app directory to your system
     ports:
       - "5000:5000"
       - "5050:5050"
@@ -63,3 +64,9 @@ volumes:
       type: 'none'
       o: 'bind'
       device: '${HOME}/variantvalidator_data/logs'
+  rest-vv-app:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: ${PWD}/rest_VariantValidator
