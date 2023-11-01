@@ -1,22 +1,27 @@
 git+https://github.com/openvar/variantValidator@master#egg=VariantValidator
 git+https://github.com/openvar/variantFormatter@master#egg=VariantFormatter
 git+https://github.com/openvar/vv_flask-restful-swagger@master#egg=vv_flask_restful_swagger
-flask
+ 
+Werkzeug==2.3.3
+flask_restx
+Flask-RESTful==0.3.9 
 flask-log
 flask-mail
 flask-restful
 gunicorn
-biocommons.seqrepo>=0.5.1
-httplib2>=0.9.0
-configparser>=3.5.0
-pyliftover>=0.3
-biotools>=0.3.0
+biocommons.seqrepo
+httplib2
+configparser
+pyliftover
+biotools
 mysql-connector-python
 requests
-pytest>=3.6
+pytest
 pytest-cov
 codecov
 dicttoxml
 
 
 
+# I took the original file and tweaked the first 3 entries 
+# to avoid compatibility issues 
