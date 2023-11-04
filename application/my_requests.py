@@ -1,6 +1,6 @@
 # import the requests module
 import requests
-
+import urllib.parse
 
 # Create the class
 class MyRequests:
@@ -28,17 +28,17 @@ class MyRequests:
 
         # If want to request as xml:
         if content_type == 'xml':
-            self.url = f"{self.base_url}VariantValidator/{gbuild}/{vdesc}/{seltrans}?content-type=text/xml"
+            self.url = f"{self.base_url}VariantValidator/variantvalidator/{gbuild}/{vdesc}/{seltrans}?content-type=text/xml"
 
         # If want to request as json:
         elif content_type == 'json':
-            self.url = f"{self.base_url}VariantValidator/{gbuild}/{vdesc}/{seltrans}?content-type=application/json"
+            self.url = f"{self.base_url}VariantValidator/variantvalidator/{gbuild}/{vdesc}/{seltrans}?content-type=application/json"
         
         # Else use default url:
         else:
-            self.url = f"{self.base_url}VariantValidator/{gbuild}/{vdesc}/{seltrans}"
+            self.url = f"{self.base_url}VariantValidator/variantvalidator/{gbuild}/{vdesc}/{seltrans}"
         
-        return self.requestdata
+        return self.request_data()
     
 
 
@@ -67,10 +67,21 @@ if __name__ == "__main__":
     print(response_nm.json())
 
     ## VariantValidator endpoint - left these blank for now:
-    gbuild = '_____'
-    vdesc = '_____'
-    seltrans = '_____'
-    response_VV = mrq.VV_get(gbuild, vdesc, seltrans)
+    gbuild = 'hg19'
+    #gbuild = 'xxx'
+    vdesc = 'NM_000088.3:c.589G>T'
+    #vdesc = 'xxx'
+    seltrans = 'NM_000088.3'
+    #seltrans = ''
+
+    # Need to do some url parsing as varint descriptions and transcripts can have reserved characters:
+    url_vdesc = urllib.parse.quote(vdesc)
+    url_seltrans = urllib.parse.quote(seltrans)
+
+    print(url_seltrans, url_vdesc)
+
+    response_VV = mrq.VV_get(gbuild, url_vdesc, url_seltrans)
     
     print(response_VV.status_code)
+    print(response_VV)
     print(response_VV.json())
