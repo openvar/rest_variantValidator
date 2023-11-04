@@ -1,4 +1,4 @@
-from flask_restplus import reqparse
+from flask_restx import reqparse
 
 
 # Create a RequestParser object to identify specific content-type requests in HTTP URLs

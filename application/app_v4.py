@@ -4,7 +4,7 @@ Simple rest interface for VariantVlidator built using Flask Flask-RESTPlus and S
 
 # Import modules
 from flask import Flask, make_response
-from flask_restplus import Api, Resource
+from flask_restx import Api, Resource
 import requests
 from dicttoxml import dicttoxml
 

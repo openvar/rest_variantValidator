@@ -7,7 +7,7 @@ import warnings
 
 # IMPORT FLASK MODULES
 from flask import Flask ,request, jsonify, abort, url_for, g, send_file, redirect, Blueprint #, session, g, redirect, , abort, render_template, flash, make_response, abort
-from flask_restful import Resource, Api, reqparse, abort, fields, marshal_with
+from flask_restx import Resource, Api, reqparse, abort, fields, marshal_with
 from vv_flask_restful_swagger import swagger
 from flask_log import Logging
 from flask_mail import Mail, Message
