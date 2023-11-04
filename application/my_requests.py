@@ -73,6 +73,7 @@ if __name__ == "__main__":
     #vdesc = 'xxx'
     seltrans = 'NM_000088.3'
     #seltrans = ''
+    content_type = ''
 
     # Need to do some url parsing as varint descriptions and transcripts can have reserved characters:
     url_vdesc = urllib.parse.quote(vdesc)
@@ -80,8 +81,11 @@ if __name__ == "__main__":
 
     print(url_seltrans, url_vdesc)
 
-    response_VV = mrq.VV_get(gbuild, url_vdesc, url_seltrans)
+    response_VV = mrq.VV_get(gbuild, url_vdesc, url_seltrans, content_type)
     
     print(response_VV.status_code)
-    print(response_VV)
-    print(response_VV.json())
+    
+    if content_type == 'xml':
+        print(response_VV.text)
+    else:
+        print(response_VV.json())
