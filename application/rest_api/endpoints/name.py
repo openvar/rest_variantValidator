@@ -1,6 +1,6 @@
 from flask_restx import Namespace, Resource
-from . import request_parser
-from . import representations
+from utils import request_parser
+from utils import representations
 
 
 """
