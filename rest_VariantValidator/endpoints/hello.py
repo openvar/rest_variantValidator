@@ -4,7 +4,6 @@ from flask import abort
 
 # Import VariantValidator  code
 import VariantValidator
-vval = VariantValidator.Validator()
 
 """
 Create a parser object locally
@@ -30,6 +29,8 @@ class HelloClass(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
     def get(self):
+
+        vval = VariantValidator.Validator()
 
         # Collect Arguments
         args = parser.parse_args()
@@ -63,8 +64,6 @@ class HelloClass(Resource):
 class ExceptionClass(Resource):
     @api.expect(parser, validate=True)
     def get(self, error_code):
-        print("WUWUWU")
-        print(error_code)
         if error_code == 400:
             abort(400, "Bad Request")
         elif error_code == 403:
@@ -74,7 +73,6 @@ class ExceptionClass(Resource):
         elif error_code == 500:
             abort(500, "Internal Server Error")
         elif error_code == 999:
-            print("HERE")
             raise exceptions.RemoteConnectionError('https://rest.variantvalidator.org/variantvalidator currently '
                                                    'unavailable')
 

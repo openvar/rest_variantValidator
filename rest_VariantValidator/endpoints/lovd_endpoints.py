@@ -6,8 +6,8 @@ from rest_VariantValidator.utils import request_parser, representations
 # Import variantFormatter
 import VariantFormatter
 import VariantFormatter.simpleVariantFormatter
-import VariantValidator
-vval = VariantValidator.Validator()
+# import VariantValidator
+# vval = VariantValidator.Validator()
 
 
 def ordereddict_to_dict(value):

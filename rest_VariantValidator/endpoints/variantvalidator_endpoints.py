@@ -4,7 +4,6 @@ from rest_VariantValidator.utils import exceptions, request_parser, representati
 
 # Import VariantValidator  code
 import VariantValidator
-vval = VariantValidator.Validator()
 
 """
 Create a parser object locally
@@ -55,8 +54,11 @@ class VariantValidatorClass(Resource):
     @api.expect(parser, validate=True)
     def get(self, genome_build, variant_description, select_transcripts):
 
+        vval = VariantValidator.Validator()
+
         # Validate using the VariantValidator Python Library
         validate = vval.validate(variant_description, genome_build, select_transcripts)
+
         content = validate.format_as_dict(with_meta=True)
 
         # Collect Arguments
@@ -82,6 +84,9 @@ class Gene2transcriptsClass(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
     def get(self, gene_query):
+
+        vval = VariantValidator.Validator()
+
         try:
             content = vval.gene2transcripts(gene_query)
         except ConnectionError:
@@ -130,6 +135,9 @@ class Gene2transcriptsV2Class(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
     def get(self, gene_query, limit_transcripts, transcript_set, genome_build):
+
+        vval = VariantValidator.Validator()
+
         if genome_build not in ["GRCh37", "GRCh38"]:
             genome_build = None
         if "False" in limit_transcripts or "false" in limit_transcripts or limit_transcripts is False:
@@ -167,6 +175,9 @@ class Hgvs2referenceClass(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
     def get(self, hgvs_description):
+
+        vval = VariantValidator.Validator()
+
         content = vval.hgvs2ref(hgvs_description)
 
         # Collect Arguments
