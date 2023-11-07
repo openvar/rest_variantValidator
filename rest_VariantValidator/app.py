@@ -5,6 +5,7 @@ Simple rest interface for VariantValidator built using Flask Flask-RESTPlus and 
 # Import modules
 from flask import Flask, request
 from rest_VariantValidator.endpoints import api
+from flask_cors import CORS
 from rest_VariantValidator.utils import exceptions, request_parser, representations
 from logging import handlers
 import time
@@ -66,6 +67,9 @@ api.init_app(application)
 
 # By default, show all endpoints (collapsed)
 application.config.SWAGGER_UI_DOC_EXPANSION = 'list'
+
+# enable CORS
+CORS(application, resources={r'/*': {'origins': '*'}})
 
 
 """
