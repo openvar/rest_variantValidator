@@ -1,10 +1,7 @@
 # Import modules
 from flask_restx import Namespace, Resource
 from rest_VariantValidator.utils import request_parser, representations
-
-# Import variantFormatter
-import VariantFormatter
-import VariantFormatter.simpleVariantFormatter
+from rest_VariantValidator.utils.object_pool import simple_variant_formatter_pool
 
 """
 Create a parser object locally
@@ -12,6 +9,8 @@ Create a parser object locally
 parser = request_parser.parser
 
 api = Namespace('VariantFormatter', description='Variantformatter API Endpoints')
+
+
 @api.route("/variantformatter/<string:genome_build>/<string:variant_description>/<string:transcript_model>/"
            "<string:select_transcripts>/<string:checkonly>")
 @api.param("variant_description", "***Genomic HGVS***\n"
@@ -57,8 +56,10 @@ class VariantFormatterClass(Resource):
         if checkonly == 'True' or checkonly == 'true':
             checkonly = True
 
-        content = VariantFormatter.simpleVariantFormatter.format(variant_description, genome_build, transcript_model, 
+        simple_formatter = simple_variant_formatter_pool.get()
+        content = simple_formatter.simpleVariantFormatter.format(variant_description, genome_build, transcript_model,
                                                                  select_transcripts, checkonly)
+        simple_variant_formatter_pool.return_object(simple_formatter)
 
         # Collect Arguments
         args = parser.parse_args()
