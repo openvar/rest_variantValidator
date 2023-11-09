@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Access VariantValidator API</title>
+</head>
+<body>
+    <h1>Test of VV API for access errors</h1>
+    <p>View the output from this page in the console. The console is opened by typing Ctrl-Shift-j.</p>
+    <!-- Create an empty div to display JSON data -->
+    <div id="jsonOutput"></div>
+    <script>
+        fetch("https://rest.variantvalidator.org/VariantValidator/variantvalidator/GRCh37/NM_000088.3:c.589G%3ET/all?content-type=application%2Fjson")
+        .then(function (response) {
+        	    console.log("Content-Type: " + response.headers.get("Content-Type"));
+    			console.log("Content-Length: " + response.headers.get("Content-Length"));
+    			console.log("Server: " + response.headers.get("Server"));
+    			console.log("Date: " + response.headers.get("Date"));
+    			console.log("Status Code: " + response.status);
+    			console.log("Set-Cookie: " + response.headers.get("Set-Cookie"));
+    			console.log("Location: " + response.headers.get("Location"));
+    			console.log("Access-Control-Allow-Origin: " + response.headers.get("Access-Control-Allow-Origin"));
+            return response.json();
+        })
+        .then(function (myObject) {
+            // Convert the JSON object to a string
+            var jsonString = JSON.stringify(myObject, null, 2);
+
+            // Get the output div element by ID
+            var jsonOutput = document.getElementById("jsonOutput");
+
+            // Set the content of the div to the JSON string
+            jsonOutput.textContent = jsonString;
+        })
+        .catch(function (error) {
+            console.log("Error: " + error);
+        });
+    </script>
+</body>
+</html>

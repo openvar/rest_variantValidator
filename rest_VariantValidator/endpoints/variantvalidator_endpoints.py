@@ -1,9 +1,7 @@
 # Import modules
 from flask_restx import Namespace, Resource
 from rest_VariantValidator.utils import exceptions, request_parser, representations
-
-# Import VariantValidator  code
-import VariantValidator
+from rest_VariantValidator.utils.object_pool import vval_object_pool
 
 """
 Create a parser object locally
@@ -54,10 +52,11 @@ class VariantValidatorClass(Resource):
     @api.expect(parser, validate=True)
     def get(self, genome_build, variant_description, select_transcripts):
 
-        vval = VariantValidator.Validator()
+        vval = vval_object_pool.get_object()
 
         # Validate using the VariantValidator Python Library
         validate = vval.validate(variant_description, genome_build, select_transcripts)
+        vval_object_pool.return_object(vval)
 
         content = validate.format_as_dict(with_meta=True)
 
@@ -85,13 +84,14 @@ class Gene2transcriptsClass(Resource):
     @api.expect(parser, validate=True)
     def get(self, gene_query):
 
-        vval = VariantValidator.Validator()
+        vval = vval_object_pool.get_object()
 
         try:
             content = vval.gene2transcripts(gene_query)
         except ConnectionError:
             message = "Cannot connect to rest.genenames.org, please try again later"
             raise exceptions.RemoteConnectionError(message)
+        vval_object_pool.return_object(vval)
 
         # Collect Arguments
         args = parser.parse_args()
@@ -136,7 +136,7 @@ class Gene2transcriptsV2Class(Resource):
     @api.expect(parser, validate=True)
     def get(self, gene_query, limit_transcripts, transcript_set, genome_build):
 
-        vval = VariantValidator.Validator()
+        vval = vval_object_pool.get_object()
 
         if genome_build not in ["GRCh37", "GRCh38"]:
             genome_build = None
@@ -149,6 +149,7 @@ class Gene2transcriptsV2Class(Resource):
         except ConnectionError:
             message = "Cannot connect to rest.genenames.org, please try again later"
             raise exceptions.RemoteConnectionError(message)
+        vval_object_pool.return_object(vval)
 
         # Collect Arguments
         args = parser.parse_args()
@@ -176,9 +177,10 @@ class Hgvs2referenceClass(Resource):
     @api.expect(parser, validate=True)
     def get(self, hgvs_description):
 
-        vval = VariantValidator.Validator()
+        vval = vval_object_pool.get_object()
 
         content = vval.hgvs2ref(hgvs_description)
+        vval_object_pool.return_object(vval)
 
         # Collect Arguments
         args = parser.parse_args()

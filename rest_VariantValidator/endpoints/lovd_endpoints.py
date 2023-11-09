@@ -2,12 +2,11 @@
 import ast
 from flask_restx import Namespace, Resource
 from rest_VariantValidator.utils import request_parser, representations
+from rest_VariantValidator.utils.object_pool import simple_variant_formatter_pool
 
 # Import variantFormatter
 import VariantFormatter
 import VariantFormatter.simpleVariantFormatter
-# import VariantValidator
-# vval = VariantValidator.Validator()
 
 
 def ordereddict_to_dict(value):
@@ -79,8 +78,10 @@ class LOVDClass(Resource):
         if liftover == 'False' or liftover == 'false':
             liftover = False
 
-        content = VariantFormatter.simpleVariantFormatter.format(variant_description, genome_build, transcript_model,
-                                                                 select_transcripts, checkonly, liftover)
+        simple_formatter = simple_variant_formatter_pool.get()
+        content = simple_formatter.format(variant_description, genome_build, transcript_model,
+                                          select_transcripts, checkonly, liftover)
+        simple_variant_formatter_pool.return_object(simple_formatter)
 
         to_dict = ordereddict_to_dict(content)
         content = str(to_dict)
