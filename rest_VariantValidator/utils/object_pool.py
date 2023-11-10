@@ -41,8 +41,9 @@ class SimpleVariantFormatterPool:
 
 
 # Create a shared object pools
-vval_object_pool = ObjectPool(pool_size=2)
-simple_variant_formatter_pool = SimpleVariantFormatterPool(pool_size=2)
+vval_object_pool = ObjectPool(pool_size=1)
+g2t_object_pool = ObjectPool(pool_size=1)
+simple_variant_formatter_pool = SimpleVariantFormatterPool(pool_size=1)
 
 # <LICENSE>
 # Copyright (C) 2016-2023 VariantValidator Contributors

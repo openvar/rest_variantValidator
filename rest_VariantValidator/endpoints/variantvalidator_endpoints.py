@@ -1,7 +1,7 @@
 # Import modules
 from flask_restx import Namespace, Resource
 from rest_VariantValidator.utils import exceptions, request_parser, representations
-from rest_VariantValidator.utils.object_pool import vval_object_pool
+from rest_VariantValidator.utils.object_pool import vval_object_pool, g2t_object_pool
 
 """
 Create a parser object locally
@@ -84,15 +84,15 @@ class Gene2transcriptsClass(Resource):
     @api.expect(parser, validate=True)
     def get(self, gene_query):
 
-        vval = vval_object_pool.get_object()
+        vval = g2t_object_pool_object_pool.get_object()
 
         try:
             content = vval.gene2transcripts(gene_query)
         except ConnectionError:
             message = "Cannot connect to rest.genenames.org, please try again later"
-            vval_object_pool.return_object(vval)
+            g2t_object_pool.return_object(vval)
             raise exceptions.RemoteConnectionError(message)
-        vval_object_pool.return_object(vval)
+        g2t_object_pool.return_object(vval)
 
         # Collect Arguments
         args = parser.parse_args()
