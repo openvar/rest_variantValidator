@@ -84,7 +84,7 @@ class Gene2transcriptsClass(Resource):
     @api.expect(parser, validate=True)
     def get(self, gene_query):
 
-        vval = g2t_object_pool_object_pool.get_object()
+        vval = g2t_object_pool.get_object()
 
         try:
             content = vval.gene2transcripts(gene_query)
@@ -137,7 +137,7 @@ class Gene2transcriptsV2Class(Resource):
     @api.expect(parser, validate=True)
     def get(self, gene_query, limit_transcripts, transcript_set, genome_build):
 
-        vval = vval_object_pool.get_object()
+        vval = g2t_object_pool.get_object()
 
         if genome_build not in ["GRCh37", "GRCh38"]:
             genome_build = None
@@ -149,9 +149,9 @@ class Gene2transcriptsV2Class(Resource):
                                             batch_output=True)
         except ConnectionError:
             message = "Cannot connect to rest.genenames.org, please try again later"
-            vval_object_pool.return_object(vval)
+            g2t_object_pool.return_object(vval)
             raise exceptions.RemoteConnectionError(message)
-        vval_object_pool.return_object(vval)
+        g2t_object_pool.return_object(vval)
 
         # Collect Arguments
         args = parser.parse_args()
