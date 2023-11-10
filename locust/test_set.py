@@ -343,3 +343,30 @@ def gene_list():
     random_number = random.randint(0, 6)
     random_task = tests[random_number]
     return random_task
+
+
+def vf_list():
+    tests = [
+        "NC_000016.9:g.2099572TC>T",
+        "NC_000016.9:g.2099572TC>T",
+        "NC_000016.9:g.2099572TC>T",
+        "NC_000016.9:g.2099572TC>T",
+        "NC_000016.9:g.2099572TC>T",
+        "NC_000016.9:g.2099572TC>T",
+        "NC_000016.9:g.2099572TC>T",
+        "NC_000016.9:g.2099572TC>T",
+        "NC_000016.9:g.2099572TC>T",
+        "NC_000016.9:g.2099572TC>T",
+        "NM_000088.3:c.589GG>CT",
+        "NC_000005.9:g.35058667_35058668AG=",
+        "NC_000005.9:g.35058667_35058668AG=",
+        "NC_000005.9:g.35058667_35058668AG=",
+        "NC_000005.9:g.35058667_35058668AG=",
+        "NC_000005.9:g.35058667_35058668AG=",
+        "NC_000005.9:g.35058667_35058668AG=",
+        "NC_000005.9:g.35058667_35058668AG=",
+        "NC_000005.9:g.35058667_35058668AG="
+    ]
+    random_number = random.randint(0, 319)
+    odd_task = tests[random_number]
+    return odd_task
