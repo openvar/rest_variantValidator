@@ -90,6 +90,7 @@ class Gene2transcriptsClass(Resource):
             content = vval.gene2transcripts(gene_query)
         except ConnectionError:
             message = "Cannot connect to rest.genenames.org, please try again later"
+            vval_object_pool.return_object(vval)
             raise exceptions.RemoteConnectionError(message)
         vval_object_pool.return_object(vval)
 
@@ -148,6 +149,7 @@ class Gene2transcriptsV2Class(Resource):
                                             batch_output=True)
         except ConnectionError:
             message = "Cannot connect to rest.genenames.org, please try again later"
+            vval_object_pool.return_object(vval)
             raise exceptions.RemoteConnectionError(message)
         vval_object_pool.return_object(vval)
 
@@ -178,7 +180,6 @@ class Hgvs2referenceClass(Resource):
     def get(self, hgvs_description):
 
         vval = vval_object_pool.get_object()
-
         content = vval.hgvs2ref(hgvs_description)
         vval_object_pool.return_object(vval)
 
