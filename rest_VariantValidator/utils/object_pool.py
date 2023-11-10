@@ -38,6 +38,6 @@ class SimpleVariantFormatterPool:
             self.pool.append(obj)
 
 # Create shared object pools
-vval_object_pool = ObjectPool(Validator, pool_size=1)
-g2t_object_pool = ObjectPool(Validator, pool_size=1)
-simple_variant_formatter_pool = SimpleVariantFormatterPool(pool_size=1)
+vval_object_pool = ObjectPool(Validator, pool_size=2)
+g2t_object_pool = ObjectPool(Validator, pool_size=2)
+simple_variant_formatter_pool = SimpleVariantFormatterPool(pool_size=2)
