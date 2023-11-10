@@ -58,8 +58,8 @@ class VariantFormatterClass(Resource):
 
         simple_formatter = simple_variant_formatter_pool.get()
         try:
-            content = simple_formatter.simpleVariantFormatter.format(variant_description, genome_build, transcript_model,
-                                                                     select_transcripts, checkonly)
+            content = simple_formatter.format(variant_description, genome_build, transcript_model,
+                                              select_transcripts, checkonly)
         except Exception as e:
             # Handle the exception and customize the error response
             return {"error": str(e)}, 500
