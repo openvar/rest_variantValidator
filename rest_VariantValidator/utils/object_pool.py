@@ -2,10 +2,12 @@ import threading
 from VariantValidator import Validator
 from VariantFormatter import simpleVariantFormatter
 
+
 class ObjectPool:
-    def __init__(self, object_type, pool_size=10):
-        self.pool_size = pool_size
-        self.objects = [object_type() for _ in range(pool_size)]
+    def __init__(self, object_type, initial_pool_size=10, max_pool_size=10):
+        self.pool_size = initial_pool_size
+        self.max_pool_size = max_pool_size
+        self.objects = [object_type() for _ in range(initial_pool_size)]
         self.lock = threading.Lock()
         self.condition = threading.Condition(self.lock)
 
@@ -18,13 +20,16 @@ class ObjectPool:
 
     def return_object(self, obj):
         with self.condition:
-            self.objects.append(obj)
-            self.condition.notify()  # Notify waiting threads that an object is available
+            if len(self.objects) < self.max_pool_size:
+                self.objects.append(obj)
+                self.condition.notify()  # Notify waiting threads that an object is available
+
 
 class SimpleVariantFormatterPool:
-    def __init__(self, pool_size=10):
-        self.pool_size = pool_size
-        self.pool = [simpleVariantFormatter for _ in range(pool_size)]
+    def __init__(self, initial_pool_size=10, max_pool_size=10):
+        self.pool_size = initial_pool_size
+        self.max_pool_size = max_pool_size
+        self.pool = [simpleVariantFormatter for _ in range(initial_pool_size)]
         self.lock = threading.Lock()
         self.condition = threading.Condition(self.lock)
 
@@ -37,13 +42,15 @@ class SimpleVariantFormatterPool:
 
     def return_object(self, obj):
         with self.condition:
-            self.pool.append(obj)
-            self.condition.notify()  # Notify waiting threads that a formatter is available
+            if len(self.pool) < self.max_pool_size:
+                self.pool.append(obj)
+                self.condition.notify()  # Notify waiting threads that a formatter is available
+
 
 # Create shared object pools
-vval_object_pool = ObjectPool(Validator, pool_size=1)
-g2t_object_pool = ObjectPool(Validator, pool_size=1)
-simple_variant_formatter_pool = SimpleVariantFormatterPool(pool_size=1)
+vval_object_pool = ObjectPool(Validator, initial_pool_size=2, max_pool_size=3)
+g2t_object_pool = ObjectPool(Validator, initial_pool_size=2, max_pool_size=3)
+simple_variant_formatter_pool = SimpleVariantFormatterPool(initial_pool_size=2, max_pool_size=3)
 
 # <LICENSE>
 # Copyright (C) 2016-2023 VariantValidator Contributors
