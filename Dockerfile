@@ -3,9 +3,6 @@ FROM python:3.10
 # Set the working directory to /app
 WORKDIR /app
 
-# Copy the current directory contents into the container's /app directory
-COPY . /app
-
 # Create logging directory
 RUN mkdir /usr/local/share/logs
 
