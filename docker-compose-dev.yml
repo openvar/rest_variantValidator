@@ -1,42 +1,16 @@
 version: '3'
 
 services:
-  rv-vdb:
-    build:
-      context: .
-      dockerfile: db_dockerfiles/vdb/Dockerfile
-    ports:
-      - "33061:3306"
-    expose:
-      - "33061"  # Expose port for external access
-
-  rv-vvta:
-    build:
-      context: .
-      dockerfile: db_dockerfiles/vvta/Dockerfile
-    ports:
-      - "54321:5432"
-    expose:
-      - "54321"  # Expose port for external access
-    shm_size: 2g
-
-  rv-seqrepo:
-    build:
-      context: .
-      dockerfile: db_dockerfiles/seqrepo/Dockerfile
-    volumes:
-      - seqdata:/usr/local/share/seqdata  # Mount volume for sequence data
-
-  rest-variantvalidator:
-    build: .
-    entrypoint: /bin/bash
-    command: ["-c", "sleep infinity"]
-    restart: always
+  dev-mode:
+    extends:
+      file: docker-compose.yml
+      service: rest-variantvalidator
     depends_on:
       - rv-vdb
       - rv-vvta
       - rv-seqrepo
     volumes:
+      - rest_vv_dev_volume:/app
       - vv-logs:/usr/local/share/logs  # Mount volume for logs
       - seqdata:/usr/local/share/seqdata  # Mount volume for sequence data
     ports:
@@ -51,6 +25,12 @@ services:
       - "8080"
 
 volumes:
+  rest_vv_dev_volume:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '${PWD}'
   seqdata:
     driver: local
     driver_opts:

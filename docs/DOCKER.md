@@ -50,54 +50,92 @@ $ docker-compose pull
 
 - Create a directory for sharing resources between your computer and the container
 ```bash
-$ mkdir -p ~/variantvalidator_data/seqdata 
-$ mkdir -p ~/variantvalidator_data/logs
+$ mkdir -p ~/variantvalidator_data/seqdata && mkdir -p ~/variantvalidator_data/logs
 ```
-*i.e.,* a directory called `variantvalidator_data/seqdata` in your `home` directory
+*i.e.,* a directory called `variantvalidator_data` in your `home` directory with sub-directories `seqdata` and `logs`
 
-- Build
+#### Build and startup procedure
 
+rest_VariantValidator can be built in Production mode and Development mode. Development mode mounts the root directory 
+of the host git Repository to the equivalent project directory in the docker container. This means that changes to the 
+code on the host machine are mapped into the container allowing on-the-fly development.
+Choose one of the following commands to build and start the rest_VariantValidaor containers
+
+- Production build
 ```bash
-$ docker-compose build --no-cache
+# Build
+$ docker-compose build --no-cache rv-vvta rv-vdb rv-seqrepo rest-variantvalidator
+# Run
+$ docker-compose up -d
 ```
- 
-- Complete build
-    - The first time you do this, it will complete the build process, for example, populating the required the databases
-    - The build takes a while because the  vv databases are large. However, this is a significant improvement on previou
-    s versions. Build time is ~30 minutes (depending on the speed of you computer and internet connection)
-    - The build has completed when you see 
+- Development and testing build
+```bash
+# Build
+$ docker-compose -f docker-compose.yml -f docker-compose-dev.yml build --no-cache rv-vvta rv-vdb rv-seqrepo rest-variantvalidator
+# Run
+$ docker-compose -f docker-compose.yml -f docker-compose-dev.yml up -d
+```
+- The build stage has completed when you see
+```
+ => [rest-variantvalidator 10/10] COPY configuration/docker.ini /root/.variantvalidator                                                                                                                                            0.0s
+ => [rest-variantvalidator] exporting to image                                                                                                                                                                                     2.3s
+ => => exporting layers                                                                                                                                                                                                            2.3s
+ => => writing image sha256:097829685d99c7b308563dbee52009bc3dd7d79e85e195d454f3bf602afd5d95                                                                                                                                       0.0s
+ => => naming to docker.io/library/rest_variantvalidator-rest-variantvalidator               
+```
 
-```
-Creating rest_variantvalidator_rv-vvta_1 ... done
-Creating rest_variantvalidator_rv-vdb_1 ... done
-Creating rest_variantvalidator_rv-seqrepo_1 ... done
-Creating rest_variantvalidator_rest-variantvalidator_1 ... done
-```
-
-Use this command to complete the build and wait for the above messages
+- Use this command to complete the build and wait for the above messages
 ```bash
 $ docker-compose up -d rv-vvta && \
   docker-compose up -d rv-vdb && \
   docker-compose up -d rv-seqrepo && \
   docker-compose up -d rest-variantvalidator
 ```
+- Or for a development and testing build, swap for this command
+```bash
+$ docker-compose up -d rv-vvta && \
+  docker-compose up -d rv-vdb && \
+  docker-compose up -d rv-seqrepo && \
+  docker-compose -f docker-compose.yml -f docker-compose-dev.yml up -d dev-mode
+```
+
+- The containers are started and running when you see
+```bash
+Creating rest_variantvalidator_rv-vvta_1 ... done
+Creating rest_variantvalidator_rv-vdb_1 ... done
+Creating rest_variantvalidator_rv-seqrepo_1 ... done
+Creating rest_variantvalidator_rest-variantvalidator_1 ... done
+```
 
 ### Test the build
 ```bash
 # Run PyTest (all tests should pass)
-$ docker exec rest_variantvalidator_rest-variantvalidator_1 pytest
+$ docker exec rest_variantvalidator-rest-variantvalidator-1 pytest
 ```
+Note: Different host Operating Systems name the container using slightly different conventions e.g. underscores instead 
+of hyphens. To find your container name run the command
+
+```bash
+$ docker ps
+*******************************************************************************************************************************************************************************************************************************************************************************
+CONTAINER ID   IMAGE                                         COMMAND                  CREATED          STATUS          PORTS                                                                                                      NAMES
+75078f429d72   rest_variantvalidator-rest-variantvalidator   "/bin/bash -c 'sleep…"   41 seconds ago   Up 39 seconds   0.0.0.0:5000->5000/tcp, 0.0.0.0:5050->5050/tcp, 0.0.0.0:8000->8000/tcp, 0.0.0.0:9000->9000/tcp, 8080/tcp   rest_variantvalidator-rest-variantvalidator-1
+*******************************************************************************************************************************************************************************************************************************************************************************
+```
+***Note: In Development and testing builds, the container name will be e.g. rest_variantvalidator-dev-mode-1***
 
 # Run the server
 ```bash
 # Start the container in detached mode
-$ docker exec -it rest_variantvalidator_rest-variantvalidator_1 gunicorn -b 0.0.0.0:8000 --timeout 600 wsgi:app --threads=5 --chdir ./rest_VariantValidator/
+$ docker exec -it rest_variantvalidator-rest-variantvalidator-1 gunicorn -b 0.0.0.0:8000 --timeout 600 wsgi:app --threads=5 --chdir ./rest_VariantValidator/
 ```
 
 Optional: If your docker instance has multiple available cores, you can increase processing power by starting multiple workers e.g.
 ```bash
-docker exec -it rest_variantvalidator_rest-variantvalidator_1 gunicorn -b 0.0.0.0:8000 --workers 3 --timeout 600 wsgi:app --threads=5 --chdir ./rest_VariantValidator/
+docker exec -it rest_variantvalidator-rest-variantvalidator-1 gunicorn -b 0.0.0.0:8000 --workers 3 --timeout 600 wsgi:app --threads=5 --chdir ./rest_VariantValidator/
 ```
+
+***Note: In Development and testing builds, the container name will be e.g. rest_variantvalidator-dev-mode-1***
 
 In a web browser navigate to
 [http://0.0.0.0:8000](http://0.0.0.0:8000)
@@ -207,54 +245,13 @@ $ docker exec -it rest_variantvalidator-rest-variantvalidator-1 python bin/varia
 ```
 
 ## Developing VariantValidator in Docker
-The container has been configured with git installed. This means that you can clone Repos directly into the container
+Create the development and testing build and changes you make in the cloned Repo should map into the container
 
-To develop VariantValidator in the container
-
-Start the container in detached mode
-
-```bash
-$ docker-compose exec rest_variantvalidator-rest-variantvalidator-1 bash
-```
-
-ON YOUR COMPUTER change into the share directory
-
-```bash
-$ cd ~/share
-```
-
-Then create a directory for development
-
-```bash
-$ mkdir DevelopmentRepos
-$ cd ~/share/DevelopmentRepos
-```
-
-Clone the VariantValidator Repo
-
-```bash
-$ git clone https://github.com/openvar/variantValidator.git
-```
-
-Checkout the develop branch
-
-```bash
-$ git checkout develop
-$ git pull
-```
-
-Create an new branch for your developments
+Create a new branch for your developments
 
 ```bash
 $ git branch name_of_branch
 $ git checkout name_of_branch
-```
-
-IN THE CONTAINER, pip install the code so it can be run by the container
-
-```bash
-$ cd /usr/local/share/DevelopmentRepos/variantValidator
-$ pip install -e . 
 ```
 
 You can then use the containers Python interpreter to run queries, e.g.
@@ -305,19 +302,17 @@ python rest_variantValidator/app.py
 To update a container, use
 
 ```bash
-$ docker-compose down
-$ docker-compose build <service name> --no-cache
-$ docker-compose up <service name>
+$ docker-compose build --build <service name e.g. rv-vvta> <service name>
 ```
+where <service name> is a service listed in the docker-compose.yml
+
+Once re-built, start all containers as normal
 
 ## Deleting rest_variantValidator
-Update requires that the restvv container is deleted from your system. This is not achieved by removing the container
-
-If you are only running rest_variantValidator in docker, we recommend deleting and re-building all containers
 
 ```bash
 # Remove the specific containers
-$ docker-compose rm <service name e.g. vvta> 
+$ docker-compose rm <service name e.g. rv-vvta> <service name>
 
 # OR Delete all containers on your system
 $ docker-compose down

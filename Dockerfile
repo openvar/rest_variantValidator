@@ -1,7 +1,10 @@
-FROM python:3.10
+FROM python:3.11
 
 # Set the working directory to /app
 WORKDIR /app
+
+# Copy the current directory contents into the container's /app directory
+COPY . /app
 
 # Create logging directory
 RUN mkdir /usr/local/share/logs
@@ -21,7 +24,7 @@ RUN git config http.postBuffer 500000000
 RUN pip install --upgrade pip
 
 # Install the tool
-RUN pip install .
+RUN pip install -e .
 
 # Copy the config file into the container home directory
 COPY configuration/docker.ini /root/.variantvalidator
