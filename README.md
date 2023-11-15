@@ -1,8 +1,13 @@
-# About rest_variantValidator
+# rest_VariantValidator
+
+## Status
+[![codecov](https://codecov.io/gh/openvar/rest_variantValidator/graph/badge.svg?token=DE92ZVZT3F)](https://codecov.io/gh/openvar/rest_variantValidator)
+
+## About rest_variantValidator
 
 rest_variantValidator is a rest web interface for VariantValidator
 
-# About VariantValidator
+## About VariantValidator
 
 VariantValidator is a user-friendly software tool designed to validate the syntax and 
 parameters of DNA variant descriptions according to the HGVS Sequence Variant 
