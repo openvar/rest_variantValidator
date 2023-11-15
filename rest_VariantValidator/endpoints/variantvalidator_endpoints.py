@@ -1,7 +1,7 @@
 # Import modules
 from flask_restx import Namespace, Resource
 from rest_VariantValidator.utils import exceptions, request_parser, representations
-from rest_VariantValidator.utils.object_pool import vval_object_pool
+from rest_VariantValidator.utils.object_pool import vval_object_pool, g2t_object_pool
 
 """
 Create a parser object locally
@@ -13,7 +13,7 @@ api = Namespace('VariantValidator', description='VariantValidator API Endpoints'
 
 @api.route("/variantvalidator/<string:genome_build>/<string:variant_description>/<string:select_transcripts>")
 @api.param("select_transcripts", "***Return all possible transcripts***\n"
-                                 ">   all (at latest version for each transcript)\n"
+                                 ">   all (at the latest version for each transcript)\n"
                                  ">   raw (all versions of each transcript)\n"
                                  "\n***Return only 'select' transcripts***\n"
                                  ">   select\n"
@@ -51,14 +51,16 @@ class VariantValidatorClass(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
     def get(self, genome_build, variant_description, select_transcripts):
-
         vval = vval_object_pool.get_object()
-
-        # Validate using the VariantValidator Python Library
-        validate = vval.validate(variant_description, genome_build, select_transcripts)
-        vval_object_pool.return_object(vval)
-
-        content = validate.format_as_dict(with_meta=True)
+        try:
+            # Validate using the VariantValidator Python Library
+            validate = vval.validate(variant_description, genome_build, select_transcripts)
+            content = validate.format_as_dict(with_meta=True)
+        except Exception as e:
+            # Handle the exception and customize the error response
+            return {"error": str(e)}, 500
+        finally:
+            vval_object_pool.return_object(vval)
 
         # Collect Arguments
         args = parser.parse_args()
@@ -83,15 +85,15 @@ class Gene2transcriptsClass(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
     def get(self, gene_query):
-
-        vval = vval_object_pool.get_object()
-
+        vval = g2t_object_pool.get_object()
         try:
             content = vval.gene2transcripts(gene_query)
         except ConnectionError:
             message = "Cannot connect to rest.genenames.org, please try again later"
+            g2t_object_pool.return_object(vval)
             raise exceptions.RemoteConnectionError(message)
-        vval_object_pool.return_object(vval)
+        finally:
+            g2t_object_pool.return_object(vval)
 
         # Collect Arguments
         args = parser.parse_args()
@@ -110,7 +112,7 @@ class Gene2transcriptsClass(Resource):
 
 @api.route("/tools/gene2transcripts_v2/<string:gene_query>/<string:limit_transcripts>/<string:transcript_set>/"
            "<string:genome_build>")
-@api.param("gene_query", "***HGNC gene symbol, HGNC ID or transcript ID***\n"
+@api.param("gene_query", "***HGNC gene symbol, HGNC ID, or transcript ID***\n"
                          "\nCurrent supported transcript IDs"
                          "\n- RefSeq or Ensembl""\n"
                                  "\n***Single***\n"
@@ -135,21 +137,21 @@ class Gene2transcriptsV2Class(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
     def get(self, gene_query, limit_transcripts, transcript_set, genome_build):
-
-        vval = vval_object_pool.get_object()
-
-        if genome_build not in ["GRCh37", "GRCh38"]:
-            genome_build = None
-        if "False" in limit_transcripts or "false" in limit_transcripts or limit_transcripts is False:
-            limit_transcripts = None
+        vval = g2t_object_pool.get_object()
         try:
+            if genome_build not in ["GRCh37", "GRCh38"]:
+                genome_build = None
+            if "False" in limit_transcripts or "false" in limit_transcripts or limit_transcripts is False:
+                limit_transcripts = None
             content = vval.gene2transcripts(gene_query, select_transcripts=limit_transcripts,
                                             transcript_set=transcript_set, genome_build=genome_build,
                                             batch_output=True)
         except ConnectionError:
             message = "Cannot connect to rest.genenames.org, please try again later"
+            g2t_object_pool.return_object(vval)
             raise exceptions.RemoteConnectionError(message)
-        vval_object_pool.return_object(vval)
+        finally:
+            g2t_object_pool.return_object(vval)
 
         # Collect Arguments
         args = parser.parse_args()
@@ -169,18 +171,20 @@ class Gene2transcriptsV2Class(Resource):
 @api.route("/tools/hgvs2reference/<string:hgvs_description>")
 @api.param("hgvs_description", "***hgvs_description***\n"
                                "\nSequence variation description in the HGVS format\n"
-                               "\n *Intronic descriptions in the context of transcript reference sequences are currentl"
-                               "y "
+                               "\n *Intronic descriptions in the context of transcript reference sequences are currently "
                                "unsupported*")
 class Hgvs2referenceClass(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
     def get(self, hgvs_description):
-
         vval = vval_object_pool.get_object()
-
-        content = vval.hgvs2ref(hgvs_description)
-        vval_object_pool.return_object(vval)
+        try:
+            content = vval.hgvs2ref(hgvs_description)
+        except Exception as e:
+            # Handle the exception and customize the error response
+            return {"error": str(e)}, 500
+        finally:
+            vval_object_pool.return_object(vval)
 
         # Collect Arguments
         args = parser.parse_args()

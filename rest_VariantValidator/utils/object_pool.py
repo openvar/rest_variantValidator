@@ -1,48 +1,56 @@
 import threading
-import VariantValidator
-import VariantFormatter.simpleVariantFormatter
+from VariantValidator import Validator
+from VariantFormatter import simpleVariantFormatter
 
 
 class ObjectPool:
-    def __init__(self, pool_size=10):
-        self.pool_size = pool_size
-        self.objects = [VariantValidator.Validator() for _ in range(pool_size)]
+    def __init__(self, object_type, initial_pool_size=10, max_pool_size=10):
+        self.pool_size = initial_pool_size
+        self.max_pool_size = max_pool_size
+        self.objects = [object_type() for _ in range(initial_pool_size)]
         self.lock = threading.Lock()
+        self.condition = threading.Condition(self.lock)
 
     def get_object(self):
-        with self.lock:
+        with self.condition:
             while not self.objects:
                 # Wait until an object becomes available
-                self.lock.release()
-                self.lock.acquire()
+                self.condition.wait()
             return self.objects.pop()
 
     def return_object(self, obj):
-        with self.lock:
-            self.objects.append(obj)
+        with self.condition:
+            if len(self.objects) < self.max_pool_size:
+                self.objects.append(obj)
+                self.condition.notify()  # Notify waiting threads that an object is available
 
 
 class SimpleVariantFormatterPool:
-    def __init__(self, pool_size=10):
-        self.pool_size = pool_size
-        self.pool = [VariantFormatter.simpleVariantFormatter for _ in range(pool_size)]
+    def __init__(self, initial_pool_size=10, max_pool_size=10):
+        self.pool_size = initial_pool_size
+        self.max_pool_size = max_pool_size
+        self.pool = [simpleVariantFormatter for _ in range(initial_pool_size)]
         self.lock = threading.Lock()
+        self.condition = threading.Condition(self.lock)
 
     def get(self):
-        with self.lock:
+        with self.condition:
             while not self.pool:
-                self.lock.release()
-                self.lock.acquire()
+                # Wait until a formatter becomes available
+                self.condition.wait()
             return self.pool.pop()
 
     def return_object(self, obj):
-        with self.lock:
-            self.pool.append(obj)
+        with self.condition:
+            if len(self.pool) < self.max_pool_size:
+                self.pool.append(obj)
+                self.condition.notify()  # Notify waiting threads that a formatter is available
 
 
-# Create a shared object pools
-vval_object_pool = ObjectPool(pool_size=10)
-simple_variant_formatter_pool = SimpleVariantFormatterPool(pool_size=10)
+# Create shared object pools
+vval_object_pool = ObjectPool(Validator, initial_pool_size=3, max_pool_size=5)
+g2t_object_pool = ObjectPool(Validator, initial_pool_size=3, max_pool_size=5)
+simple_variant_formatter_pool = SimpleVariantFormatterPool(initial_pool_size=3, max_pool_size=5)
 
 # <LICENSE>
 # Copyright (C) 2016-2023 VariantValidator Contributors
@@ -60,5 +68,3 @@ simple_variant_formatter_pool = SimpleVariantFormatterPool(pool_size=10)
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # </LICENSE>
-
-

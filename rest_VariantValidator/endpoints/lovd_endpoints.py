@@ -22,6 +22,8 @@ Create a parser object locally
 parser = request_parser.parser
 
 api = Namespace('LOVD', description='LOVD API Endpoints')
+
+
 @api.route("/lovd/<string:genome_build>/<string:variant_description>/<string:transcript_model>/"
            "<string:select_transcripts>/<string:checkonly>/<string:liftover>")
 @api.param("variant_description", "***Genomic HGVS***\n"
@@ -79,9 +81,14 @@ class LOVDClass(Resource):
             liftover = False
 
         simple_formatter = simple_variant_formatter_pool.get()
-        content = simple_formatter.format(variant_description, genome_build, transcript_model,
-                                          select_transcripts, checkonly, liftover)
-        simple_variant_formatter_pool.return_object(simple_formatter)
+        try:
+            content = simple_formatter.format(variant_description, genome_build, transcript_model,
+                                              select_transcripts, checkonly, liftover)
+        except Exception as e:
+            # Handle the exception and customize the error response
+            return {"error": str(e)}, 500
+        finally:
+            simple_variant_formatter_pool.return_object(simple_formatter)
 
         to_dict = ordereddict_to_dict(content)
         content = str(to_dict)
