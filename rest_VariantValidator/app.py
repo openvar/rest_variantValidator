@@ -168,8 +168,10 @@ def default_error_handler(e):
 
 # Allows app to be run in debug mode
 if __name__ == '__main__':
+    # Read the port from the environment variable, defaulting to 8000 if not set
+    port = int(os.environ.get('PORT', 5000))
     application.debug = True  # Enable debugging mode
-    application.run(host="127.0.0.1", port=5000)  # Specify a host and port fot the app
+    application.run(host="127.0.0.1", port=port)  # Specify a host and port fot the app
 
 
 # <LICENSE>
