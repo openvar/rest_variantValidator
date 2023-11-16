@@ -65,15 +65,11 @@ Choose one of the following commands to build and start the rest_VariantValidaor
 ```bash
 # Build
 $ docker-compose build --no-cache rv-vvta rv-vdb rv-seqrepo rest-variantvalidator
-# Run
-$ docker-compose up -d
 ```
 - Development and testing build
 ```bash
 # Build
 $ docker-compose -f docker-compose.yml -f docker-compose-dev.yml build --no-cache rv-vvta rv-vdb rv-seqrepo rest-variantvalidator
-# Run
-$ docker-compose -f docker-compose.yml -f docker-compose-dev.yml up -d
 ```
 - The build stage has completed when you see
 ```
