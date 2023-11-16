@@ -1,17 +1,15 @@
-# Import necessary packages
+from rest_VariantValidator.wsgi import app
 import pytest
-from rest_VariantValidator.wsgi import application  # Import your Flask app
 
 
-# Fixture to set up the test client
 @pytest.fixture(scope='module')
 def client():
-    application.testing = True
-    return application.test_client()  # Create a test client to interact with the app
+    app.testing = True
+    return app.test_client()  # Create a test client to interact with the app
 
 
 # Test function for the /hello/ endpoint
-def test_hello_endpoint(client):
+def test_wsgi_gateway(client):
     response = client.get('/hello/')  # Send a GET request to the /hello/ endpoint
     assert response.status_code == 200  # Check if the response status code is 200 OK
     assert response.json["status"] == "hello_world"  # Check the JSON response content
