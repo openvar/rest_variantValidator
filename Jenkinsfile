@@ -33,14 +33,16 @@ pipeline {
                 sh "git checkout ${BRANCH_NAME}"
             }
         }
-
-        stage("Build and Run Services with Docker Compose") {
+        stage("Build and Run containers") {
+            steps {
+                 // Build and run services using docker-compose with container names including the build number
+                sh 'docker-compose build --no-cache rv-vvta rv-vdb rv-seqrepo rest-variantvalidator'
+                sh 'docker-compose up -d --build --force-recreate rv-vvta-${CONTAINER_SUFFIX} rv-vdb-${CONTAINER_SUFFIX} rv-seqrepo-${CONTAINER_SUFFIX} rest-variantvalidator-${CONTAINER_SUFFIX}'
+            }
+        }
+        stage("Connect and run Pytest") {
             steps {
                 script {
-                    // Build and run services using docker-compose with container names including the build number
-                    sh 'docker-compose build --no-cache rv-vvta rv-vdb rv-seqrepo rest-variantvalidator'
-                    sh 'docker-compose up -d --build --force-recreate rv-vvta-${CONTAINER_SUFFIX} rv-vdb-${CONTAINER_SUFFIX} rv-seqrepo-${CONTAINER_SUFFIX} rest-variantvalidator-${CONTAINER_SUFFIX}'
-
                     // Wait for the PostgreSQL container to be ready
                     def connectionSuccessful = false
                     for (int attempt = 1; attempt <= 5; attempt++) {
