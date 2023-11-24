@@ -17,6 +17,7 @@ pipeline {
         stage("Clone Repository Remove dangling docker components and Create Docker Network") {
             steps {
                 checkout scm
+                sh 'apt update && apt install -y git'
                 sh 'docker system prune --all --volumes --force'
                 sh 'docker network create $DOCKER_NETWORK'
             }
