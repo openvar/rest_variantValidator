@@ -2,7 +2,6 @@ pipeline {
     agent {
         docker {
             image 'docker:24.0.6-git'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
 
