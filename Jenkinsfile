@@ -22,6 +22,7 @@ pipeline {
         stage("Clone Repository Remove dangling docker components and Create Docker Network") {
             steps {
                 checkout scm
+                sh 'docker-compose down -v'
                 sh 'docker system prune --all --volumes --force'
                 sh 'docker network create $DOCKER_NETWORK'
             }
