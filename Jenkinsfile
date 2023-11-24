@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'docker/compose:1.27.4'
+            image 'docker:24.0.6-git'
             args '-v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
@@ -14,10 +14,15 @@ pipeline {
     }
 
     stages {
+        stage("Install Docker Compose") {
+            steps {
+                sh 'apt update && apt install -y docker-compose'
+            }
+        }
+
         stage("Clone Repository Remove dangling docker components and Create Docker Network") {
             steps {
                 checkout scm
-                sh 'apt update && apt install -y git'
                 sh 'docker system prune --all --volumes --force'
                 sh 'docker network create $DOCKER_NETWORK'
             }
