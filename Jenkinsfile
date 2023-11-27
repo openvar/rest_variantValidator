@@ -27,7 +27,7 @@ pipeline {
         }
         stage("Install Docker Compose") {
             steps {
-                sh 'apk update && apk add -y docker-compose'
+                sh 'apk update && apk add docker-compose'
             }
         }
         stage("Build and Run containers") {
