@@ -8,7 +8,6 @@ pipeline {
     environment {
         CODECOV_TOKEN = credentials('CODECOV_TOKEN_rest_variantvalidator')
         CONTAINER_SUFFIX = "${BUILD_NUMBER}"
-        DOCKER_NETWORK = "rest-variantvalidator_docker_network-${CONTAINER_SUFFIX}"
         DATA_VOLUME = "docker-shared-space"
     }
     stages {
@@ -16,7 +15,6 @@ pipeline {
             steps {
                 checkout scm // Checkout the source code from the configured source code management system
                 sh 'docker system prune --all --volumes --force' // Remove unused Docker resources
-                sh 'docker network create $DOCKER_NETWORK' // Create a Docker network for containers
             }
         }
         stage("Switch to Git Branch") {
