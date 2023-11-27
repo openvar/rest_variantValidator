@@ -22,11 +22,12 @@ pipeline {
         stage("Switch to Git Branch") {
             steps {
                 sh "git checkout ${BRANCH_NAME}"
+                sh "git pull"
             }
         }
         stage("Install Docker Compose") {
             steps {
-                sh 'apt update && apt install -y docker-compose'
+                sh 'apk update && apk add -y docker-compose'
             }
         }
         stage("Build and Run containers") {
