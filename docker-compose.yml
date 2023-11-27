@@ -1,3 +1,4 @@
+
 version: '3'
 
 services:
@@ -5,6 +6,7 @@ services:
     build:
       context: .
       dockerfile: db_dockerfiles/vdb/Dockerfile
+    container_name: rv-vdb${CONTAINER_SUFFIX}
     ports:
       - "33061:3306"
     expose:
@@ -14,6 +16,7 @@ services:
     build:
       context: .
       dockerfile: db_dockerfiles/vvta/Dockerfile
+    container_name: rv-vvta${CONTAINER_SUFFIX}
     ports:
       - "54321:5432"
     expose:
@@ -24,11 +27,13 @@ services:
     build:
       context: .
       dockerfile: db_dockerfiles/seqrepo/Dockerfile
+    container_name: rv-seqrepo${CONTAINER_SUFFIX}
     volumes:
       - seqdata:/usr/local/share/seqdata  # Mount volume for sequence data
 
   rest-variantvalidator:
     build: .
+    container_name: rest-variantvalidator${CONTAINER_SUFFIX}
     entrypoint: /bin/bash
     command: ["-c", "sleep infinity"]
     restart: always
@@ -63,4 +68,3 @@ volumes:
       type: 'none'
       o: 'bind'
       device: '${HOME}/variantvalidator_data/logs'
-

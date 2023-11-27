@@ -31,9 +31,9 @@ pipeline {
         }
         stage("Build and Run containers") {
             steps {
-                 // Build and run services using docker-compose with container names including the build number
-                sh 'docker-compose build --no-cache rv-vvta rv-vdb rv-seqrepo rest-variantvalidator'
-                sh 'docker-compose up -d --build --force-recreate rv-vvta-${CONTAINER_SUFFIX} rv-vdb-${CONTAINER_SUFFIX} rv-seqrepo-${CONTAINER_SUFFIX} rest-variantvalidator-${CONTAINER_SUFFIX}'
+                // Build and run services using docker-compose with container names including the build number
+                sh "docker-compose build --no-cache rv-vvta${CONTAINER_SUFFIX} rv-vdb${CONTAINER_SUFFIX} rv-seqrepo${CONTAINER_SUFFIX} rest-variantvalidator${CONTAINER_SUFFIX}"
+                sh "docker-compose up -d rv-vvta${CONTAINER_SUFFIX} && docker-compose up -d rv-vdb${CONTAINER_SUFFIX} && docker-compose up -d rv-seqrepo${CONTAINER_SUFFIX} && docker-compose up -d rest-variantvalidator${CONTAINER_SUFFIX}"
             }
         }
         stage("Connect and run Pytest") {
