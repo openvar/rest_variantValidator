@@ -32,7 +32,7 @@ pipeline {
             steps {
                 // Build and run services using docker-compose with container names including the build number
                 // Create the directories within the Jenkins home directory
-                sh 'mkdir -p /var/jenkins_home/variantvalidator_data/seqdata && mkdir -p /var/jenkins_home/variantvalidator_data/logs'
+                sh 'mkdir -p /var/lib/docker/volumes/rest-variantvalidator-ci/variantvalidator_data/seqdata && mkdir -p /var/lib/docker/volumes/rest-variantvalidator-ci/variantvalidator_data/logs'
 
                 // List the contents of the parent directory to verify the created directories
                 sh 'ls -l /var/jenkins_home/variantvalidator_data'
