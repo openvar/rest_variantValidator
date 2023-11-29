@@ -32,6 +32,10 @@ pipeline {
             steps {
                 // Build and run services using docker-compose with container names including the build number
                 sh 'mkdir -p ${HOME}/variantvalidator_data/seqdata && mkdir -p ${HOME}/variantvalidator_data/logs'
+                sh 'pwd'
+                sh 'ls -l'
+                sh 'ls ${HOME}/variantvalidator_data/seqdata'
+                sh 'ls ${HOME}/variantvalidator_data/logs'
                 sh 'docker-compose --project-name rest-variantvalidator-ci build --no-cache rv-vvta rv-vdb rv-seqrepo rest-variantvalidator'
                 sh 'docker-compose --project-name rest-variantvalidator-ci up -d rv-vvta && docker-compose --project-name rest-variantvalidator-ci up -d rv-vdb && docker-compose --project-name rest-variantvalidator-ci up -d rv-seqrepo && docker-compose --project-name rest-variantvalidator-ci up -d rest-variantvalidator'
             }
