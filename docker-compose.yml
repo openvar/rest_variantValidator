@@ -49,9 +49,3 @@ services:
       - "5050"
       - "8000"
       - "8080"
-
-volumes:
-  seqdata:
-    driver: local
-  vv-logs:
-    driver: local
