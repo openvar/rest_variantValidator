@@ -25,7 +25,7 @@ services:
       context: .
       dockerfile: db_dockerfiles/seqrepo/Dockerfile
     volumes:
-      - ${SEQDATA_VOLUME}:/usr/local/share/seqdata  # Mount volume for sequence data
+      - seqdata:/usr/local/share/seqdata  # Mount volume for sequence data
 
   rest-variantvalidator:
     build: .
@@ -37,8 +37,8 @@ services:
       - rv-vvta
       - rv-seqrepo
     volumes:
-      - ${VV_LOGS_VOLUME}:/usr/local/share/logs  # Mount volume for logs
-      - ${SEQDATA_VOLUME}:/usr/local/share/seqdata  # Mount volume for sequence data
+      - vv-logs:/usr/local/share/logs  # Mount volume for logs
+      - seqdata:/usr/local/share/seqdata  # Mount volume for sequence data
     ports:
       - "5000:5000"
       - "5050:5050"
