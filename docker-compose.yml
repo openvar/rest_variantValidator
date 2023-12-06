@@ -53,14 +53,5 @@ services:
 volumes:
   seqdata:
     driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: '${HOME}/variantvalidator_data/seqdata'
   vv-logs:
     driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: '${HOME}/variantvalidator_data/logs'
-

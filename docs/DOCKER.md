@@ -48,12 +48,6 @@ compiling SeqRepo*
 $ docker-compose pull
 ```
 
-- Create a directory for sharing resources between your computer and the container
-```bash
-$ mkdir -p ~/variantvalidator_data/seqdata && mkdir -p ~/variantvalidator_data/logs
-```
-*i.e.,* a directory called `variantvalidator_data` in your `home` directory with sub-directories `seqdata` and `logs`
-
 #### Build and startup procedure
 
 rest_VariantValidator can be built in Production mode and Development mode. Development mode mounts the root directory 
@@ -85,9 +79,16 @@ $ docker-compose -f docker-compose.yml -f docker-compose-dev.yml build --no-cach
 $ docker-compose up -d rv-vvta && \
   docker-compose up -d rv-vdb && \
   docker-compose up -d rv-seqrepo && \
-  docker-compose up -d rest-variantvalidator
+  docker-compose up -d rest-variantvalidator -v '${HOME}/variantvalidator_data/seqdata' -v '${HOME}/variantvalidator_data/logs'
 ```
-- Or for a development and testing build, swap for this command
+- Or for a development and testing build, swap for these commands
+
+- Create directories for sharing resources between your computer and the containers
+```bash
+$ mkdir -p ~/variantvalidator_data/seqdata && mkdir -p ~/variantvalidator_data/logs
+```
+*i.e.,* a directory called `variantvalidator_data` in your `home` directory with sub-directories `seqdata` and `logs`
+
 ```bash
 $ docker-compose up -d rv-vvta && \
   docker-compose up -d rv-vdb && \
