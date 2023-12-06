@@ -1,6 +1,6 @@
 # Import modules
 from flask_restx import Namespace, Resource
-from rest_VariantValidator.utils import exceptions, request_parser, representations
+from rest_VariantValidator.utils import exceptions, request_parser, representations, input_formatting
 from rest_VariantValidator.utils.object_pool import vval_object_pool, g2t_object_pool
 
 """
@@ -51,7 +51,14 @@ class VariantValidatorClass(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
     def get(self, genome_build, variant_description, select_transcripts):
+
+        # Import object from vval pool
         vval = vval_object_pool.get_object()
+
+        # Convert inputs to JSON arrays
+        variant_description = input_formatting.format_input(variant_description)
+        select_transcripts = input_formatting.format_input(select_transcripts)
+
         try:
             # Validate using the VariantValidator Python Library
             validate = vval.validate(variant_description, genome_build, select_transcripts)
@@ -85,7 +92,13 @@ class Gene2transcriptsClass(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
     def get(self, gene_query):
+
+        # Get vvval object from pool
         vval = g2t_object_pool.get_object()
+
+        # Convert inputs to JSON arrays
+        gene_query = input_formatting.format_input(gene_query)
+
         try:
             content = vval.gene2transcripts(gene_query)
         except ConnectionError:
@@ -137,7 +150,14 @@ class Gene2transcriptsV2Class(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
     def get(self, gene_query, limit_transcripts, transcript_set, genome_build):
+
+        # Get vval object from pool
         vval = g2t_object_pool.get_object()
+
+        # Convert inputs to JSON arrays
+        gene_query = input_formatting.format_input(gene_query)
+        limit_transcripts = input_formatting.format_input(limit_transcripts)
+
         try:
             if genome_build not in ["GRCh37", "GRCh38"]:
                 genome_build = None
@@ -177,7 +197,10 @@ class Hgvs2referenceClass(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
     def get(self, hgvs_description):
+
+        # Get vval object from pool
         vval = vval_object_pool.get_object()
+
         try:
             content = vval.hgvs2ref(hgvs_description)
         except Exception as e:

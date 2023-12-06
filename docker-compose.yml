@@ -63,4 +63,3 @@ volumes:
       type: 'none'
       o: 'bind'
       device: '${HOME}/variantvalidator_data/logs'
-
