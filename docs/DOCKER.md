@@ -55,6 +55,10 @@ of the host git Repository to the equivalent project directory in the docker con
 code on the host machine are mapped into the container allowing on-the-fly development. It also allows you to view logs.
 Choose one of the following commands to build and start the rest_VariantValidaor containers
 
+- Create directories for sharing resources between your computer and the containers
+```bash
+$ mkdir -p ~/variantvalidator_data/seqdata && mkdir -p ~/variantvalidator_data/logs
+
 - Production build
 ```bash
 # Build
@@ -83,9 +87,6 @@ $ docker-compose up -d rv-vvta && \
 ```
 - Or for a development and testing build, swap for these commands
 
-- Create directories for sharing resources between your computer and the containers
-```bash
-$ mkdir -p ~/variantvalidator_data/seqdata && mkdir -p ~/variantvalidator_data/logs
 ```
 *i.e.,* a directory called `variantvalidator_data` in your `home` directory with sub-directories `seqdata` and `logs`
 
