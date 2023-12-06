@@ -60,9 +60,10 @@ class VariantValidatorClass(Resource):
             if "c." not in variant_description and "n." not in variant_description and "r." not in variant_description \
                     and "p." not in variant_description:
                 return {"Not Found": "Setting select_transcripts to 'all' or 'raw' is deprecated for genomic "
-                                     "variant processing using this endpoint. Use another option, the LOVD "
-                                     "endpoint or https://variantvalidator.org/service/validate/batch/ and contact "
-                                     "admin for fair usage information"}, 404
+                                     "variant processing using this endpoint. Contact admin on "
+                                     "https://variantvalidator.org/help/contact/ for updated instructions and"
+                                     "fair usage information; use another option; or use the LOVD endpoint which is "
+                                     "designed for integration into pipelines"}, 404
         elif "auth_all" in select_transcripts:
             select_transcripts = "all"
         elif "auth_raw" in select_transcripts:
