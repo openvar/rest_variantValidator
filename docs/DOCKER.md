@@ -52,7 +52,7 @@ $ docker-compose pull
 
 rest_VariantValidator can be built in Production mode and Development mode. Development mode mounts the root directory 
 of the host git Repository to the equivalent project directory in the docker container. This means that changes to the 
-code on the host machine are mapped into the container allowing on-the-fly development.
+code on the host machine are mapped into the container allowing on-the-fly development. It also allows you to view logs.
 Choose one of the following commands to build and start the rest_VariantValidaor containers
 
 - Production build
@@ -65,7 +65,7 @@ $ docker-compose build --no-cache rv-vvta rv-vdb rv-seqrepo rest-variantvalidato
 # Build
 $ docker-compose -f docker-compose.yml -f docker-compose-dev.yml build --no-cache rv-vvta rv-vdb rv-seqrepo rest-variantvalidator
 ```
-- The build stage has completed when you see
+- The build stage has completed when you see the following message or something similar
 ```
  => [rest-variantvalidator 10/10] COPY configuration/docker.ini /root/.variantvalidator                                                                                                                                            0.0s
  => [rest-variantvalidator] exporting to image                                                                                                                                                                                     2.3s
@@ -74,12 +74,12 @@ $ docker-compose -f docker-compose.yml -f docker-compose-dev.yml build --no-cach
  => => naming to docker.io/library/rest_variantvalidator-rest-variantvalidator               
 ```
 
-- Use this command to complete the build and wait for the above messages
+- Use this command to complete the standard build and wait for the above messages
 ```bash
 $ docker-compose up -d rv-vvta && \
   docker-compose up -d rv-vdb && \
   docker-compose up -d rv-seqrepo && \
-  docker-compose up -d rest-variantvalidator -v '${HOME}/variantvalidator_data/seqdata' -v '${HOME}/variantvalidator_data/logs'
+  docker-compose up -d rest-variantvalidator
 ```
 - Or for a development and testing build, swap for these commands
 
@@ -96,7 +96,7 @@ $ docker-compose up -d rv-vvta && \
   docker-compose -f docker-compose.yml -f docker-compose-dev.yml up -d dev-mode
 ```
 
-- The containers are started and running when you see
+- In both cases containers are started and running when you see messages similar to
 ```bash
 Creating rest_variantvalidator_rv-vvta_1 ... done
 Creating rest_variantvalidator_rv-vdb_1 ... done
