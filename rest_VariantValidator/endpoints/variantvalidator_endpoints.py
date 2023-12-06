@@ -55,6 +55,15 @@ class VariantValidatorClass(Resource):
         # Import object from vval pool
         vval = vval_object_pool.get_object()
 
+        # Switch off select_transcripts = all or raw for genomic variants
+        if "all" in select_transcripts or "raw" in select_transcripts:
+            if "c." not in variant_description and "n." not in variant_description and "r." not in variant_description \
+                    and "p." not in variant_description:
+                return {"Not Found": "Setting select_transcripts to 'all' or 'raw' is deprecated for genomic "
+                                     "variant processing using this endpoint. Use another option, the LOVD "
+                                     "endpoint or https://variantvalidator.org/service/validate/batch/ and contact "
+                                     "admin for fair usage information"}, 404
+
         # Convert inputs to JSON arrays
         variant_description = input_formatting.format_input(variant_description)
         select_transcripts = input_formatting.format_input(select_transcripts)

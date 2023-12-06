@@ -50,3 +50,32 @@ def test_h2ref_endpoint(client):
     response = client.get('/VariantValidator/tools/hgvs2reference/NM_000088.3%3Ac.589G%3ET?content-type=application%2Fjson')  # Send a GET request to the /hello/ endpoint
     assert response.status_code == 200  # Check if the response status code is 200 OK
 
+
+def test_vv_endpoint_all_tx(client):
+    response = client.get('/VariantValidator/variantvalidator/GRCh38/NM_000088.3%3Ac.589G%3ET/all?content-type=application%2Fjson')  # Send a GET request to the /hello/ endpoint
+    assert response.status_code == 200  # Check if the response status code is 200 OK
+    assert "metadata" in response.json.keys()  # Check if "metadata" key is in the JSON response
+
+
+def test_vv_endpoint_all_vcf(client):
+    response = client.get('/VariantValidator/variantvalidator/GRCh38/17-50198002-C-A/all?content-type=application%2Fjson')  # Send a GET request to the /hello/ endpoint
+    assert response.status_code == 404  # Check if the response status code is 200 OK
+    assert "metadata" not in response.json.keys()  # Check if "metadata" key is in the JSON response
+
+
+def test_vv_endpoint_all_genomic(client):
+    response = client.get('/VariantValidator/variantvalidator/GRCh38/NC_000017.10:g.48275363C>A/all?content-type=application%2Fjson')  # Send a GET request to the /hello/ endpoint
+    assert response.status_code == 404  # Check if the response status code is 200 OK
+    assert "metadata" not in response.json.keys()  # Check if "metadata" key is in the JSON response
+
+
+def test_vv_endpoint_mane_genomic(client):
+    response = client.get('/VariantValidator/variantvalidator/GRCh38/NC_000017.10:g.48275363C>A/mane?content-type=application%2Fjson')  # Send a GET request to the /hello/ endpoint
+    assert response.status_code == 200  # Check if the response status code is 200 OK
+    assert "metadata" in response.json.keys()  # Check if "metadata" key is in the JSON response
+
+
+def test_vv_endpoint_mane_vcf(client):
+    response = client.get('/VariantValidator/variantvalidator/GRCh38/17-50198002-C-A/mane?content-type=application%2Fjson')  # Send a GET request to the /hello/ endpoint
+    assert response.status_code == 200  # Check if the response status code is 200 OK
+    assert "metadata" in response.json.keys()  # Check if "metadata" key is in the JSON response

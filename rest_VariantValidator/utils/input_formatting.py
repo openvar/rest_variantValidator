@@ -20,7 +20,10 @@ def format_input(data_string):
         for entry in pre_data_list:
             entry = entry.replace("&", "|")
             data_list.append(entry)
-    return json.dumps(data_list)
+    if len(data_list) == 1:
+        return str(data_list[0])
+    else:
+        return json.dumps(data_list)
 
 # <LICENSE>
 # Copyright (C) 2016-2023 VariantValidator Contributors

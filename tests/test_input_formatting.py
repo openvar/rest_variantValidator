@@ -33,7 +33,7 @@ class TestFormatInput(unittest.TestCase):
     def test_empty_input(self):
         data_string = ''
         result = input_formatting.format_input(data_string)
-        self.assertEqual(result, '[""]')
+        self.assertEqual(result, '')
 
     def test_multiple_pipe_symbols(self):
         data_string = 'a||b||c'
