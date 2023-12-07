@@ -8,7 +8,7 @@ pipeline {
     environment {
         CODECOV_TOKEN = credentials('CODECOV_TOKEN_rest_variantvalidator')
         CONTAINER_SUFFIX = "${BUILD_NUMBER}"
-        DATA_VOLUME = "docker-shared-space"
+        DATA_VOLUME = "${HOME}/variantvalidator_data"
     }
     stages {
         stage("Clone Repository Remove dangling docker components and Create Docker Network") {
@@ -31,11 +31,14 @@ pipeline {
         stage("Build and Run containers") {
             steps {
                 // Build and run services using docker-compose with container names including the build number
-                sh 'mkdir -p /root/variantvalidator_data/seqdata && mkdir -p /root/variantvalidator_data/logs'
-                sh 'pwd'
-                sh 'ls -l'
-                sh 'ls /root/variantvalidator_data/seqdata'
-                sh 'ls /root/variantvalidator_data/logs'
+                sh "mkdir -p ${HOME}/variantvalidator_data/seqdata && mkdir -p ${HOME}/variantvalidator_data/logs"
+
+                // Add ls commands to check if the directories exist
+                sh "ls -l ${HOME}/variantvalidator_data"
+                sh "ls -l ${HOME}/variantvalidator_data/seqdata"
+                sh "ls -l ${HOME}/variantvalidator_data/logs"
+
+                // Create and run the containers
                 sh 'docker-compose --project-name rest-variantvalidator-ci build --no-cache rv-vvta rv-vdb rv-seqrepo rest-variantvalidator'
                 sh 'docker-compose --project-name rest-variantvalidator-ci up -d rv-vvta && docker-compose --project-name rest-variantvalidator-ci up -d rv-vdb && docker-compose --project-name rest-variantvalidator-ci up -d rv-seqrepo && docker-compose --project-name rest-variantvalidator-ci up -d rest-variantvalidator'
             }

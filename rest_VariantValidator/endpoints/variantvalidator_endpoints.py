@@ -62,7 +62,7 @@ class VariantValidatorClass(Resource):
                 return {"Not Found": "Setting select_transcripts to 'all' or 'raw' is deprecated for genomic "
                                      "variant processing using this endpoint. Contact admin on "
                                      "https://variantvalidator.org/help/contact/ for updated instructions and"
-                                     "fair usage information; use another option; or use the LOVD endpoint which is "
+                                     " fair usage information; use another option; or use the LOVD endpoint which is "
                                      "designed for integration into pipelines"}, 404
         elif "auth_all" in select_transcripts:
             select_transcripts = "all"
