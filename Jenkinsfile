@@ -33,8 +33,8 @@ pipeline {
             steps {
                 script {
                     sh """
-                        mkdir -p ${DATA_VOLUME}/seqdata
-                        mkdir -p ${DATA_VOLUME}/logs
+                        mkdir -p ${DATA_VOLUME}seqdata
+                        mkdir -p ${DATA_VOLUME}logs
 
                         # Add ls commands to check if the directories exist
                         ls -l ${DATA_VOLUME}
