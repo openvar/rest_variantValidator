@@ -337,7 +337,10 @@ def gene_list():
             "COL5A1",
             "BRCA2",
             "HBB",
-            "DMD"
+            "DMD",
+            "BRAF",
+            "HTT",
+            "NR2E3"
     ]
 
     random_number = random.randint(0, 6)
