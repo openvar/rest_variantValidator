@@ -72,6 +72,10 @@ class VariantValidatorClass(Resource):
         # Convert inputs to JSON arrays
         variant_description = input_formatting.format_input(variant_description)
         select_transcripts = input_formatting.format_input(select_transcripts)
+        if select_transcripts == '["all"]':
+            select_transcripts = "all"
+        if select_transcripts == '["raw"]':
+            select_transcripts = "raw"
 
         try:
             # Validate using the VariantValidator Python Library
@@ -171,6 +175,8 @@ class Gene2transcriptsV2Class(Resource):
         # Convert inputs to JSON arrays
         gene_query = input_formatting.format_input(gene_query)
         limit_transcripts = input_formatting.format_input(limit_transcripts)
+        if len(limit_transcripts) == 1:
+            limit_transcripts = limit_transcripts[0]
 
         try:
             if genome_build not in ["GRCh37", "GRCh38"]:

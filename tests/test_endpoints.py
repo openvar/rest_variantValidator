@@ -39,9 +39,10 @@ def test_vf_endpoint(client):
 
 
 def test_vv_endpoint(client):
-    response = client.get('/VariantValidator/variantvalidator/GRCh38/NM_000088.3%3Ac.589G%3ET/mane?content-type=application%2Fjson')  # Send a GET request to the /hello/ endpoint
+    response = client.get('/VariantValidator/variantvalidator/GRCh38/NM_000088.3%3Ac.589G%3ET/all?content-type=application%2Fjson')  # Send a GET request to the /hello/ endpoint
     assert response.status_code == 200  # Check if the response status code is 200 OK
     assert "metadata" in response.json.keys()  # Check if "metadata" key is in the JSON response
+    assert "NM_000088.3:c.589G>T" in response.json.keys()
 
 
 def test_vv_endpoint_multi(client):
