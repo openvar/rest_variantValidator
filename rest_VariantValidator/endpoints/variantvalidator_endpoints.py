@@ -170,7 +170,11 @@ class Gene2transcriptsV2Class(Resource):
 
         # Convert inputs to JSON arrays
         gene_query = input_formatting.format_input(gene_query)
+        if isinstance(gene_query, str):
+            gene_query = [gene_query]
         limit_transcripts = input_formatting.format_input(limit_transcripts)
+
+        print(gene_query)
 
         try:
             if genome_build not in ["GRCh37", "GRCh38"]:

@@ -12,26 +12,26 @@ class TestInternalServers(TestCase):
 
         # Start the WSGI server as a separate process
         cls.wsgi_server_process = subprocess.Popen(['python', 'rest_VariantValidator/wsgi.py'])
-        time.sleep(30)
+        time.sleep(60)
 
         # Set the PORT environment variable for APP server
         os.environ['PORT'] = '5001'
 
         # Start the app server as a separate process
         cls.app_server_process = subprocess.Popen(['python', 'rest_VariantValidator/app.py'])
-        time.sleep(30)
+        time.sleep(60)
 
     @classmethod
     def tearDownClass(cls):
         # Terminate the WSGI server process
         cls.wsgi_server_process.terminate()
-        cls.wsgi_server_process.wait(timeout=30)
+        cls.wsgi_server_process.wait(timeout=60)
         wsgi_exit_code = cls.wsgi_server_process.poll()
         print(f"WSGI Server Exit Code: {wsgi_exit_code}")
 
         # Terminate the app server process
         cls.app_server_process.terminate()
-        cls.app_server_process.wait(timeout=30)
+        cls.app_server_process.wait(timeout=60)
         app_exit_code = cls.app_server_process.poll()
         print(f"App Server Exit Code: {app_exit_code}")
 

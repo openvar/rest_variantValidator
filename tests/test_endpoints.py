@@ -91,3 +91,8 @@ def test_vv_endpoint_auth_all_vcf(client):
     response = client.get('/VariantValidator/variantvalidator/GRCh38/17-50198002-C-A/auth_raw?content-type=application%2Fjson')  # Send a GET request to the /hello/ endpoint
     assert response.status_code == 200  # Check if the response status code is 200 OK
     assert "metadata" in response.json.keys()  # Check if "metadata" key is in the JSON response
+
+
+def test_vv_g2tv2(client):
+    response = client.get('/VariantValidator/tools/gene2transcripts_v2/AMPD1/mane/refseq/GRCh38?content-type=application%2Fjson')  # Send a GET request to the /hello/ endpoint
+    assert response.status_code == 200  # Check if the response status code is 200 OK
