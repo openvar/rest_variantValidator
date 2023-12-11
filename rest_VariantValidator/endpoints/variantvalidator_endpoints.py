@@ -62,7 +62,7 @@ class VariantValidatorClass(Resource):
                 return {"Not Found": "Setting select_transcripts to 'all' or 'raw' is deprecated for genomic "
                                      "variant processing using this endpoint. Contact admin on "
                                      "https://variantvalidator.org/help/contact/ for updated instructions and"
-                                     "fair usage information; use another option; or use the LOVD endpoint which is "
+                                     " fair usage information; use another option; or use the LOVD endpoint which is "
                                      "designed for integration into pipelines"}, 404
         elif "auth_all" in select_transcripts:
             select_transcripts = "all"
@@ -170,7 +170,11 @@ class Gene2transcriptsV2Class(Resource):
 
         # Convert inputs to JSON arrays
         gene_query = input_formatting.format_input(gene_query)
+        if isinstance(gene_query, str):
+            gene_query = [gene_query]
         limit_transcripts = input_formatting.format_input(limit_transcripts)
+
+        print(gene_query)
 
         try:
             if genome_build not in ["GRCh37", "GRCh38"]:

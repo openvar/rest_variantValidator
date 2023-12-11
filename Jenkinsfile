@@ -8,13 +8,14 @@ pipeline {
     environment {
         CODECOV_TOKEN = credentials('CODECOV_TOKEN_rest_variantvalidator')
         CONTAINER_SUFFIX = "${BUILD_NUMBER}"
-        DATA_VOLUME = "docker-shared-space"
+        DATA_VOLUME = "/root/variantvalidator_data/"
     }
+
     stages {
         stage("Clone Repository Remove dangling docker components and Create Docker Network") {
             steps {
-                checkout scm // Checkout the source code from the configured source code management system
-                sh 'docker system prune --all --volumes --force' // Remove unused Docker resources
+                checkout scm
+                sh 'docker system prune --all --volumes --force'
             }
         }
         stage("Switch to Git Branch") {
@@ -30,20 +31,26 @@ pipeline {
         }
         stage("Build and Run containers") {
             steps {
-                // Build and run services using docker-compose with container names including the build number
-                sh 'mkdir -p /root/variantvalidator_data/seqdata && mkdir -p /root/variantvalidator_data/logs'
-                sh 'pwd'
-                sh 'ls -l'
-                sh 'ls /root/variantvalidator_data/seqdata'
-                sh 'ls /root/variantvalidator_data/logs'
-                sh 'docker-compose --project-name rest-variantvalidator-ci build --no-cache rv-vvta rv-vdb rv-seqrepo rest-variantvalidator'
-                sh 'docker-compose --project-name rest-variantvalidator-ci up -d rv-vvta && docker-compose --project-name rest-variantvalidator-ci up -d rv-vdb && docker-compose --project-name rest-variantvalidator-ci up -d rv-seqrepo && docker-compose --project-name rest-variantvalidator-ci up -d rest-variantvalidator'
+                script {
+                    sh """
+                        mkdir -p ${DATA_VOLUME}seqdata
+                        mkdir -p ${DATA_VOLUME}logs
+
+                        # Add ls commands to check if the directories exist
+                        ls -l ${DATA_VOLUME}
+                        ls -l ${DATA_VOLUME}/seqdata
+                        ls -l ${DATA_VOLUME}/logs
+
+                        # Create and run the containers
+                        docker-compose --project-name rest-variantvalidator-ci build --no-cache rv-vvta rv-vdb rv-seqrepo rest-variantvalidator
+                        docker-compose --project-name rest-variantvalidator-ci up -d rv-vvta && docker-compose --project-name rest-variantvalidator-ci up -d rv-vdb && docker-compose --project-name rest-variantvalidator-ci up -d rv-seqrepo && docker-compose --project-name rest-variantvalidator-ci up -d rest-variantvalidator
+                    """
+                }
             }
         }
         stage("Connect and run Pytest") {
             steps {
                 script {
-                    // Wait for the PostgreSQL container to be ready
                     def connectionSuccessful = false
                     for (int attempt = 1; attempt <= 5; attempt++) {
                         echo "Attempt $attempt to connect to the database..."
@@ -67,14 +74,10 @@ pipeline {
                 }
             }
         }
-
         stage("Run Pytest and Codecov") {
             steps {
                 script {
-                    // Run pytest && Run Codecov with the provided token and branch name
                     sh 'docker-compose exec rest-variantvalidator-${CONTAINER_SUFFIX} pytest --cov=rest_VariantValidator --cov-report=term tests/'
-
-                    // Send coverage report to Codecov
                     sh 'docker-compose exec rest-variantvalidator-${CONTAINER_SUFFIX} codecov -t $CODECOV_TOKEN -b ${BRANCH_NAME}'
                 }
             }
@@ -84,7 +87,6 @@ pipeline {
     post {
         always {
             script {
-                // Cleanup Docker and Docker Compose
                 sh 'docker-compose down -v'
                 sh 'docker network rm $DOCKER_NETWORK'
             }
