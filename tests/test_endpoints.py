@@ -117,3 +117,15 @@ def test_vv_g2tv2(client):
     assert response.status_code == 200  # Check if the response status code is 200 OK
     assert len(response.json) == 1
 
+def test_lovd_endpoint_all(client):
+    response = client.get('/LOVD/lovd/GRCh37/1%3A43815009%3AG%3AT/refseq/all/False/True?content-type=application%2Fjson')  # Send a GET request to the /hello/ endpoint
+    assert response.status_code == 200  # Check if the response status code is 200 OK
+    assert "metadata" in response.json.keys()  # Check if "metadata" key is in the JSON response
+    assert "1:43815009:G:T" in response.json.keys()
+
+def test_lovd_endpoint_raw(client):
+    response = client.get('/LOVD/lovd/GRCh37/1%3A43815009%3AG%3AT/refseq/raw/False/True?content-type=application%2Fjson')  # Send a GET request to the /hello/ endpoint
+    assert response.status_code == 200  # Check if the response status code is 200 OK
+    assert "metadata" in response.json.keys()  # Check if "metadata" key is in the JSON response
+    assert "1:43815009:G:T" in response.json.keys()
+
