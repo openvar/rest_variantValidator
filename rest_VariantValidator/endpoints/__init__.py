@@ -7,6 +7,37 @@ from .variantvalidator_endpoints import api as ns_vv
 from .variantformatter_endpoints import api as ns_vf
 from .lovd_endpoints import api as ns_lovd
 from .hello import api as ns_hello
+#attempt to pull in and use/document auth api if it is available
+try:
+
+    from VariantValidator_APIs.db_auth.auth_endpoints import auth_api as ns_auth
+    # Set auth for API
+    authorizations = {
+        'apikey': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization'
+        },
+        'basic_pwd': {
+            'type': 'basic',
+            'name': 'VV_API_PWD'
+        }
+    }
+    security = ['apikey', 'basic_pwd']
+    sec_descripton = '''
+## Security
+For now the Swagger documented endpoints retain the last entered login even on
+page refresh, at least on some browsers, to "log out" please enter a trivial
+invalid login e.g. username:none password: none to overwrite this.
+
+For logging in via a token please prefix your token with "Bearer " (including
+the space).
+'''
+except ModuleNotFoundError:
+    ns_auth = None
+    authorizations = None
+    security = None
+    sec_descripton =''
 
 # Obtain VariantValidator related metadata
 vval = VariantValidator.Validator()
@@ -43,7 +74,9 @@ api = CustomAPI(version=rest_VariantValidator.__version__,
                       " - [VVTA](https://www528.lamp.le.ac.uk/) release "
                       + config_dict['vvta_version'] + "\n"
                       " - [vvSeqRepo](https://www528.lamp.le.ac.uk/) release "
-                      + config_dict['vvseqrepo_db'].split('/')[-2]
+                      + config_dict['vvseqrepo_db'].split('/')[-2] + sec_descripton,
+                authorizations=authorizations,
+                security=security
           )
 
 # Add the namespaces to the API
