@@ -3,6 +3,11 @@ import ast
 from flask_restx import Namespace, Resource
 from rest_VariantValidator.utils import request_parser, representations, input_formatting
 from rest_VariantValidator.utils.object_pool import simple_variant_formatter_pool
+# get login authentication, if needed, or dummy auth if not present
+try:
+    from VariantValidator_APIs.db_auth.verify_password import auth
+except ModuleNotFoundError:
+    from rest_VariantValidator.utils.verify_password import auth
 
 
 def ordereddict_to_dict(value):
@@ -62,6 +67,7 @@ api = Namespace('LOVD', description='LOVD API Endpoints')
 class LOVDClass(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
+    @auth.login_required()
     def get(self, genome_build, variant_description, transcript_model, select_transcripts, checkonly, liftover):
         if transcript_model == 'None' or transcript_model == 'none':
             transcript_model = None
