@@ -2,6 +2,12 @@
 from flask_restx import Namespace, Resource
 from rest_VariantValidator.utils import exceptions, request_parser, representations, input_formatting
 from rest_VariantValidator.utils.object_pool import vval_object_pool, g2t_object_pool
+# get login authentication, if needed, or dummy auth if not present
+try:
+    from VariantValidator_APIs.db_auth.verify_password import auth
+except ModuleNotFoundError:
+    from rest_VariantValidator.utils.verify_password import auth
+
 
 """
 Create a parser object locally
@@ -50,6 +56,7 @@ api = Namespace('VariantValidator', description='VariantValidator API Endpoints'
 class VariantValidatorClass(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
+    @auth.login_required()
     def get(self, genome_build, variant_description, select_transcripts):
 
         # Import object from vval pool

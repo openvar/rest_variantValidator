@@ -89,6 +89,7 @@ pipeline {
             script {
                 sh 'docker-compose down -v'
                 sh 'docker network rm $DOCKER_NETWORK'
+                sh 'docker system prune --all --volumes --force'
             }
         }
     }

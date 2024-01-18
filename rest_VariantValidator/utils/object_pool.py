@@ -53,7 +53,7 @@ g2t_object_pool = ObjectPool(Validator, initial_pool_size=3, max_pool_size=5)
 simple_variant_formatter_pool = SimpleVariantFormatterPool(initial_pool_size=3, max_pool_size=5)
 
 # <LICENSE>
-# Copyright (C) 2016-2023 VariantValidator Contributors
+# Copyright (C) 2016-2024 VariantValidator Contributors
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
