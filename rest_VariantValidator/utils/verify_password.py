@@ -1,10 +1,8 @@
-from flask_httpauth import MultiAuth
-from datetime import datetime
-from flask import g
 from functools import wraps
 
-# Unified verification decorator, dummy for non auth versions of the api
-class DummyAuth():
+
+class DummyAuth:
+    # Unified verification decorator, dummy for non auth versions of the api
     def login_required(self,null=None):
         def login(f):
             @wraps(f)
@@ -13,10 +11,11 @@ class DummyAuth():
             return wrapper
         return login
 
+
 auth = DummyAuth()
 
 # <LICENSE>
-# Copyright (C) 2016-2022 VariantValidator Contributors
+# Copyright (C) 2016-2024 VariantValidator Contributors
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as

@@ -39,14 +39,8 @@ VariantValidator [manual](https://github.com/openvar/variantValidator/blob/maste
 
 ## Build the container
 
-*Note: some of these steps take >>1hr to complete depending on the speed of your internet connection, particularly 
+*Note: some of these steps take ~1hr to complete depending on the speed of your internet connection, particularly 
 compiling SeqRepo*
-
-- Pull images
-
-```bash
-$ docker-compose pull
-```
 
 #### Build and startup procedure
 
@@ -67,7 +61,7 @@ $ docker-compose build --no-cache rv-vvta rv-vdb rv-seqrepo rest-variantvalidato
 - Development and testing build
 ```bash
 # Build
-$ docker-compose -f docker-compose.yml -f docker-compose-dev.yml build --no-cache rv-vvta rv-vdb rv-seqrepo rest-variantvalidator
+$ docker-compose -f docker-compose.yml -f docker-compose-dev.yml build --no-cache rv-vvta rv-vdb rv-seqrepo dev-mode
 ```
 - The build stage has completed when you see the following message or something similar
 ```
@@ -86,9 +80,6 @@ $ docker-compose up -d rv-vvta && \
   docker-compose up -d rest-variantvalidator
 ```
 - Or for a development and testing build, swap for these commands
-
-```
-*i.e.,* a directory called `variantvalidator_data` in your `home` directory with sub-directories `seqdata` and `logs`
 
 ```bash
 $ docker-compose up -d rv-vvta && \
