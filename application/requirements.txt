@@ -1,10 +1,10 @@
-flask                     1.1.4
+flask 1.1.4
 flask-restx
 Werkzeug
-flask-log                 0.1.0
-flask-restful-swagger     0.20.2
-git                       2.40.1
-variantformatter          2.2.1.dev52+gb76ebc6
-variantvalidator          2.2.1.dev521+g1d4df7a
-vv-flask-restful-swagger  0.20.1
-vvhgvs                    2.2.0
+flask-log 0.1.0
+flask-restful-swagger 0.20.2
+git 2.40.1
+variantformatter 2.2.1.dev52+gb76ebc6
+variantvalidator 2.2.1.dev521+g1d4df7a
+vv-flask-restful-swagger 0.20.1
+vvhgvs 2.2.0
