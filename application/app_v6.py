@@ -3,9 +3,9 @@ Simple rest interface for VariantVlidator built using Flask Flask-RESTPlus and S
 """
 
 # Import modules
+from http.client import REQUEST_HEADER_FIELDS_TOO_LARGE
 from flask import Flask, make_response, request
-from flask_restplus import Api, Resource, reqparse, fields, abort
-import requests
+from flask_restx import Api, Resource, reqparse
 from requests.exceptions import ConnectionError
 from dicttoxml import dicttoxml
 
@@ -34,7 +34,7 @@ logger.addHandler(logHandler)
 application = Flask(__name__)
 
 # Define the API as api
-api = Api(app = application)
+api = Api(app=application)
 
 # Create a RequestParser object to identify specific content-type requests in HTTP URLs
 # The requestparser allows us to specify arguements passed via a URL, in this case, ....?content-type=application/json
@@ -47,7 +47,7 @@ parser.add_argument('content-type',
 Register custom exceptions
 """
 class RemoteConnectionError(Exception):
-    code=504
+    code = 504
 
 """
 Representations
@@ -74,7 +74,6 @@ def json(data, code, headers):
 # The first variable is the path of the namespace the second variable describes the space
 hello_space = api.namespace('hello', description='Simple API that returns a greeting')
 @hello_space.route("/")
-
 class HelloClass(Resource):
 
     # Add documentation about the parser
@@ -106,7 +105,6 @@ class HelloClass(Resource):
 name_space = api.namespace('name', description='Return a name provided by the user')
 @name_space.route("/<string:name>")
 class NameClass(Resource):
-
 
     # Add documentation about the parser
     @api.doc(parser=parser)
@@ -147,7 +145,7 @@ class VariantValidatorClass(Resource):
 
         # Likley error source, Test be switching off internet connection!
         try:
-            validation = requests.get(url)
+            validation = REQUEST_HEADER_FIELDS_TOO_LARGE.get(url)
         except ConnectionError:
             raise RemoteConnectionError('https://rest.variantvalidator.org/variantvalidator currently unavailable')
         content = validation.json()
