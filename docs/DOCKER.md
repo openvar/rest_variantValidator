@@ -88,12 +88,12 @@ $ docker-compose up -d rv-vvta && \
   docker-compose -f docker-compose.yml -f docker-compose-dev.yml up -d dev-mode
 ```
 
-- In both cases containers are started and running when you see messages similar to
+- You may need to run the above command a second time, until you see a response similar to
 ```bash
-Creating rest_variantvalidator_rv-vvta_1 ... done
-Creating rest_variantvalidator_rv-vdb_1 ... done
-Creating rest_variantvalidator_rv-seqrepo_1 ... done
-Creating rest_variantvalidator_rest-variantvalidator_1 ... done
+ ✔ Container rest_variantvalidator-rv-vvta-1     Running                                                                                                                                                                           0.0s 
+ ✔ Container rest_variantvalidator-rv-seqrepo-1  Running                                                                                                                                                                           0.0s 
+ ✔ Container rest_variantvalidator-rv-vdb-1      Running                                                                                                                                                                           0.0s 
+ ✔ Container rest_variantvalidator-dev-mode-1    Running    
 ```
 
 ### Test the build
@@ -307,6 +307,19 @@ $ docker-compose rm <service name e.g. rv-vvta> <service name>
 $ docker-compose down
 $ docker system prune -a --volumes
 ```
+
+Run the following command to make sure all rest_validator containers are stopped
+```bash
+$ docker ps
+```
+
+Stop any individual containers by running
+
+```bash
+$ docker stop <container ID>
+```
+
+Then re-run the docker system prune command
 
 ***If you choose this option, make sure you see the container restvv being re-created and all Python packages being 
 reinstalled in the printed logs, otherwise the container may not actually be rebuilt and the contained modules may not
