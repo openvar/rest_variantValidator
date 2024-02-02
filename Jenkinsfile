@@ -38,8 +38,8 @@ pipeline {
 
                         # Add ls commands to check if the directories exist
                         ls -l ${DATA_VOLUME}
-                        ls -l ${DATA_VOLUME}/seqdata
-                        ls -l ${DATA_VOLUME}/logs
+                        ls -l ${DATA_VOLUME}seqdata
+                        ls -l ${DATA_VOLUME}logs
 
                         echo "Contents of ${DATA_VOLUME}:"
                         ls -lR ${DATA_VOLUME}
