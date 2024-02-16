@@ -128,8 +128,6 @@ class Gene2transcriptsClass(Resource):
         # Convert inputs to JSON arrays
         gene_query = input_formatting.format_input(gene_query)
 
-        print(gene_query)
-
         try:
             content = vval.gene2transcripts(gene_query)[0]
         except ConnectionError:
@@ -138,8 +136,6 @@ class Gene2transcriptsClass(Resource):
             raise exceptions.RemoteConnectionError(message)
         finally:
             g2t_object_pool.return_object(vval)
-
-        print(content)
 
         # Collect Arguments
         args = parser.parse_args()
@@ -202,7 +198,7 @@ class Gene2transcriptsV2Class(Resource):
                 limit_transcripts = None
             content = vval.gene2transcripts(gene_query, select_transcripts=limit_transcripts,
                                             transcript_set=transcript_set, genome_build=genome_build,
-                                            batch_output=True)
+                                            batch_output=True, validator=vval)
         except ConnectionError:
             message = "Cannot connect to rest.genenames.org, please try again later"
             g2t_object_pool.return_object(vval)
