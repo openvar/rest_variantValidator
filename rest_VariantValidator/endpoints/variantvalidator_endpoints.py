@@ -110,9 +110,13 @@ class VariantValidatorClass(Resource):
 
 
 @api.route("/tools/gene2transcripts/<string:gene_query>")
-@api.param("gene_query", "***HGNC gene symbol or transcript ID***\n"
+@api.param("gene_query", "***HGNC gene symbol, HGNC ID, or transcript ID***\n"
                          "\nCurrent supported transcript IDs"
-                         "\n- RefSeq")
+                         "\n- RefSeq\n"
+                                 "\n***Single***\n"
+                                 ">   COL1A1\n"
+                                 ">   HGNC:2197\n"
+                                 ">   NM_000088.4\n")
 class Gene2transcriptsClass(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
@@ -124,14 +128,18 @@ class Gene2transcriptsClass(Resource):
         # Convert inputs to JSON arrays
         gene_query = input_formatting.format_input(gene_query)
 
+        print(gene_query)
+
         try:
-            content = vval.gene2transcripts(gene_query)
+            content = vval.gene2transcripts(gene_query)[0]
         except ConnectionError:
             message = "Cannot connect to rest.genenames.org, please try again later"
             g2t_object_pool.return_object(vval)
             raise exceptions.RemoteConnectionError(message)
         finally:
             g2t_object_pool.return_object(vval)
+
+        print(content)
 
         # Collect Arguments
         args = parser.parse_args()
@@ -152,11 +160,13 @@ class Gene2transcriptsClass(Resource):
            "<string:genome_build>")
 @api.param("gene_query", "***HGNC gene symbol, HGNC ID, or transcript ID***\n"
                          "\nCurrent supported transcript IDs"
-                         "\n- RefSeq or Ensembl""\n"
+                         "\n- RefSeq or Ensembl\n"
                                  "\n***Single***\n"
                                  ">   COL1A1\n"
+                                 ">   HGNC:2197\n"
+                                 ">   NM_000088.4\n"
                                  "\n***Multiple***\n"
-                                 ">   COL1A1|COL1A2|COL5A1\n")
+                                 ">   COL1A1|COL1A2|COL5A1|HGNC:2197\n")
 @api.param("limit_transcripts",  "***Return all possible transcripts***\n"
                                  ">   False\n"
                                  "\n***Single***\n"
