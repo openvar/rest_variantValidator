@@ -1,3 +1,13 @@
+Sure, I can help you modify your `Jenkinsfile` to include some additional steps. Here's a step-by-step plan:
+
+1. Add a step to check if the directory `/root/variantvalidator_data/seqdata` exists. If it doesn't, create it.
+2. Add a step to check if the directory `/root/variantvalidator_data/logs` exists. If it doesn't, create it.
+3. Add a step to list the contents of the `/root/variantvalidator_data/` directory to verify that the directories were created successfully.
+4. Continue with the existing steps to build and run the Docker containers.
+
+Here's the modified `Jenkinsfile`:
+
+```groovy
 pipeline {
     agent {
         docker {
@@ -29,22 +39,27 @@ pipeline {
                 sh 'apk update && apk add docker-compose'
             }
         }
+        stage("Check and Create Directories") {
+            steps {
+                script {
+                    sh """
+                        if [ ! -d "${DATA_VOLUME}seqdata" ]; then
+                            mkdir -p ${DATA_VOLUME}seqdata
+                        fi
+
+                        if [ ! -d "${DATA_VOLUME}logs" ]; then
+                            mkdir -p ${DATA_VOLUME}logs
+                        fi
+
+                        ls -l ${DATA_VOLUME}
+                    """
+                }
+            }
+        }
         stage("Build and Run containers") {
             steps {
                 script {
                     sh """
-                        mkdir -p ${DATA_VOLUME}seqdata
-                        mkdir -p ${DATA_VOLUME}logs
-
-                        # Add ls commands to check if the directories exist
-                        ls -l ${DATA_VOLUME}
-                        ls -l ${DATA_VOLUME}seqdata
-                        ls -l ${DATA_VOLUME}logs
-
-                        echo "Contents of ${DATA_VOLUME}:"
-                        ls -lR ${DATA_VOLUME}
-
-                        # Create and run the containers
                         docker-compose --project-name rest-variantvalidator-ci build --no-cache rv-vvta rv-vdb rv-seqrepo rest-variantvalidator
                         docker-compose --project-name rest-variantvalidator-ci up -d rv-vvta && docker-compose --project-name rest-variantvalidator-ci up -d rv-vdb && docker-compose --project-name rest-variantvalidator-ci up -d rv-seqrepo && docker-compose --project-name rest-variantvalidator-ci up -d rest-variantvalidator
                     """
@@ -97,3 +112,6 @@ pipeline {
         }
     }
 }
+```
+
+This script checks if the directories exist and creates them if they don't. It then lists the contents of the `/root/variantvalidator_data/` directory to verify that the directories were created successfully. The rest of the script is the same as your original script.
