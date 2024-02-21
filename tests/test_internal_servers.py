@@ -8,18 +8,26 @@ class TestInternalServers(TestCase):
     @classmethod
     def setUpClass(cls):
         # Set the PORT environment variable for WSGI server
-        os.environ['PORT'] = '8001'
+        os.environ['PORT'] = '8002'
 
         # Start the WSGI server as a separate process
         cls.wsgi_server_process = subprocess.Popen(['python', 'rest_VariantValidator/wsgi.py'])
         time.sleep(60)
 
+        # Check if the WSGI server started correctly
+        if cls.wsgi_server_process.poll() is not None:
+            raise RuntimeError('WSGI server failed to start')
+
         # Set the PORT environment variable for APP server
-        os.environ['PORT'] = '5001'
+        os.environ['PORT'] = '5002'
 
         # Start the app server as a separate process
         cls.app_server_process = subprocess.Popen(['python', 'rest_VariantValidator/app.py'])
         time.sleep(60)
+
+        # Check if the app server started correctly
+        if cls.app_server_process.poll() is not None:
+            raise RuntimeError('App server failed to start')
 
     @classmethod
     def tearDownClass(cls):
@@ -58,8 +66,9 @@ class TestInternalServers(TestCase):
 
     def test_wsgi_internal_server(self):
         # Check the WSGI server
-        self.check_server('hello', 8001)
+        self.check_server('hello', 8002)
 
     def test_app_server(self):
         # Check the app server
-        self.check_server('hello', 5001)
+        self.check_server('hello', 5002)
+
