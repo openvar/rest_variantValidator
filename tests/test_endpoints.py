@@ -56,7 +56,7 @@ def test_vv_endpoint_multi(client):
 def test_g2t_endpoint(client):
     response = client.get('/VariantValidator/tools/gene2transcripts/COL1A1?content-type=application%2Fjson')  # Send a GET request to the /hello/ endpoint
     assert response.status_code == 200  # Check if the response status code is 200 OK
-    assert len(response.json) == 1
+    assert len(response.json) == 6
 
 
 def test_g2t2_endpoint(client):
