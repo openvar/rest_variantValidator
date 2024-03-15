@@ -2,6 +2,7 @@
 from flask_restx import Namespace, Resource
 from rest_VariantValidator.utils import exceptions, request_parser, representations, input_formatting
 from rest_VariantValidator.utils.object_pool import vval_object_pool, g2t_object_pool
+from rest_VariantValidator.utils.limiter import limiter
 # get login authentication, if needed, or dummy auth if not present
 try:
     from VariantValidator_APIs.db_auth.verify_password import auth
@@ -18,6 +19,7 @@ api = Namespace('VariantValidator', description='VariantValidator API Endpoints'
 
 
 @api.route("/variantvalidator/<string:genome_build>/<string:variant_description>/<string:select_transcripts>")
+@api.doc(description="This endpoint has a rate limit of 2 requests per second.")
 @api.param("select_transcripts", "***Return all possible transcripts***\n"
                                  ">   all (at the latest version for each transcript)\n"
                                  ">   raw (all versions of each transcript)\n"
@@ -57,6 +59,7 @@ class VariantValidatorClass(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
     @auth.login_required()
+    @limiter.limit("2/second")
     def get(self, genome_build, variant_description, select_transcripts):
 
         # Import object from vval pool
@@ -110,6 +113,7 @@ class VariantValidatorClass(Resource):
 
 
 @api.route("/tools/gene2transcripts/<string:gene_query>")
+@api.doc(description="This endpoint has a rate limit of 1 request per second.")
 @api.param("gene_query", "***HGNC gene symbol, HGNC ID, or transcript ID***\n"
                          "\nCurrent supported transcript IDs"
                          "\n- RefSeq\n"
@@ -120,6 +124,8 @@ class VariantValidatorClass(Resource):
 class Gene2transcriptsClass(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
+    @auth.login_required()
+    @limiter.limit("1/second")
     def get(self, gene_query):
 
         # Get vvval object from pool
@@ -154,6 +160,7 @@ class Gene2transcriptsClass(Resource):
 
 @api.route("/tools/gene2transcripts_v2/<string:gene_query>/<string:limit_transcripts>/<string:transcript_set>/"
            "<string:genome_build>")
+@api.doc(description="This endpoint has a rate limit of 1 request per second.")
 @api.param("gene_query", "***HGNC gene symbol, HGNC ID, or transcript ID***\n"
                          "\nCurrent supported transcript IDs"
                          "\n- RefSeq or Ensembl\n"
@@ -180,6 +187,8 @@ class Gene2transcriptsClass(Resource):
 class Gene2transcriptsV2Class(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
+    @auth.login_required()
+    @limiter.limit("1/second")
     def get(self, gene_query, limit_transcripts, transcript_set, genome_build):
 
         # Get vval object from pool
@@ -229,6 +238,8 @@ class Gene2transcriptsV2Class(Resource):
 class Hgvs2referenceClass(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
+    @auth.login_required()
+    @limiter.limit("4/second")
     def get(self, hgvs_description):
 
         # Get vval object from pool

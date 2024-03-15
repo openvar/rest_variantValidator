@@ -65,13 +65,15 @@ class ExceptionClass(Resource):
     @api.expect(parser, validate=True)
     def get(self, error_code):
         if error_code == 400:
-            abort(400, "Bad Request")
+            abort(400)
         elif error_code == 403:
-            abort(403, "Forbidden")
+            abort(403)
         elif error_code == 404:
-            abort(404, "Not Found")
+            abort(404)
         elif error_code == 500:
-            abort(500, "Internal Server Error")
+            abort(500)
+        elif error_code == 429:
+            abort(429)
         elif error_code == 999:
             raise exceptions.RemoteConnectionError('https://rest.variantvalidator.org/variantvalidator currently '
                                                    'unavailable')

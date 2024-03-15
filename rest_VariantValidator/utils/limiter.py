@@ -1,25 +1,7 @@
-"""
-Gunicorn wsgi gateway file
-"""
-import os
-from rest_VariantValidator.app import application as app
-from configparser import ConfigParser
-from VariantValidator.settings import CONFIG_DIR
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
-config = ConfigParser()
-config.read(CONFIG_DIR)
-
-if config["logging"]["log"] == "True":
-    app.debug = True
-    app.config['PROPAGATE_EXCEPTIONS'] = True
-else:
-    app.debug = False
-    app.config['PROPAGATE_EXCEPTIONS'] = False
-
-if __name__ == '__main__':
-    # Read the port from the environment variable, defaulting to 8000 if not set
-    port = int(os.environ.get('PORT', 8000))
-    app.run(host="127.0.0.1", port=port)
+limiter = Limiter(key_func=get_remote_address)
 
 # <LICENSE>
 # Copyright (C) 2016-2024 VariantValidator Contributors
