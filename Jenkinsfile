@@ -1,13 +1,3 @@
-Sure, I can help you modify your `Jenkinsfile` to include some additional steps. Here's a step-by-step plan:
-
-1. Add a step to check if the directory `/root/variantvalidator_data/seqdata` exists. If it doesn't, create it.
-2. Add a step to check if the directory `/root/variantvalidator_data/logs` exists. If it doesn't, create it.
-3. Add a step to list the contents of the `/root/variantvalidator_data/` directory to verify that the directories were created successfully.
-4. Continue with the existing steps to build and run the Docker containers.
-
-Here's the modified `Jenkinsfile`:
-
-```groovy
 pipeline {
     agent {
         docker {
@@ -112,6 +102,3 @@ pipeline {
         }
     }
 }
-```
-
-This script checks if the directories exist and creates them if they don't. It then lists the contents of the `/root/variantvalidator_data/` directory to verify that the directories were created successfully. The rest of the script is the same as your original script.
