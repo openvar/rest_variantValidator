@@ -29,22 +29,27 @@ pipeline {
                 sh 'apk update && apk add docker-compose'
             }
         }
+        stage("Check and Create Directories") {
+            steps {
+                script {
+                    sh """
+                        if [ ! -d "${DATA_VOLUME}seqdata" ]; then
+                            mkdir -p ${DATA_VOLUME}seqdata
+                        fi
+
+                        if [ ! -d "${DATA_VOLUME}logs" ]; then
+                            mkdir -p ${DATA_VOLUME}logs
+                        fi
+
+                        ls -l ${DATA_VOLUME}
+                    """
+                }
+            }
+        }
         stage("Build and Run containers") {
             steps {
                 script {
                     sh """
-                        mkdir -p ${DATA_VOLUME}seqdata
-                        mkdir -p ${DATA_VOLUME}logs
-
-                        # Add ls commands to check if the directories exist
-                        ls -l ${DATA_VOLUME}
-                        ls -l ${DATA_VOLUME}seqdata
-                        ls -l ${DATA_VOLUME}logs
-
-                        echo "Contents of ${DATA_VOLUME}:"
-                        ls -lR ${DATA_VOLUME}
-
-                        # Create and run the containers
                         docker-compose --project-name rest-variantvalidator-ci build --no-cache rv-vvta rv-vdb rv-seqrepo rest-variantvalidator
                         docker-compose --project-name rest-variantvalidator-ci up -d rv-vvta && docker-compose --project-name rest-variantvalidator-ci up -d rv-vdb && docker-compose --project-name rest-variantvalidator-ci up -d rv-seqrepo && docker-compose --project-name rest-variantvalidator-ci up -d rest-variantvalidator
                     """

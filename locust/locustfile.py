@@ -24,7 +24,7 @@ class UserBehavior(TaskSet):
 
 class WebsiteUser(HttpUser):
     tasks = [UserBehavior]
-    wait_time = between(1, 10)  # seconds
+    wait_time = between(0.1, 2)  # seconds
 
 # <LICENSE>
 # Copyright (C) 2016-2024 VariantValidator Contributors
