@@ -26,6 +26,7 @@ def rate_limit_test_client():
 
     yield test_client  # This is where the tests will run
 
+
 # Test the limiter works as intended,
 def test_limit_endpoint_error_immediate(client):
     """Provoke a limiter error by repeated requests to a limited endpoint"""
@@ -51,3 +52,4 @@ def test_limit_endpoint_success(client):
     time.sleep(1)
     response = client.get('/hello/limit', headers={'Content-Type': 'application/json'})
     assert response.status_code == 200
+

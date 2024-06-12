@@ -18,7 +18,7 @@ parser = request_parser.parser
 api = Namespace('VariantValidator', description='VariantValidator API Endpoints')
 
 
-@api.route("/variantvalidator/<string:genome_build>/<string:variant_description>/<string:select_transcripts>")
+@api.route("/variantvalidator/<string:genome_build>/<string:variant_description>/<string:select_transcripts>/<string:transcript_model>/")
 @api.doc(description="This endpoint has a rate limit of 2 requests per second.")
 @api.param("select_transcripts", "***Return all possible transcripts***\n"
                                  ">   all (at the latest version for each transcript)\n"
@@ -55,15 +55,22 @@ api = Namespace('VariantValidator', description='VariantValidator API Endpoints'
                            ">   - GRCh38\n"
                            ">   - hg19\n"
                            ">   - hg38")
+@api.param("transcript_model", "***Accepted:***\n"
+                               ">   - refseq (return data for RefSeq transcript models)\n"
+                               ">   - ensembl (return data for ensembl transcript models)")
 class VariantValidatorClass(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
     @auth.login_required()
     @limiter.limit("2/second")
-    def get(self, genome_build, variant_description, select_transcripts):
+    def get(self, genome_build, variant_description, select_transcripts, transcript_model):
 
         # Import object from vval pool
         vval = vval_object_pool.get_object()
+
+        # set transcript_model
+        if transcript_model != 'ensembl' and transcript_model == 'refseq':
+            transcript_model = "refseq"
 
         # Switch off select_transcripts = all or raw for genomic variants
         if ("all" in select_transcripts or "raw" in select_transcripts) and "auth" not in select_transcripts:
@@ -89,7 +96,8 @@ class VariantValidatorClass(Resource):
 
         try:
             # Validate using the VariantValidator Python Library
-            validate = vval.validate(variant_description, genome_build, select_transcripts)
+            validate = vval.validate(variant_description, genome_build, select_transcripts,
+                                     transcript_set=transcript_model)
             content = validate.format_as_dict(with_meta=True)
         except Exception as e:
             # Handle the exception and customize the error response
