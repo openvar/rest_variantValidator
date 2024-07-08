@@ -18,7 +18,7 @@ parser = request_parser.parser
 api = Namespace('VariantValidator', description='VariantValidator API Endpoints')
 
 
-@api.route("/variantvalidator/<string:genome_build>/<string:variant_description>/<string:select_transcripts>/")
+@api.route("/variantvalidator/<string:genome_build>/<string:variant_description>/<string:select_transcripts>")
 @api.doc(description="This endpoint has a rate limit of 2 requests per second.")
 @api.param("select_transcripts", "***Return all possible transcripts***\n"
                                  "\n***Return only 'select' transcripts***\n"
@@ -113,7 +113,7 @@ class VariantValidatorClass(Resource):
             # Return the api default output
             return content
 
-@api.route("/variantvalidator_ensembl/<string:genome_build>/<string:variant_description>/<string:select_transcripts>/")
+@api.route("/variantvalidator_ensembl/<string:genome_build>/<string:variant_description>/<string:select_transcripts>")
 @api.doc(description="This endpoint has a rate limit of 2 requests per second.")
 @api.param("select_transcripts", "***Return all possible transcripts***\n"
                                  "\n***Return only 'select' transcripts***\n"
