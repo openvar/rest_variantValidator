@@ -1,5 +1,6 @@
 from flask_restx import Namespace, Resource
 from rest_VariantValidator.utils import request_parser, representations, exceptions
+from rest_VariantValidator.utils.limiter import limiter
 from flask import abort
 
 # Import VariantValidator  code
@@ -58,6 +59,13 @@ class HelloClass(Resource):
                  "status": "hello_world",
                  "metadata": config_dict
             }
+
+@api.route('/limit')
+class LimitedRateHelllo(Resource):
+    @limiter.limit("1/second")
+    @api.expect(parser, validate=True)
+    def get(self):
+        return { "status": "not yet hitting the rate limit" }
 
 
 @api.route('/trigger_error/<int:error_code>')

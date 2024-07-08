@@ -21,8 +21,6 @@ api = Namespace('VariantValidator', description='VariantValidator API Endpoints'
 @api.route("/variantvalidator/<string:genome_build>/<string:variant_description>/<string:select_transcripts>")
 @api.doc(description="This endpoint has a rate limit of 2 requests per second.")
 @api.param("select_transcripts", "***Return all possible transcripts***\n"
-                                 ">   all (at the latest version for each transcript)\n"
-                                 ">   raw (all versions of each transcript)\n"
                                  "\n***Return only 'select' transcripts***\n"
                                  ">   select\n"
                                  ">   mane_select\n"
@@ -65,6 +63,9 @@ class VariantValidatorClass(Resource):
         # Import object from vval pool
         vval = vval_object_pool.get_object()
 
+        # set transcript_model
+        transcript_model = "refseq"
+
         # Switch off select_transcripts = all or raw for genomic variants
         if ("all" in select_transcripts or "raw" in select_transcripts) and "auth" not in select_transcripts:
             if "c." not in variant_description and "n." not in variant_description and "r." not in variant_description \
@@ -89,7 +90,100 @@ class VariantValidatorClass(Resource):
 
         try:
             # Validate using the VariantValidator Python Library
-            validate = vval.validate(variant_description, genome_build, select_transcripts)
+            validate = vval.validate(variant_description, genome_build, select_transcripts,
+                                     transcript_set=transcript_model)
+            content = validate.format_as_dict(with_meta=True)
+        except Exception as e:
+            # Handle the exception and customize the error response
+            return {"error": str(e)}, 500
+        finally:
+            vval_object_pool.return_object(vval)
+
+        # Collect Arguments
+        args = parser.parse_args()
+
+        # Overrides the default response route so that the standard HTML URL can return any specified format
+        if args['content-type'] == 'application/json':
+            # example: http://127.0.0.1:5000.....bob?content-type=application/json
+            return representations.application_json(content, 200, None)
+        # example: http://127.0.0.1:5000.....?content-type=text/xml
+        elif args['content-type'] == 'text/xml':
+            return representations.xml(content, 200, None)
+        else:
+            # Return the api default output
+            return content
+
+@api.route("/variantvalidator_ensembl/<string:genome_build>/<string:variant_description>/<string:select_transcripts>")
+@api.doc(description="This endpoint has a rate limit of 2 requests per second.")
+@api.param("select_transcripts", "***Return all possible transcripts***\n"
+                                 "\n***Return only 'select' transcripts***\n"
+                                 ">   select\n"
+                                 ">   mane_select\n"
+                                 ">   mane (MANE and MANE Plus Clinical)\n"
+                                 ">   refseq_select\n"
+                                 "\n***Single***\n"
+                                 ">   ENST00000225964.10\n"
+                                 "\n***Multiple***\n"
+                                 ">   ENST00000225964.9|ENST00000225964.10")
+@api.param("variant_description", "***HGVS***\n"
+                                  ">   - ENST00000225964.10:c.589G>T\n"
+                                  ">   - NC_000017.10:g.48275363C>A\n"
+                                  "\n***Pseudo-VCF***\n"
+                                  ">   - 17-50198002-C-A\n"
+                                  ">   - 17:50198002:C:A\n"
+                                  ">   - GRCh38-17-50198002-C-A\n"
+                                  ">   - GRCh38:17:50198002:C:A\n"
+                                  "\n***Hybrid***\n"
+                                  ">   - chr17:50198002C>A\n "
+                                  ">   - chr17:50198002C>A(GRCh38)\n"
+                                  ">   - chr17(GRCh38):50198002C>A\n"
+                                  ">   - chr17:g.50198002C>A\n"
+                                  ">   - chr17:g.50198002C>A(GRCh38)\n"
+                                  ">   - chr17(GRCh38):g.50198002C>A")
+@api.param("genome_build", "***Accepted:***\n"
+                           ">   - GRCh37\n"
+                           ">   - GRCh38\n"
+                           ">   - hg19\n"
+                           ">   - hg38")
+class VariantValidatorEnsemblClass(Resource):
+    # Add documentation about the parser
+    @api.expect(parser, validate=True)
+    @auth.login_required()
+    @limiter.limit("2/second")
+    def get(self, genome_build, variant_description, select_transcripts):
+
+        # Import object from vval pool
+        vval = vval_object_pool.get_object()
+
+        # set transcript_model
+        transcript_model = "ensembl"
+
+        # Switch off select_transcripts = all or raw for genomic variants
+        if ("all" in select_transcripts or "raw" in select_transcripts) and "auth" not in select_transcripts:
+            if "c." not in variant_description and "n." not in variant_description and "r." not in variant_description \
+                    and "p." not in variant_description:
+                return {"Not Found": "Setting select_transcripts to 'all' or 'raw' is deprecated for genomic "
+                                     "variant processing using this endpoint. Contact admin on "
+                                     "https://variantvalidator.org/help/contact/ for updated instructions and"
+                                     " fair usage information; use another option; or use the LOVD endpoint which is "
+                                     "designed for integration into pipelines"}, 404
+        elif "auth_all" in select_transcripts:
+            select_transcripts = "all"
+        elif "auth_raw" in select_transcripts:
+            select_transcripts = "raw"
+
+        # Convert inputs to JSON arrays
+        variant_description = input_formatting.format_input(variant_description)
+        select_transcripts = input_formatting.format_input(select_transcripts)
+        if select_transcripts == '["all"]':
+            select_transcripts = "all"
+        if select_transcripts == '["raw"]':
+            select_transcripts = "raw"
+
+        try:
+            # Validate using the VariantValidator Python Library
+            validate = vval.validate(variant_description, genome_build, select_transcripts,
+                                     transcript_set=transcript_model)
             content = validate.format_as_dict(with_meta=True)
         except Exception as e:
             # Handle the exception and customize the error response
