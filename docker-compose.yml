@@ -40,12 +40,12 @@ services:
       - vv-logs:/usr/local/share/logs  # Mount volume for logs
       - seqdata:/usr/local/share/seqdata  # Mount volume for sequence data
     ports:
-      - "5000:5000"
+      - "5001:5000"
       - "5050:5050"
       - "8000:8000"
       - "9000:9000"
     expose:
-      - "5000"  # Expose ports for external access
+      - "5001"  # Expose ports for external access
       - "5050"
       - "8000"
       - "8080"
