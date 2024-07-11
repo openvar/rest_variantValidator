@@ -96,6 +96,9 @@ $ docker-compose up -d rv-vvta && \
  ✔ Container rest_variantvalidator-dev-mode-1    Running    
 ```
 
+- The first time you see all services running, wait for 30 mimutes before testing and using the API. This is because the
+VVTA database needs to load and initialise.
+
 ### Test the build
 ```bash
 # Run PyTest (all tests should pass)
