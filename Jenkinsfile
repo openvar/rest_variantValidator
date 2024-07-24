@@ -32,19 +32,27 @@ pipeline {
         stage("Check and Create Directories") {
             steps {
                 script {
+                    def dataVolume = "${DATA_VOLUME}"
                     sh """
-                        if [ ! -d "${DATA_VOLUME}seqdata" ]; then
-                            mkdir -p ${DATA_VOLUME}seqdata
+                        if [ ! -d "${dataVolume}seqdata" ]; then
+                            mkdir -p ${dataVolume}seqdata
                         fi
 
-                        if [ ! -d "${DATA_VOLUME}logs" ]; then
-                            mkdir -p ${DATA_VOLUME}logs
+                        if [ ! -d "${dataVolume}logs" ]; then
+                            mkdir -p ${dataVolume}logs
                         fi
 
-                        chmod -R 775 ${DATA_VOLUME}
-                        chown -R jenkins:jenkins ${DATA_VOLUME}
+                        # Set directory permissions to ensure Docker can access it
+                        chmod -R 775 ${dataVolume}
 
-                        ls -l ${DATA_VOLUME}
+                        # Check if the jenkins user exists and set ownership if it does
+                        if id "jenkins" &>/dev/null; then
+                            chown -R jenkins:jenkins ${dataVolume}
+                        else
+                            echo "User jenkins does not exist, skipping chown"
+                        fi
+
+                        ls -l ${dataVolume}
                     """
                 }
             }
