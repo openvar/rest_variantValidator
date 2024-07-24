@@ -8,7 +8,7 @@ pipeline {
     environment {
         CODECOV_TOKEN = credentials('CODECOV_TOKEN_rest_variantvalidator')
         CONTAINER_SUFFIX = "${BUILD_NUMBER}"
-        DATA_VOLUME = "/home/jenkins/variantvalidator_data/"
+        DATA_VOLUME = "${HOME}/variantvalidator_data/"
     }
 
     stages {
