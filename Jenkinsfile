@@ -8,7 +8,7 @@ pipeline {
     environment {
         CODECOV_TOKEN = credentials('CODECOV_TOKEN_rest_variantvalidator')
         CONTAINER_SUFFIX = "${BUILD_NUMBER}"
-        DATA_VOLUME = "/root/variantvalidator_data/"
+        DATA_VOLUME = "/home/jenkins/variantvalidator_data/"
     }
 
     stages {
@@ -40,6 +40,9 @@ pipeline {
                         if [ ! -d "${DATA_VOLUME}logs" ]; then
                             mkdir -p ${DATA_VOLUME}logs
                         fi
+
+                        chmod -R 775 ${DATA_VOLUME}
+                        chown -R jenkins:jenkins ${DATA_VOLUME}
 
                         ls -l ${DATA_VOLUME}
                     """
