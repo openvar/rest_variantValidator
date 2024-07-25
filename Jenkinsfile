@@ -8,11 +8,12 @@ pipeline {
     environment {
         CODECOV_TOKEN = credentials('CODECOV_TOKEN_rest_variantvalidator')
         CONTAINER_SUFFIX = "${BUILD_NUMBER}"
+        HOME = "/home/jenkins"  // Set HOME to /home/jenkins
         DATA_VOLUME = "${HOME}/variantvalidator_data/"
     }
 
     stages {
-        stage("Clone Repository Remove dangling docker components and Create Docker Network") {
+        stage("Clone Repository and Clean Up Docker") {
             steps {
                 checkout scm
                 sh 'docker system prune --all --volumes --force'
@@ -45,19 +46,15 @@ pipeline {
                         # Set directory permissions to ensure Docker can access it
                         chmod -R 775 ${dataVolume}
 
-                        # Check if the jenkins user exists and set ownership if it does
-                        if id "jenkins" &>/dev/null; then
-                            chown -R jenkins:jenkins ${dataVolume}
-                        else
-                            echo "User jenkins does not exist, skipping chown"
-                        fi
+                        # Set ownership to Jenkins user
+                        chown -R jenkins:jenkins ${dataVolume}
 
                         ls -l ${dataVolume}
                     """
                 }
             }
         }
-        stage("Build and Run containers") {
+        stage("Build and Run Containers") {
             steps {
                 script {
                     sh """
@@ -67,7 +64,7 @@ pipeline {
                 }
             }
         }
-        stage("Connect and run Pytest") {
+        stage("Connect and Run Pytest") {
             steps {
                 script {
                     def connectionSuccessful = false
@@ -107,7 +104,6 @@ pipeline {
         always {
             script {
                 sh 'docker-compose down -v'
-                sh 'docker network rm $DOCKER_NETWORK'
                 sh 'docker system prune --all --volumes --force'
             }
         }
