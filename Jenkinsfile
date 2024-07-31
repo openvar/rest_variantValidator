@@ -46,9 +46,6 @@ pipeline {
                         # Set directory permissions to ensure Docker can access it
                         chmod -R 775 ${dataVolume}
 
-                        # Set ownership to Jenkins user
-                        chown -R jenkins:jenkins ${dataVolume}
-
                         ls -l ${dataVolume}
                     """
                 }
