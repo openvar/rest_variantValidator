@@ -10,6 +10,7 @@ pipeline {
         CONTAINER_SUFFIX = "${BUILD_NUMBER}"
         HOME = "/home/jenkins"  // Set HOME to /home/jenkins
         DATA_VOLUME = "${HOME}/variantvalidator_data/"
+        WORKSPACE_DIR = "/var/jenkins_home/workspace/${JOB_NAME}"  // Workspace directory
     }
 
     stages {
@@ -17,6 +18,15 @@ pipeline {
             steps {
                 checkout scm
                 sh 'docker system prune --all --volumes --force'
+            }
+        }
+        stage("Set Safe Directory for Git") {
+            steps {
+                script {
+                    sh """
+                        git config --global --add safe.directory ${env.WORKSPACE_DIR}
+                    """
+                }
             }
         }
         stage("Switch to Git Branch") {
@@ -38,7 +48,6 @@ pipeline {
                         echo "Ensuring data directories exist and have correct permissions..."
                         mkdir -p ${dataVolume}seqdata ${dataVolume}logs
                         chmod -R 775 ${dataVolume}
-                        # Use the `stat` command to confirm the existence of the jenkins user, and avoid using chown if not necessary
                         if id -u jenkins > /dev/null 2>&1; then
                             chown -R jenkins:jenkins ${dataVolume}
                         else
