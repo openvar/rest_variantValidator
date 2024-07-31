@@ -10,7 +10,6 @@ pipeline {
         CONTAINER_SUFFIX = "${BUILD_NUMBER}"
         HOME = "/home/jenkins"  // Set HOME to /home/jenkins
         DATA_VOLUME = "${HOME}/variantvalidator_data/"
-        WORKSPACE_DIR = "/var/jenkins_home/workspace/${JOB_NAME}"  // Workspace directory
     }
 
     stages {
@@ -18,15 +17,6 @@ pipeline {
             steps {
                 checkout scm
                 sh 'docker system prune --all --volumes --force'
-            }
-        }
-        stage("Set Safe Directory for Git") {
-            steps {
-                script {
-                    sh """
-                        git config --global --add safe.directory ${env.WORKSPACE_DIR}
-                    """
-                }
             }
         }
         stage("Switch to Git Branch") {
