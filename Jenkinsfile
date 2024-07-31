@@ -33,19 +33,12 @@ pipeline {
         stage("Check and Create Directories") {
             steps {
                 script {
-                    def dataVolume = "${DATA_VOLUME}"
+                    def dataVolume = "${env.DATA_VOLUME}"
                     sh """
-                        if [ ! -d "${dataVolume}seqdata" ]; then
-                            mkdir -p ${dataVolume}seqdata
-                        fi
-
-                        if [ ! -d "${dataVolume}logs" ]; then
-                            mkdir -p ${dataVolume}logs
-                        fi
-
-                        # Set directory permissions to ensure Docker can access it
+                        echo "Ensuring data directories exist and have correct permissions..."
+                        mkdir -p ${dataVolume}seqdata ${dataVolume}logs
                         chmod -R 775 ${dataVolume}
-
+                        chown -R 1000:1000 ${dataVolume}  // Ensure ownership matches the 'jenkins' user in the container
                         ls -l ${dataVolume}
                     """
                 }
@@ -68,7 +61,7 @@ pipeline {
                     for (int attempt = 1; attempt <= 5; attempt++) {
                         echo "Attempt $attempt to connect to the database..."
                         def exitCode = sh(script: '''
-                            docker-compose exec -e PGPASSWORD=uta_admin rest-variantvalidator-${CONTAINER_SUFFIX} psql -U uta_admin -d vvta -h rv-vvta-${CONTAINER_SUFFIX} -p 54321
+                            docker-compose exec -e PGPASSWORD=uta_admin rest-variantvalidator-${CONTAINER_SUFFIX} psql -U uta_admin -d vvta -h rv-vvta-${CONTAINER_SUFFIX} -p 54321 -c "SELECT 1;"
                         ''', returnStatus: true)
 
                         if (exitCode == 0) {
