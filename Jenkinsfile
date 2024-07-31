@@ -38,7 +38,12 @@ pipeline {
                         echo "Ensuring data directories exist and have correct permissions..."
                         mkdir -p ${dataVolume}seqdata ${dataVolume}logs
                         chmod -R 775 ${dataVolume}
-                        chown -R 1000:1000 ${dataVolume}  // Ensure ownership matches the 'jenkins' user in the container
+                        # Use the `stat` command to confirm the existence of the jenkins user, and avoid using chown if not necessary
+                        if id -u jenkins > /dev/null 2>&1; then
+                            chown -R jenkins:jenkins ${dataVolume}
+                        else
+                            echo "Jenkins user does not exist. Skipping chown."
+                        fi
                         ls -l ${dataVolume}
                     """
                 }
