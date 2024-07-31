@@ -8,7 +8,7 @@ pipeline {
     environment {
         CODECOV_TOKEN = credentials('CODECOV_TOKEN_rest_variantvalidator')
         CONTAINER_SUFFIX = "${BUILD_NUMBER}"
-        HOME = "/home/jenkins"  // Set HOME to /home/jenkins
+        HOME = "/home/jenkins"
         DATA_VOLUME = "${HOME}/variantvalidator_data/"
     }
 
@@ -17,6 +17,15 @@ pipeline {
             steps {
                 checkout scm
                 sh 'docker system prune --all --volumes --force'
+            }
+        }
+        stage("Set Safe Directory for Git") {
+            steps {
+                script {
+                    sh """
+                        git config --global --add safe.directory "${env.WORKSPACE}"
+                    """
+                }
             }
         }
         stage("Switch to Git Branch") {
