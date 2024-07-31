@@ -8,7 +8,7 @@ pipeline {
     environment {
         CODECOV_TOKEN = credentials('CODECOV_TOKEN_rest_variantvalidator')
         CONTAINER_SUFFIX = "${BUILD_NUMBER}"
-        HOME = "/home/jenkins"  // Set HOME to /home/jenkins
+        HOME = "/home/jenkins"
         DATA_VOLUME = "${HOME}/variantvalidator_data/"
     }
 
@@ -17,6 +17,15 @@ pipeline {
             steps {
                 checkout scm
                 sh 'docker system prune --all --volumes --force'
+            }
+        }
+        stage("Set Safe Directory for Git") {
+            steps {
+                script {
+                    sh """
+                        git config --global --add safe.directory "${env.WORKSPACE}"
+                    """
+                }
             }
         }
         stage("Switch to Git Branch") {
@@ -33,22 +42,16 @@ pipeline {
         stage("Check and Create Directories") {
             steps {
                 script {
-                    def dataVolume = "${DATA_VOLUME}"
+                    def dataVolume = "${env.DATA_VOLUME}"
                     sh """
-                        if [ ! -d "${dataVolume}seqdata" ]; then
-                            mkdir -p ${dataVolume}seqdata
-                        fi
-
-                        if [ ! -d "${dataVolume}logs" ]; then
-                            mkdir -p ${dataVolume}logs
-                        fi
-
-                        # Set directory permissions to ensure Docker can access it
+                        echo "Ensuring data directories exist and have correct permissions..."
+                        mkdir -p ${dataVolume}seqdata ${dataVolume}logs
                         chmod -R 775 ${dataVolume}
-
-                        # Set ownership to Jenkins user
-                        chown -R jenkins:jenkins ${dataVolume}
-
+                        if id -u jenkins > /dev/null 2>&1; then
+                            chown -R jenkins:jenkins ${dataVolume}
+                        else
+                            echo "Jenkins user does not exist. Skipping chown."
+                        fi
                         ls -l ${dataVolume}
                     """
                 }
@@ -71,7 +74,7 @@ pipeline {
                     for (int attempt = 1; attempt <= 5; attempt++) {
                         echo "Attempt $attempt to connect to the database..."
                         def exitCode = sh(script: '''
-                            docker-compose exec -e PGPASSWORD=uta_admin rest-variantvalidator-${CONTAINER_SUFFIX} psql -U uta_admin -d vvta -h rv-vvta-${CONTAINER_SUFFIX} -p 54321
+                            docker-compose exec -e PGPASSWORD=uta_admin rest-variantvalidator-${CONTAINER_SUFFIX} psql -U uta_admin -d vvta -h rv-vvta-${CONTAINER_SUFFIX} -p 54321 -c "SELECT 1;"
                         ''', returnStatus: true)
 
                         if (exitCode == 0) {
