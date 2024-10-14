@@ -2,7 +2,7 @@
 from flask_restx import Namespace, Resource
 from rest_VariantValidator.utils import exceptions, request_parser, representations, input_formatting
 from rest_VariantValidator.utils.object_pool import vval_object_pool, g2t_object_pool
-from rest_VariantValidator.utils.limiter import limiter
+from rest_VariantValidator.utils.limiter import limiter, concurrency_limit
 # get login authentication, if needed, or dummy auth if not present
 try:
     from VariantValidator_APIs.db_auth.verify_password import auth
@@ -58,6 +58,7 @@ class VariantValidatorClass(Resource):
     @api.expect(parser, validate=True)
     @auth.login_required()
     @limiter.limit("2/second")
+    @concurrency_limit()
     def get(self, genome_build, variant_description, select_transcripts):
 
         # Import object from vval pool
@@ -150,6 +151,7 @@ class VariantValidatorEnsemblClass(Resource):
     @api.expect(parser, validate=True)
     @auth.login_required()
     @limiter.limit("2/second")
+    @concurrency_limit()
     def get(self, genome_build, variant_description, select_transcripts):
 
         # Import object from vval pool
@@ -220,6 +222,7 @@ class Gene2transcriptsClass(Resource):
     @api.expect(parser, validate=True)
     @auth.login_required()
     @limiter.limit("1/second")
+    @concurrency_limit()
     def get(self, gene_query):
 
         # Get vvval object from pool
@@ -283,6 +286,7 @@ class Gene2transcriptsV2Class(Resource):
     @api.expect(parser, validate=True)
     @auth.login_required()
     @limiter.limit("1/second")
+    @concurrency_limit()
     def get(self, gene_query, limit_transcripts, transcript_set, genome_build):
 
         # Get vval object from pool
@@ -334,6 +338,7 @@ class Hgvs2referenceClass(Resource):
     @api.expect(parser, validate=True)
     @auth.login_required()
     @limiter.limit("4/second")
+    @concurrency_limit()
     def get(self, hgvs_description):
 
         # Get vval object from pool
