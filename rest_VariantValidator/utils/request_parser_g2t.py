@@ -19,7 +19,8 @@ parser.add_argument('content-type',
                     choices=['application/json', 'text/xml'])
 parser.add_argument('show_exon_info',
                     type=str_to_bool,
-                    help='***Show Exon structures and alignment data***')
+                    help='***Show Exon structures and alignment data***',
+                    choices=[True, False])
 
 
 # <LICENSE>
