@@ -91,10 +91,6 @@ class LOVDClass(Resource):
         # Convert inputs to JSON arrays
         variant_description = input_formatting.format_input(variant_description)
         select_transcripts = input_formatting.format_input(select_transcripts)
-        if select_transcripts == '["all"]':
-            select_transcripts = "all"
-        if select_transcripts == '["raw"]':
-            select_transcripts = "raw"
 
         try:
             content = simple_formatter.format(variant_description, genome_build, transcript_model,

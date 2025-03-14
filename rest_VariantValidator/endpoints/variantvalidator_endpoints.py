@@ -1,6 +1,6 @@
 # Import modules
 from flask_restx import Namespace, Resource
-from rest_VariantValidator.utils import exceptions, request_parser, representations, input_formatting
+from rest_VariantValidator.utils import exceptions, request_parser, representations, input_formatting, request_parser_g2t
 from rest_VariantValidator.utils.object_pool import vval_object_pool, g2t_object_pool
 from rest_VariantValidator.utils.limiter import limiter
 # get login authentication, if needed, or dummy auth if not present
@@ -14,6 +14,7 @@ except ModuleNotFoundError:
 Create a parser object locally
 """
 parser = request_parser.parser
+parser_g2t = request_parser_g2t.parser
 
 api = Namespace('VariantValidator', description='VariantValidator API Endpoints')
 
@@ -280,13 +281,22 @@ class Gene2transcriptsClass(Resource):
                            "\nall = all builds, GRCh37 = GRCh37 only, GRCh38 = GRCh38 only")
 class Gene2transcriptsV2Class(Resource):
     # Add documentation about the parser
-    @api.expect(parser, validate=True)
+    @api.expect(parser_g2t, validate=True)
     @auth.login_required()
     @limiter.limit("1/second")
     def get(self, gene_query, limit_transcripts, transcript_set, genome_build):
 
         # Get vval object from pool
         vval = g2t_object_pool.get_object()
+
+        # Collect Arguments
+        args = parser_g2t.parse_args()
+        if args['show_exon_info'] is True:
+            bypass_genomic_spans = False
+        elif args['show_exon_info'] is False:
+            bypass_genomic_spans = True
+        else:
+            bypass_genomic_spans = True
 
         # Convert inputs to JSON arrays
         gene_query = input_formatting.format_input(gene_query)
@@ -301,16 +311,14 @@ class Gene2transcriptsV2Class(Resource):
                 limit_transcripts = None
             content = vval.gene2transcripts(gene_query, select_transcripts=limit_transcripts,
                                             transcript_set=transcript_set, genome_build=genome_build,
-                                            batch_output=True, validator=vval)
+                                            batch_output=True, validator=vval,
+                                            bypass_genomic_spans=bypass_genomic_spans)
         except ConnectionError:
             message = "Cannot connect to rest.genenames.org, please try again later"
             g2t_object_pool.return_object(vval)
             raise exceptions.RemoteConnectionError(message)
         finally:
             g2t_object_pool.return_object(vval)
-
-        # Collect Arguments
-        args = parser.parse_args()
 
         # Overrides the default response route so that the standard HTML URL can return any specified format
         if args['content-type'] == 'application/json':
