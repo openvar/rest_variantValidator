@@ -1,11 +1,9 @@
-
 # Import necessary packages
 import pytest
 import time
 from rest_VariantValidator.app import application  # Import your Flask app
 
 
-# Fixture to set up the test client
 # Fixture to set up the test client
 @pytest.fixture(scope='module')
 def client():
