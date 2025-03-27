@@ -25,6 +25,7 @@ RUN pip install --upgrade pip
 
 # Install the tool
 RUN pip install -e .
+RUN python -m VariantValidator.bin.setup_lovd_syntax_checker
 
 # Copy the config file into the container home directory
 COPY configuration/docker.ini /root/.variantvalidator
