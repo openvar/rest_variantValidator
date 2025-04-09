@@ -2,9 +2,7 @@ from flask_restx import Namespace, Resource
 from rest_VariantValidator.utils import request_parser, representations, exceptions
 from rest_VariantValidator.utils.limiter import limiter
 from flask import abort
-
-# Import VariantValidator  code
-import VariantValidator
+from rest_VariantValidator.utils.object_pool import vval_object_pool
 
 """
 Create a parser object locally
@@ -31,12 +29,16 @@ class HelloClass(Resource):
     @api.expect(parser, validate=True)
     def get(self):
 
-        vval = VariantValidator.Validator()
+        # Import object from vval pool
+        vval = vval_object_pool.get_object()
 
         # Collect Arguments
         args = parser.parse_args()
         config_dict = vval.my_config()
         config_dict['vvseqrepo_db'] = config_dict['vvseqrepo_db'].split('/')[-2]
+
+        # Return object to vval pool
+        vval_object_pool.return_object(vval)
 
         # Overrides the default response route so that the standard HTML URL can return any specified format
         if args['content-type'] == 'application/json':
