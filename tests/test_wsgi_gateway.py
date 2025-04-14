@@ -1,6 +1,7 @@
 from rest_VariantValidator.wsgi import app
 import pytest
 
+pytestmark = pytest.mark.usefixtures("check_object_pool_leaks")
 
 @pytest.fixture(scope='module')
 def client():

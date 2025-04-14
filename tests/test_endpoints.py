@@ -3,6 +3,7 @@ import pytest
 import time
 from rest_VariantValidator.app import application  # Import your Flask app
 
+pytestmark = pytest.mark.usefixtures("check_object_pool_leaks")
 
 # Fixture to set up the test client
 @pytest.fixture(scope='module')

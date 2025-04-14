@@ -66,24 +66,22 @@ class VariantFormatterClass(Resource):
             checkonly = True
 
         # Import formatter from pool
-        simple_formatter = simple_variant_formatter_pool.get()
+        with simple_variant_formatter_pool.item() as simple_formatter:
 
-        # Convert inputs to JSON arrays
-        variant_description = input_formatting.format_input(variant_description)
-        select_transcripts = input_formatting.format_input(select_transcripts)
-        if select_transcripts == '["all"]':
-            select_transcripts = "all"
-        if select_transcripts == '["raw"]':
-            select_transcripts = "raw"
+            # Convert inputs to JSON arrays
+            variant_description = input_formatting.format_input(variant_description)
+            select_transcripts = input_formatting.format_input(select_transcripts)
+            if select_transcripts == '["all"]':
+                select_transcripts = "all"
+            if select_transcripts == '["raw"]':
+                select_transcripts = "raw"
 
-        try:
-            content = simple_formatter.format(variant_description, genome_build, transcript_model,
-                                              select_transcripts, checkonly)
-        except Exception as e:
-            # Handle the exception and customize the error response
-            return {"error": str(e)}, 500
-        finally:
-            simple_variant_formatter_pool.return_object(simple_formatter)
+            try:
+                content = simple_formatter.format(variant_description, genome_build, transcript_model,
+                                                  select_transcripts, checkonly)
+            except Exception as e:
+                # Handle the exception and customize the error response
+                return {"error": str(e)}, 500
 
         # Collect Arguments
         args = parser.parse_args()

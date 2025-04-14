@@ -11,6 +11,8 @@ from flask import g
 from rest_VariantValidator.utils.limiter import limiter
 from rest_VariantValidator.app import application  # Import your Flask app
 
+pytestmark = pytest.mark.usefixtures("check_object_pool_leaks")
+
 # Fixture to set up the test client
 @pytest.fixture(scope='module',name='client')
 def rate_limit_test_client():
@@ -52,4 +54,3 @@ def test_limit_endpoint_success(client):
     time.sleep(1)
     response = client.get('/hello/limit', headers={'Content-Type': 'application/json'})
     assert response.status_code == 200
-

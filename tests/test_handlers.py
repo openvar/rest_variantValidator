@@ -2,6 +2,7 @@
 import pytest
 from rest_VariantValidator.app import application  # Import your Flask app
 
+pytestmark = pytest.mark.usefixtures("check_object_pool_leaks")
 
 # Fixture to set up the test client
 @pytest.fixture(scope='module')
@@ -41,4 +42,3 @@ def test_connection_error(client):
     response = client.get('/hello/trigger_error/999', headers={'Content-Type': 'application/json'})  # Send a GET request to a nonexistent endpoint
     assert response.status_code == 504  # Check if the response status code is 404 NOT FOUND
     assert response.json["message"] == "https://rest.variantvalidator.org/variantvalidator currently unavailable"
-

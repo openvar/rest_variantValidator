@@ -86,20 +86,18 @@ class LOVDClass(Resource):
             liftover = False
 
         # Import formatter object from pool
-        simple_formatter = simple_variant_formatter_pool.get()
+        with simple_variant_formatter_pool.item() as simple_formatter:
 
-        # Convert inputs to JSON arrays
-        variant_description = input_formatting.format_input(variant_description)
-        select_transcripts = input_formatting.format_input(select_transcripts)
+            # Convert inputs to JSON arrays
+            variant_description = input_formatting.format_input(variant_description)
+            select_transcripts = input_formatting.format_input(select_transcripts)
 
-        try:
-            content = simple_formatter.format(variant_description, genome_build, transcript_model,
-                                              select_transcripts, checkonly, liftover)
-        except Exception as e:
-            # Handle the exception and customize the error response
-            return {"error": str(e)}, 500
-        finally:
-            simple_variant_formatter_pool.return_object(simple_formatter)
+            try:
+                content = simple_formatter.format(variant_description, genome_build, transcript_model,
+                                                  select_transcripts, checkonly, liftover)
+            except Exception as e:
+                # Handle the exception and customize the error response
+                return {"error": str(e)}, 500
 
         to_dict = ordereddict_to_dict(content)
         content = str(to_dict)
