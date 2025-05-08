@@ -230,7 +230,7 @@ class Gene2transcriptsClass(Resource):
         gene_query = input_formatting.format_input(gene_query)
 
         try:
-            content = vval.gene2transcripts(gene_query)[0]
+            content = vval.gene2transcripts(gene_query, lovd_syntax_check=True)[0]
         except ConnectionError:
             message = "Cannot connect to rest.genenames.org, please try again later"
             g2t_object_pool.return_object(vval)
@@ -312,7 +312,7 @@ class Gene2transcriptsV2Class(Resource):
             content = vval.gene2transcripts(gene_query, select_transcripts=limit_transcripts,
                                             transcript_set=transcript_set, genome_build=genome_build,
                                             batch_output=True, validator=vval,
-                                            bypass_genomic_spans=bypass_genomic_spans)
+                                            bypass_genomic_spans=bypass_genomic_spans, lovd_syntax_check=True)
         except ConnectionError:
             message = "Cannot connect to rest.genenames.org, please try again later"
             g2t_object_pool.return_object(vval)
