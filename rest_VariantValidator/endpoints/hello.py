@@ -1,6 +1,7 @@
+import time
 from flask_restx import Namespace, Resource
 from rest_VariantValidator.utils import request_parser, representations, exceptions
-from rest_VariantValidator.utils.limiter import limiter
+from rest_VariantValidator.utils.limiter import limiter, concurrency_limit
 from flask import abort
 from rest_VariantValidator.utils.object_pool import vval_object_pool
 
@@ -68,6 +69,16 @@ class LimitedRateHelllo(Resource):
     @api.expect(parser, validate=True)
     def get(self):
         return { "status": "not yet hitting the rate limit" }
+
+@api.route('/limit_concurrent')
+class LimitedConcurrencyHelllo(Resource):
+    @limiter.limit("1/second")
+    @concurrency_limit()
+    @api.expect(parser, validate=True)
+    def get(self):
+        time.sleep(2)
+        return { "status": "not yet hitting the concurrency limit" }
+
 
 
 @api.route('/trigger_error/<int:error_code>')
