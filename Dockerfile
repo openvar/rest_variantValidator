@@ -1,4 +1,4 @@
-FROM python:3.11
+FROM python:3.12.11
 
 # Set the working directory to /app
 WORKDIR /app
@@ -15,7 +15,8 @@ RUN apt update
 # Install apt managed sofware
 RUN apt -y install git \
     postgresql-client \
-    sqlite3
+    sqlite3 \
+    php
 
 # Manage git buffer
 RUN git config http.postBuffer 500000000
