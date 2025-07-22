@@ -1,0 +1,7 @@
+name: ray_variantValidator
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python
+  - pip
