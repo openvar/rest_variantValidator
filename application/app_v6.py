@@ -72,7 +72,7 @@ def json(data, code, headers):
 
 # Define a name-space to be read Swagger UI which is built in to Flask-RESTPlus
 # The first variable is the path of the namespace the second variable describes the space
-hello_space = api.namespace('hello', description='Simple API that returns a greeting')
+hello_space = api.namespace('hello noobs', description='Simple API that returns a greeting')
 @hello_space.route("/")
 
 class HelloClass(Resource):
