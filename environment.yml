@@ -1,0 +1,3 @@
+name: cr_env
+dependencies:
+  - python==3.11.5
