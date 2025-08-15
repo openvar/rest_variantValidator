@@ -51,6 +51,7 @@ parser = request_parser.parser
 
 # Define the application as a Flask app with the name defined by __name__
 application = Flask(__name__)
+application.config.from_prefixed_env()
 
 # Create a limiter instance and attach it to your Flask application
 limiter.init_app(application)
