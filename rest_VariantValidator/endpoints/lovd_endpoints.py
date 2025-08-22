@@ -3,7 +3,7 @@ import ast
 from flask_restx import Namespace, Resource
 from rest_VariantValidator.utils import request_parser, representations, input_formatting
 from rest_VariantValidator.utils.object_pool import simple_variant_formatter_pool
-from rest_VariantValidator.utils.limiter import limiter
+from rest_VariantValidator.utils.limiter import limiter, concurrency_limit
 # get login authentication, if needed, or dummy auth if not present
 try:
     from VariantValidator_APIs.db_auth.verify_password import auth
@@ -71,6 +71,7 @@ class LOVDClass(Resource):
     @api.expect(parser, validate=True)
     @auth.login_required()
     @limiter.limit("4/second")
+    @concurrency_limit()
     def get(self, genome_build, variant_description, transcript_model, select_transcripts, checkonly, liftover):
         if transcript_model == 'None' or transcript_model == 'none':
             transcript_model = None
