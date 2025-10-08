@@ -84,6 +84,9 @@ api.add_namespace(ns_vv)
 api.add_namespace(ns_vf)
 api.add_namespace(ns_lovd)
 api.add_namespace(ns_hello)
+if ns_auth is not None:
+    api.add_namespace(ns_auth, path='/auth')  # Mount auth endpoints under /auth
+
 
 
 # <LICENSE>
