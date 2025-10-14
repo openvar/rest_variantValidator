@@ -1,7 +1,9 @@
 import json
 import subprocess
 import time
+import os
 
+# Updated base URL
 BASE_URL = "https://www183.lamp.le.ac.uk/LOVD/lovd"
 THROTTLE_SECONDS = 0.3  # ~3 requests/sec (API allows 4/sec)
 
@@ -14,22 +16,40 @@ def run_curl(
     checkonly="False"):
     """
     Run curl against the LOVD VariantValidator API and return parsed JSON.
+    Automatically includes Authorization header if RESTVV_BEARER_TOKEN is set.
     """
     time.sleep(THROTTLE_SECONDS)  # avoid rate limiting
+
     url = (
         f"{BASE_URL}/{genome_build}/{variant}/"
         f"{transcript_model}/{select_transcripts}/"
         f"{liftover}/{checkonly}"
         f"?content-type=application%2Fjson"
     )
-    cmd = ["curl", "-s", "-X", "GET", url, "-H", "accept: application/json"]
+
+    # Get bearer token from environment (set by your token script)
+    bearer_token = os.getenv("RESTVV_BEARER_TOKEN")
+
+    # Build curl command
+    cmd = [
+        "curl", "-s", "-X", "GET", url,
+        "-H", "accept: application/json",
+        "-H", "Content-Type: application/json"
+    ]
+
+    # Add Authorization header if token exists
+    if bearer_token:
+        cmd += ["-H", f"Authorization: Bearer {bearer_token}"]
+
+    # Run curl and parse output
     result = subprocess.run(cmd, capture_output=True, text=True, check=True)
     return json.loads(result.stdout)
 
 
-# -----------------------------
-# Variant Inputs
-# -----------------------------
+# -------------------------------------------------------------------------
+# All your existing test classes stay exactly as they were
+# -------------------------------------------------------------------------
+
 class TestVariantInputs:
     def test_hybrid_syntax_1(self):
         data = run_curl("chr17:50198002C>A")
@@ -42,9 +62,6 @@ class TestVariantInputs:
         assert entry["g_hgvs"] == "NC_000017.11:g.50198002C>A"
 
 
-# -----------------------------
-# Transcript Selection
-# -----------------------------
 class TestTranscriptSelection:
     def test_transcript_selection_raw(self):
         data = run_curl("NC_000005.10:g.140114829del", select_transcripts="raw")
@@ -87,9 +104,6 @@ class TestTranscriptSelection:
         assert "NM_001354609.1" not in hgvs_t_and_p
 
 
-# -----------------------------
-# Auto/Edge Case Variants
-# -----------------------------
 class TestVariantAutoCases:
     def test_variant1_bad_build(self):
         v = "NC_000019.10:g.50378563_50378564insTAC"

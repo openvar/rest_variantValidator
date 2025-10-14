@@ -55,7 +55,7 @@ class VariantFormatterClass(Resource):
     @api.expect(parser, validate=True)
     @auth.login_required()
     @limiter.limit("4/second")
-    def get(self, genome_build, variant_description, transcript_model, select_transcripts, checkonly):
+    def get(self, genome_build, variant_description, transcript_model, select_transcripts, checkonly, user_id=None):
         if transcript_model == 'None' or transcript_model == 'none':
             transcript_model = None
         if select_transcripts == 'None' or select_transcripts == 'none':

@@ -59,7 +59,7 @@ class VariantValidatorClass(Resource):
     @api.expect(parser, validate=True)
     @auth.login_required()
     @limiter.limit("2/second")
-    def get(self, genome_build, variant_description, select_transcripts):
+    def get(self, genome_build, variant_description, select_transcripts, user_id=None):
 
         # Import object from vval pool
         vval = vval_object_pool.get_object()
@@ -151,7 +151,7 @@ class VariantValidatorEnsemblClass(Resource):
     @api.expect(parser, validate=True)
     @auth.login_required()
     @limiter.limit("2/second")
-    def get(self, genome_build, variant_description, select_transcripts):
+    def get(self, genome_build, variant_description, select_transcripts, user_id=None):
 
         # Import object from vval pool
         vval = vval_object_pool.get_object()
@@ -221,7 +221,7 @@ class Gene2transcriptsClass(Resource):
     @api.expect(parser, validate=True)
     @auth.login_required()
     @limiter.limit("1/second")
-    def get(self, gene_query):
+    def get(self, gene_query, user_id=None):
 
         # Get vvval object from pool
         vval = g2t_object_pool.get_object()
@@ -284,7 +284,7 @@ class Gene2transcriptsV2Class(Resource):
     @api.expect(parser_g2t, validate=True)
     @auth.login_required()
     @limiter.limit("1/second")
-    def get(self, gene_query, limit_transcripts, transcript_set, genome_build):
+    def get(self, gene_query, limit_transcripts, transcript_set, genome_build, user_id=None):
 
         # Get vval object from pool
         vval = g2t_object_pool.get_object()
@@ -342,7 +342,7 @@ class Hgvs2referenceClass(Resource):
     @api.expect(parser, validate=True)
     @auth.login_required()
     @limiter.limit("4/second")
-    def get(self, hgvs_description):
+    def get(self, hgvs_description, user_id=None):
 
         # Get vval object from pool
         vval = vval_object_pool.get_object()
