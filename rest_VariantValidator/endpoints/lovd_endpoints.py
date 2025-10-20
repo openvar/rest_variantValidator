@@ -27,7 +27,7 @@ api = Namespace('LOVD', description='LOVD API Endpoints')
 
 
 @api.route("/lovd/<string:genome_build>/<string:variant_description>/<string:transcript_model>/"
-           "<string:select_transcripts>/<string:checkonly>/<string:liftover>")
+           "<string:select_transcripts>/<string:checkonly>/<string:liftover>", strict_slashes=False)
 @api.doc(description="This endpoint has a rate limit of 4 requests per second.")
 @api.param("variant_description", "***Genomic HGVS***\n"
                                   ">   - NC_000017.10:g.48275363C>A\n"

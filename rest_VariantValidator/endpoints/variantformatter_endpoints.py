@@ -18,7 +18,7 @@ api = Namespace('VariantFormatter', description='Variantformatter API Endpoints'
 
 
 @api.route("/variantformatter/<string:genome_build>/<string:variant_description>/<string:transcript_model>/"
-           "<string:select_transcripts>/<string:checkonly>")
+           "<string:select_transcripts>/<string:checkonly>", strict_slashes=False)
 @api.doc(description="This endpoint has a rate limit of 4 requests per second.")
 @api.param("variant_description", "***Genomic HGVS***\n"
                                   ">   - NC_000017.10:g.48275363C>A\n"

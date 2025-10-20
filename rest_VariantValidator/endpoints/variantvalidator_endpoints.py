@@ -19,7 +19,8 @@ parser_g2t = request_parser_g2t.parser
 api = Namespace('VariantValidator', description='VariantValidator API Endpoints')
 
 
-@api.route("/variantvalidator/<string:genome_build>/<string:variant_description>/<string:select_transcripts>")
+@api.route("/variantvalidator/<string:genome_build>/<string:variant_description>/<string:select_transcripts>",
+           strict_slashes=False)
 @api.doc(description="This endpoint has a rate limit of 2 requests per second.")
 @api.param("select_transcripts", "***Return all possible transcripts***\n"
                                  "\n***Return only 'select' transcripts***\n"
@@ -114,7 +115,8 @@ class VariantValidatorClass(Resource):
             # Return the api default output
             return content
 
-@api.route("/variantvalidator_ensembl/<string:genome_build>/<string:variant_description>/<string:select_transcripts>")
+@api.route("/variantvalidator_ensembl/<string:genome_build>/<string:variant_description>/<string:select_transcripts>",
+           strict_slashes=False)
 @api.doc(description="This endpoint has a rate limit of 2 requests per second.")
 @api.param("select_transcripts", "***Return all possible transcripts***\n"
                                  "\n***Return only 'select' transcripts***\n"
@@ -207,7 +209,7 @@ class VariantValidatorEnsemblClass(Resource):
             return content
 
 
-@api.route("/tools/gene2transcripts/<string:gene_query>")
+@api.route("/tools/gene2transcripts/<string:gene_query>", strict_slashes=False)
 @api.doc(description="This endpoint has a rate limit of 1 request per second.")
 @api.param("gene_query", "***HGNC gene symbol, HGNC ID, or transcript ID***\n"
                          "\nCurrent supported transcript IDs"
@@ -254,7 +256,7 @@ class Gene2transcriptsClass(Resource):
 
 
 @api.route("/tools/gene2transcripts_v2/<string:gene_query>/<string:limit_transcripts>/<string:transcript_set>/"
-           "<string:genome_build>")
+           "<string:genome_build>", strict_slashes=False)
 @api.doc(description="This endpoint has a rate limit of 1 request per second.")
 @api.param("gene_query", "***HGNC gene symbol, HGNC ID, or transcript ID***\n"
                          "\nCurrent supported transcript IDs"
@@ -332,7 +334,7 @@ class Gene2transcriptsV2Class(Resource):
             return content
 
 
-@api.route("/tools/hgvs2reference/<string:hgvs_description>")
+@api.route("/tools/hgvs2reference/<string:hgvs_description>", strict_slashes=False)
 @api.param("hgvs_description", "***hgvs_description***\n"
                                "\nSequence variation description in the HGVS format\n"
                                "\n *Intronic descriptions in the context of transcript reference sequences are currently "
