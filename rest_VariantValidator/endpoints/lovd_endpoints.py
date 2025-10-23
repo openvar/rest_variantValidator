@@ -3,7 +3,7 @@ import ast
 from flask_restx import Namespace, Resource
 from rest_VariantValidator.utils import request_parser, representations, input_formatting
 from rest_VariantValidator.utils.object_pool import simple_variant_formatter_pool
-from rest_VariantValidator.utils.limiter import limiter
+from rest_VariantValidator.utils.limiter import limiter, formatter_pool_limit
 # get login authentication, if needed, or dummy auth if not present
 try:
     from VariantValidator_APIs.db_auth.verify_password import auth
@@ -28,7 +28,7 @@ api = Namespace('LOVD', description='LOVD API Endpoints')
 
 @api.route("/lovd/<string:genome_build>/<string:variant_description>/<string:transcript_model>/"
            "<string:select_transcripts>/<string:checkonly>/<string:liftover>", strict_slashes=False)
-@api.doc(description="This endpoint has a rate limit of 4 requests per second.")
+@api.doc(description="This endpoint uses a dynamic rate limit based on pool availability.")
 @api.param("variant_description", "***Genomic HGVS***\n"
                                   ">   - NC_000017.10:g.48275363C>A\n"
                                   "\n***Pseudo-VCF***\n"
@@ -67,57 +67,58 @@ api = Namespace('LOVD', description='LOVD API Endpoints')
                         ">   - primary - (lift to primary assembly only)\n"
                         ">   - False")
 class LOVDClass(Resource):
-    # Add documentation about the parser
     @api.expect(parser, validate=True)
     @auth.login_required()
-    @limiter.limit("4/second")
+    @limiter.limit(formatter_pool_limit)  # <-- dynamic limiter
     def get(self, genome_build, variant_description, transcript_model, select_transcripts, checkonly, liftover, user_id=None):
-        if transcript_model == 'None' or transcript_model == 'none':
+        # Normalize input values
+        if transcript_model in ('None', 'none'):
             transcript_model = None
-        if select_transcripts == 'None' or select_transcripts == 'none':
+        if select_transcripts in ('None', 'none'):
             select_transcripts = None
-        if checkonly == 'False' or checkonly == 'false':
+        if checkonly in ('False', 'false'):
             checkonly = False
-        if checkonly == 'True' or checkonly == 'true':
+        if checkonly in ('True', 'true'):
             checkonly = True
-        if liftover == 'True' or liftover == 'true':
+        if liftover in ('True', 'true'):
             liftover = True
-        if liftover == 'False' or liftover == 'false':
+        if liftover in ('False', 'false'):
             liftover = False
 
-        # Import formatter object from pool
+        # Get a formatter from the pool
         simple_formatter = simple_variant_formatter_pool.get()
 
         # Convert inputs to JSON arrays
         variant_description = input_formatting.format_input(variant_description)
         select_transcripts = input_formatting.format_input(select_transcripts)
+        if select_transcripts == '["all"]':
+            select_transcripts = "all"
+        if select_transcripts == '["raw"]':
+            select_transcripts = "raw"
 
         try:
-            content = simple_formatter.format(variant_description, genome_build, transcript_model,
-                                              select_transcripts, checkonly, liftover)
+            content = simple_formatter.format(
+                variant_description, genome_build, transcript_model,
+                select_transcripts, checkonly, liftover
+            )
         except Exception as e:
-            # Handle the exception and customize the error response
             return {"error": str(e)}, 500
         finally:
             simple_variant_formatter_pool.return_object(simple_formatter)
 
+        # Convert OrderedDict to normal dict
         to_dict = ordereddict_to_dict(content)
-        content = str(to_dict)
-        content = content.replace("'", '"')
-        content = ast.literal_eval(content)
+        content = ast.literal_eval(str(to_dict).replace("'", '"'))
 
-        # Collect Arguments
+        # Parse query arguments
         args = parser.parse_args()
 
-        # Overrides the default response route so that the standard HTML URL can return any specified format
+        # Return content in requested format
         if args['content-type'] == 'application/json':
-            # example: http://127.0.0.1:5000.....bob?content-type=application/json
             return representations.application_json(content, 200, None)
-        # example: http://127.0.0.1:5000.....?content-type=text/xml
         elif args['content-type'] == 'text/xml':
             return representations.xml(str(content), 200, None)
         else:
-            # Return the api default output
             return content
 
 
