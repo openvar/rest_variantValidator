@@ -3,7 +3,7 @@ import ast
 from flask_restx import Namespace, Resource
 from rest_VariantValidator.utils import request_parser, representations, input_formatting
 from rest_VariantValidator.utils.object_pool import simple_variant_formatter_pool
-from rest_VariantValidator.utils.limiter import limiter, formatter_pool_limit
+from rest_VariantValidator.utils.limiter import formatter_pool_limit
 # get login authentication, if needed, or dummy auth if not present
 try:
     from VariantValidator_APIs.db_auth.verify_password import auth
@@ -28,7 +28,8 @@ api = Namespace('LOVD', description='LOVD API Endpoints')
 
 @api.route("/lovd/<string:genome_build>/<string:variant_description>/<string:transcript_model>/"
            "<string:select_transcripts>/<string:checkonly>/<string:liftover>", strict_slashes=False)
-@api.doc(description="This endpoint uses a dynamic rate limit based on pool availability.")
+@api.doc(description="This endpoint uses a dynamic blocking limiter based on pool availability. "
+                     "If all formatter objects are busy, requests wait up to 60 seconds.")
 @api.param("variant_description", "***Genomic HGVS***\n"
                                   ">   - NC_000017.10:g.48275363C>A\n"
                                   "\n***Pseudo-VCF***\n"
@@ -40,7 +41,7 @@ api = Namespace('LOVD', description='LOVD API Endpoints')
                                   ">   - *Recommended maximum is 10 variants per submission*")
 @api.param("transcript_model", "***Accepted:***\n"
                                ">   - refseq (return data for RefSeq transcript models)\n"
-                               ">   - ensembl (return data for ensembl transcript models)\n"
+                               ">   - ensembl (return data for Ensembl transcript models)\n"
                                ">   - all")
 @api.param("select_transcripts", "***Return all possible transcripts***\n"
                                  ">   None or all (all transcripts at the latest versions)\n"
@@ -58,18 +59,17 @@ api = Namespace('LOVD', description='LOVD API Endpoints')
                            ">   - hg19\n"
                            ">   - hg38\n")
 @api.param("checkonly", "***Accepted:***\n"
-                        ">   - True (return ONLY the genomic variant descriptions and not transcript and protein"
-                        " descriptions)\n"
+                        ">   - True (return ONLY the genomic variant descriptions and not transcript and protein descriptions)\n"
                         ">   - False\n"
                         ">   - tx (Stop at transcript level, exclude protein)")
 @api.param("liftover", "***Accepted***\n"
-                        ">   - True - (liftover to all genomic loci)\n"
-                        ">   - primary - (lift to primary assembly only)\n"
-                        ">   - False")
+                       ">   - True - (liftover to all genomic loci)\n"
+                       ">   - primary - (lift to primary assembly only)\n"
+                       ">   - False")
 class LOVDClass(Resource):
     @api.expect(parser, validate=True)
     @auth.login_required()
-    @limiter.limit(formatter_pool_limit)  # <-- dynamic limiter
+    @formatter_pool_limit()  # <-- New blocking limiter decorator
     def get(self, genome_build, variant_description, transcript_model, select_transcripts, checkonly, liftover, user_id=None):
         # Normalize input values
         if transcript_model in ('None', 'none'):
@@ -85,7 +85,7 @@ class LOVDClass(Resource):
         if liftover in ('False', 'false'):
             liftover = False
 
-        # Get a formatter from the pool
+        # Acquire a formatter object from the pool (may block for up to 60 seconds)
         simple_formatter = simple_variant_formatter_pool.get()
 
         # Convert inputs to JSON arrays
@@ -101,6 +101,10 @@ class LOVDClass(Resource):
                 variant_description, genome_build, transcript_model,
                 select_transcripts, checkonly, liftover
             )
+        except TimeoutError:
+            return {
+                "error": "Server busy — all processing slots are currently in use. Please retry later."
+            }, 429
         except Exception as e:
             return {"error": str(e)}, 500
         finally:
