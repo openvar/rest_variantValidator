@@ -15,5 +15,4 @@ build
 dist
 rest_VariantValidator.egg-info
 .DS_Store
-
-
+__pycache__

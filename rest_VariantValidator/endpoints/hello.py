@@ -22,7 +22,7 @@ We also need to re-assign the route ans other decorated functions to api
 """
 
 
-@api.route("/")
+@api.route("/", strict_slashes=False)
 class HelloClass(Resource):
 
     # Add documentation about the parser

@@ -56,5 +56,19 @@ CustomLog /local/apache2/log/access_log for_pound
 
 ```
 
+## Flask configuration
+
+rest_variantValidator is a Flask application. Flask can be
+[configured](https://flask.palletsprojects.com/en/stable/config/)
+using its
+[prefixed environment variable](https://flask.palletsprojects.com/en/stable/config/#configuring-from-environment-variables)
+configuration mechanism, so documented settings can be set with a prefix 
+of `FLASK_`.
+
+This mechanism is also used for Flask extensions such as the
+[Flask-Limiter](https://github.com/alisaifee/flask-limiter/tree/master)
+rate limiter this uses, which can be disabled by setting 
+`FLASK_RATELIMIT_ENABLED=`.
+
 ## Additional resources
 We are compiling a number of jupyter notebook user guides for rest_variantValidator in [rest_variantValidator_manuals](https://github.com/openvar/rest_variantValidator_manuals)

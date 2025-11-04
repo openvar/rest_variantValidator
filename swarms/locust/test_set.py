@@ -370,6 +370,6 @@ def vf_list():
         "NC_000005.9:g.35058667_35058668AG=",
         "NC_000005.9:g.35058667_35058668AG="
     ]
-    random_number = random.randint(0, 319)
+    random_number = random.randint(0, len(tests) - 1)
     odd_task = tests[random_number]
     return odd_task

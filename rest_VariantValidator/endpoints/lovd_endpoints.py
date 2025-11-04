@@ -27,7 +27,7 @@ api = Namespace('LOVD', description='LOVD API Endpoints')
 
 
 @api.route("/lovd/<string:genome_build>/<string:variant_description>/<string:transcript_model>/"
-           "<string:select_transcripts>/<string:checkonly>/<string:liftover>")
+           "<string:select_transcripts>/<string:checkonly>/<string:liftover>", strict_slashes=False)
 @api.doc(description="This endpoint has a rate limit of 4 requests per second.")
 @api.param("variant_description", "***Genomic HGVS***\n"
                                   ">   - NC_000017.10:g.48275363C>A\n"
@@ -71,7 +71,7 @@ class LOVDClass(Resource):
     @api.expect(parser, validate=True)
     @auth.login_required()
     @limiter.limit("4/second")
-    def get(self, genome_build, variant_description, transcript_model, select_transcripts, checkonly, liftover):
+    def get(self, genome_build, variant_description, transcript_model, select_transcripts, checkonly, liftover, user_id=None):
         if transcript_model == 'None' or transcript_model == 'none':
             transcript_model = None
         if select_transcripts == 'None' or select_transcripts == 'none':

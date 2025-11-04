@@ -90,3 +90,7 @@ requires = [
     "wheel"
 ]
 build-backend = "setuptools.build_meta"
+
+# Pytest configuration
+[tool.pytest.ini_options]
+testpaths = ["tests"]

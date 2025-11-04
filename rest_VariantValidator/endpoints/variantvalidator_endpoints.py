@@ -19,7 +19,8 @@ parser_g2t = request_parser_g2t.parser
 api = Namespace('VariantValidator', description='VariantValidator API Endpoints')
 
 
-@api.route("/variantvalidator/<string:genome_build>/<string:variant_description>/<string:select_transcripts>")
+@api.route("/variantvalidator/<string:genome_build>/<string:variant_description>/<string:select_transcripts>",
+           strict_slashes=False)
 @api.doc(description="This endpoint has a rate limit of 2 requests per second.")
 @api.param("select_transcripts", "***Return all possible transcripts***\n"
                                  "\n***Return only 'select' transcripts***\n"
@@ -59,7 +60,7 @@ class VariantValidatorClass(Resource):
     @api.expect(parser, validate=True)
     @auth.login_required()
     @limiter.limit("2/second")
-    def get(self, genome_build, variant_description, select_transcripts):
+    def get(self, genome_build, variant_description, select_transcripts, user_id=None):
 
         # Import object from vval pool
         vval = vval_object_pool.get_object()
@@ -88,6 +89,10 @@ class VariantValidatorClass(Resource):
             select_transcripts = "all"
         if select_transcripts == '["raw"]':
             select_transcripts = "raw"
+        if select_transcripts == '["mane_select"]':
+            select_transcripts = "mane_select"
+        if select_transcripts == '["mane"]':
+            select_transcripts = "mane"
 
         try:
             # Validate using the VariantValidator Python Library
@@ -114,7 +119,8 @@ class VariantValidatorClass(Resource):
             # Return the api default output
             return content
 
-@api.route("/variantvalidator_ensembl/<string:genome_build>/<string:variant_description>/<string:select_transcripts>")
+@api.route("/variantvalidator_ensembl/<string:genome_build>/<string:variant_description>/<string:select_transcripts>",
+           strict_slashes=False)
 @api.doc(description="This endpoint has a rate limit of 2 requests per second.")
 @api.param("select_transcripts", "***Return all possible transcripts***\n"
                                  "\n***Return only 'select' transcripts***\n"
@@ -151,7 +157,7 @@ class VariantValidatorEnsemblClass(Resource):
     @api.expect(parser, validate=True)
     @auth.login_required()
     @limiter.limit("2/second")
-    def get(self, genome_build, variant_description, select_transcripts):
+    def get(self, genome_build, variant_description, select_transcripts, user_id=None):
 
         # Import object from vval pool
         vval = vval_object_pool.get_object()
@@ -180,6 +186,10 @@ class VariantValidatorEnsemblClass(Resource):
             select_transcripts = "all"
         if select_transcripts == '["raw"]':
             select_transcripts = "raw"
+        if select_transcripts == '["mane_select"]':
+            select_transcripts = "mane_select"
+        if select_transcripts == '["mane"]':
+            select_transcripts = "mane"
 
         try:
             # Validate using the VariantValidator Python Library
@@ -207,7 +217,7 @@ class VariantValidatorEnsemblClass(Resource):
             return content
 
 
-@api.route("/tools/gene2transcripts/<string:gene_query>")
+@api.route("/tools/gene2transcripts/<string:gene_query>", strict_slashes=False)
 @api.doc(description="This endpoint has a rate limit of 1 request per second.")
 @api.param("gene_query", "***HGNC gene symbol, HGNC ID, or transcript ID***\n"
                          "\nCurrent supported transcript IDs"
@@ -221,7 +231,7 @@ class Gene2transcriptsClass(Resource):
     @api.expect(parser, validate=True)
     @auth.login_required()
     @limiter.limit("1/second")
-    def get(self, gene_query):
+    def get(self, gene_query, user_id=None):
 
         # Get vvval object from pool
         vval = g2t_object_pool.get_object()
@@ -254,7 +264,7 @@ class Gene2transcriptsClass(Resource):
 
 
 @api.route("/tools/gene2transcripts_v2/<string:gene_query>/<string:limit_transcripts>/<string:transcript_set>/"
-           "<string:genome_build>")
+           "<string:genome_build>", strict_slashes=False)
 @api.doc(description="This endpoint has a rate limit of 1 request per second.")
 @api.param("gene_query", "***HGNC gene symbol, HGNC ID, or transcript ID***\n"
                          "\nCurrent supported transcript IDs"
@@ -284,7 +294,7 @@ class Gene2transcriptsV2Class(Resource):
     @api.expect(parser_g2t, validate=True)
     @auth.login_required()
     @limiter.limit("1/second")
-    def get(self, gene_query, limit_transcripts, transcript_set, genome_build):
+    def get(self, gene_query, limit_transcripts, transcript_set, genome_build, user_id=None):
 
         # Get vval object from pool
         vval = g2t_object_pool.get_object()
@@ -332,7 +342,7 @@ class Gene2transcriptsV2Class(Resource):
             return content
 
 
-@api.route("/tools/hgvs2reference/<string:hgvs_description>")
+@api.route("/tools/hgvs2reference/<string:hgvs_description>", strict_slashes=False)
 @api.param("hgvs_description", "***hgvs_description***\n"
                                "\nSequence variation description in the HGVS format\n"
                                "\n *Intronic descriptions in the context of transcript reference sequences are currently "
@@ -342,7 +352,7 @@ class Hgvs2referenceClass(Resource):
     @api.expect(parser, validate=True)
     @auth.login_required()
     @limiter.limit("4/second")
-    def get(self, hgvs_description):
+    def get(self, hgvs_description, user_id=None):
 
         # Get vval object from pool
         vval = vval_object_pool.get_object()

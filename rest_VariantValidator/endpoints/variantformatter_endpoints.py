@@ -18,7 +18,7 @@ api = Namespace('VariantFormatter', description='Variantformatter API Endpoints'
 
 
 @api.route("/variantformatter/<string:genome_build>/<string:variant_description>/<string:transcript_model>/"
-           "<string:select_transcripts>/<string:checkonly>")
+           "<string:select_transcripts>/<string:checkonly>", strict_slashes=False)
 @api.doc(description="This endpoint has a rate limit of 4 requests per second.")
 @api.param("variant_description", "***Genomic HGVS***\n"
                                   ">   - NC_000017.10:g.48275363C>A\n"
@@ -55,7 +55,7 @@ class VariantFormatterClass(Resource):
     @api.expect(parser, validate=True)
     @auth.login_required()
     @limiter.limit("4/second")
-    def get(self, genome_build, variant_description, transcript_model, select_transcripts, checkonly):
+    def get(self, genome_build, variant_description, transcript_model, select_transcripts, checkonly, user_id=None):
         if transcript_model == 'None' or transcript_model == 'none':
             transcript_model = None
         if select_transcripts == 'None' or select_transcripts == 'none':
@@ -75,6 +75,10 @@ class VariantFormatterClass(Resource):
             select_transcripts = "all"
         if select_transcripts == '["raw"]':
             select_transcripts = "raw"
+        if select_transcripts == '["mane"]':
+            select_transcripts = "mane"
+        if select_transcripts == '["mane_select"]':
+            select_transcripts = "mane_select"
 
         try:
             content = simple_formatter.format(variant_description, genome_build, transcript_model,
