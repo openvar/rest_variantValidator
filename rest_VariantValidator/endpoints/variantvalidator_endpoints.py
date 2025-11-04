@@ -89,6 +89,10 @@ class VariantValidatorClass(Resource):
             select_transcripts = "all"
         if select_transcripts == '["raw"]':
             select_transcripts = "raw"
+        if select_transcripts == '["mane_select"]':
+            select_transcripts = "mane_select"
+        if select_transcripts == '["mane"]':
+            select_transcripts = "mane"
 
         try:
             # Validate using the VariantValidator Python Library
@@ -182,6 +186,10 @@ class VariantValidatorEnsemblClass(Resource):
             select_transcripts = "all"
         if select_transcripts == '["raw"]':
             select_transcripts = "raw"
+        if select_transcripts == '["mane_select"]':
+            select_transcripts = "mane_select"
+        if select_transcripts == '["mane"]':
+            select_transcripts = "mane"
 
         try:
             # Validate using the VariantValidator Python Library
