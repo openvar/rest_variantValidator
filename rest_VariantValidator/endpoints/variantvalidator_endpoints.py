@@ -199,7 +199,8 @@ class VariantValidatorEnsemblClass(Resource):
 
 
 @api.route("/tools/gene2transcripts/<string:gene_query>", strict_slashes=False)
-@api.doc(description="Recommended: 1 requests/sec to avoid hitting limits; higher rates may be throttled dynamically.")
+# @api.doc(description="Recommended: 1 requests/sec to avoid hitting limits; higher rates may be throttled dynamically.")
+@api.doc(False)
 @api.param("gene_query", "***HGNC gene symbol, HGNC ID, or transcript ID***\n"
                          "\nCurrent supported transcript IDs"
                          "\n- RefSeq\n"
