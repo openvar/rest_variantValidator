@@ -78,8 +78,14 @@ class VariantValidatorClass(Resource):
 
         variant_description = input_formatting.format_input(variant_description)
         select_transcripts = input_formatting.format_input(select_transcripts)
-        if select_transcripts == '["all"]': select_transcripts = "all"
-        if select_transcripts == '["raw"]': select_transcripts = "raw"
+        if select_transcripts == '["all"]':
+            select_transcripts = "all"
+        if select_transcripts == '["raw"]':
+            select_transcripts = "raw"
+        if select_transcripts == '["mane_select"]':
+            select_transcripts = "mane_select"
+        if select_transcripts == '["mane"]':
+            select_transcripts = "mane"
 
         try:
             validate = vval.validate(variant_description, genome_build, select_transcripts,
@@ -123,8 +129,14 @@ class VariantValidatorEnsemblClass(Resource):
 
         variant_description = input_formatting.format_input(variant_description)
         select_transcripts = input_formatting.format_input(select_transcripts)
-        if select_transcripts == '["all"]': select_transcripts = "all"
-        if select_transcripts == '["raw"]': select_transcripts = "raw"
+        if select_transcripts == '["all"]':
+            select_transcripts = "all"
+        if select_transcripts == '["raw"]':
+            select_transcripts = "raw"
+        if select_transcripts == '["mane_select"]':
+            select_transcripts = "mane_select"
+        if select_transcripts == '["mane"]':
+            select_transcripts = "mane"
 
         try:
             validate = vval.validate(variant_description, genome_build, select_transcripts,

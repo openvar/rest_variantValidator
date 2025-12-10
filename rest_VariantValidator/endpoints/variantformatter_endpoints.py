@@ -76,6 +76,10 @@ class VariantFormatterClass(Resource):
             select_transcripts = "all"
         if select_transcripts == '["raw"]':
             select_transcripts = "raw"
+        if select_transcripts == '["mane"]':
+            select_transcripts = "mane"
+        if select_transcripts == '["mane_select"]':
+            select_transcripts = "mane_select"
 
         try:
             content = simple_formatter.format(variant_description, genome_build, transcript_model,
