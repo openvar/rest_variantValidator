@@ -3,7 +3,8 @@ import ast
 from flask_restx import Namespace, Resource
 from rest_VariantValidator.utils import request_parser, representations, input_formatting
 from rest_VariantValidator.utils.object_pool import simple_variant_formatter_pool
-from rest_VariantValidator.utils.limiter import limiter
+from rest_VariantValidator.utils.limiter import limiter, fmt_rate  # <- import fmt_rate
+
 # get login authentication, if needed, or dummy auth if not present
 try:
     from VariantValidator_APIs.db_auth.verify_password import auth
@@ -28,7 +29,7 @@ api = Namespace('LOVD', description='LOVD API Endpoints')
 
 @api.route("/lovd/<string:genome_build>/<string:variant_description>/<string:transcript_model>/"
            "<string:select_transcripts>/<string:checkonly>/<string:liftover>", strict_slashes=False)
-@api.doc(description="This endpoint has a rate limit of 4 requests per second.")
+@api.doc(description="Recommended: 4 requests/sec to avoid hitting limits; higher rates may be throttled dynamically.")
 @api.param("variant_description", "***Genomic HGVS***\n"
                                   ">   - NC_000017.10:g.48275363C>A\n"
                                   "\n***Pseudo-VCF***\n"
@@ -39,15 +40,15 @@ api = Namespace('LOVD', description='LOVD API Endpoints')
                                   ">   - *Multiple variants can be submitted, separated by the pipe '|' character*\n"
                                   ">   - *Recommended maximum is 10 variants per submission*")
 @api.param("transcript_model", "***Accepted:***\n"
-                               ">   - refseq (return data for RefSeq transcript models)\n"
-                               ">   - ensembl (return data for ensembl transcript models)\n"
+                               ">   - refseq\n"
+                               ">   - ensembl\n"
                                ">   - all")
 @api.param("select_transcripts", "***Return all possible transcripts***\n"
-                                 ">   None or all (all transcripts at the latest versions)\n"
-                                 ">   raw (all transcripts all version)\n"
-                                 ">   select (select transcripts)\n"
-                                 ">   mane (MANE Select and MANE Plus Clinical transcripts)\n"
-                                 ">   mane_select (MANE Select transcripts)\n"
+                                 ">   None or all\n"
+                                 ">   raw\n"
+                                 ">   select\n"
+                                 ">   mane\n"
+                                 ">   mane_select\n"
                                  "\n***Single***\n"
                                  ">   NM_000093.4\n"
                                  "\n***Multiple***\n"
@@ -56,70 +57,94 @@ api = Namespace('LOVD', description='LOVD API Endpoints')
                            ">   - GRCh37\n"
                            ">   - GRCh38\n"
                            ">   - hg19\n"
-                           ">   - hg38\n")
+                           ">   - hg38")
 @api.param("checkonly", "***Accepted:***\n"
-                        ">   - True (return ONLY the genomic variant descriptions and not transcript and protein"
-                        " descriptions)\n"
+                        ">   - True\n"
                         ">   - False\n"
-                        ">   - tx (Stop at transcript level, exclude protein)")
+                        ">   - tx")
 @api.param("liftover", "***Accepted***\n"
-                        ">   - True - (liftover to all genomic loci)\n"
-                        ">   - primary - (lift to primary assembly only)\n"
+                        ">   - True\n"
+                        ">   - primary\n"
                         ">   - False")
 class LOVDClass(Resource):
-    # Add documentation about the parser
     @api.expect(parser, validate=True)
     @auth.login_required()
-    @limiter.limit("4/second")
+    @limiter.limit(fmt_rate)  # <- dynamic rate limiter
     def get(self, genome_build, variant_description, transcript_model, select_transcripts, checkonly, liftover, user_id=None):
-        if transcript_model == 'None' or transcript_model == 'none':
-            transcript_model = None
-        if select_transcripts == 'None' or select_transcripts == 'none':
-            select_transcripts = None
-        if checkonly == 'False' or checkonly == 'false':
-            checkonly = False
-        if checkonly == 'True' or checkonly == 'true':
-            checkonly = True
-        if liftover == 'True' or liftover == 'true':
-            liftover = True
-        if liftover == 'False' or liftover == 'false':
-            liftover = False
 
-        # Import formatter object from pool
+        # Normalise incoming values
+        if transcript_model.lower() == 'none':
+            transcript_model = None
+        if select_transcripts.lower() == 'none':
+            select_transcripts = None
+
+        # checkonly supports True/False/tx
+        if checkonly.lower() == 'false':
+            checkonly = False
+        elif checkonly.lower() == 'true':
+            checkonly = True
+        # 'tx' passes through unchanged
+
+        # liftover supports True/False/"primary"
+        if liftover.lower() == 'true':
+            liftover = True
+        elif liftover.lower() == 'false':
+            liftover = False
+        # 'primary' passes through unchanged
+
+        # Get formatter instance from pool
         simple_formatter = simple_variant_formatter_pool.get()
 
-        # Convert inputs to JSON arrays
-        variant_description = input_formatting.format_input(variant_description)
-        select_transcripts = input_formatting.format_input(select_transcripts)
-
         try:
-            content = simple_formatter.format(variant_description, genome_build, transcript_model,
-                                              select_transcripts, checkonly, liftover)
+            # Convert multi-value inputs
+            variant_description = input_formatting.format_input(variant_description)
+            select_transcripts = input_formatting.format_input(select_transcripts)
+
+            # Escape single-value lists
+            if select_transcripts == '["all"]':
+                select_transcripts = "all"
+            if select_transcripts == '["raw"]':
+                select_transcripts = "raw"
+            if select_transcripts == '["mane"]':
+                select_transcripts = "mane"
+            if select_transcripts == '["mane_select"]':
+                select_transcripts = "mane_select"
+
+            # Format via pool object
+            content = simple_formatter.format(
+                variant_description,
+                genome_build,
+                transcript_model,
+                select_transcripts,
+                checkonly,
+                liftover
+            )
+
         except Exception as e:
-            # Handle the exception and customize the error response
             return {"error": str(e)}, 500
+
         finally:
             simple_variant_formatter_pool.return_object(simple_formatter)
 
+        # Convert ordered dict → plain dict
         to_dict = ordereddict_to_dict(content)
-        content = str(to_dict)
-        content = content.replace("'", '"')
+
+        # Fix quotes via ast (this matches your existing behaviour)
+        content = str(to_dict).replace("'", '"')
         content = ast.literal_eval(content)
 
         # Collect Arguments
         args = parser.parse_args()
 
-        # Overrides the default response route so that the standard HTML URL can return any specified format
+        # Return in requested format
         if args['content-type'] == 'application/json':
-            # example: http://127.0.0.1:5000.....bob?content-type=application/json
             return representations.application_json(content, 200, None)
-        # example: http://127.0.0.1:5000.....?content-type=text/xml
+
         elif args['content-type'] == 'text/xml':
             return representations.xml(str(content), 200, None)
-        else:
-            # Return the api default output
-            return content
 
+        else:
+            return content
 
 # <LICENSE>
 # Copyright (C) 2016-2025 VariantValidator Contributors

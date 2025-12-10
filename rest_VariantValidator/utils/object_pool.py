@@ -11,10 +11,18 @@ class ObjectPool:
         self.lock = threading.Lock()
         self.condition = threading.Condition(self.lock)
 
+    def available(self):
+        """Number of free objects."""
+        with self.lock:
+            return len(self.objects)
+
+    def total(self):
+        """Total configured capacity of pool."""
+        return self.pool_size
+
     def get_object(self):
         with self.condition:
             while not self.objects:
-                # Wait until an object becomes available
                 self.condition.wait()
             return self.objects.pop()
 
@@ -22,7 +30,7 @@ class ObjectPool:
         with self.condition:
             if len(self.objects) < self.max_pool_size:
                 self.objects.append(obj)
-                self.condition.notify()  # Notify waiting threads that an object is available
+                self.condition.notify()
 
 
 class SimpleVariantFormatterPool:
@@ -33,10 +41,16 @@ class SimpleVariantFormatterPool:
         self.lock = threading.Lock()
         self.condition = threading.Condition(self.lock)
 
+    def available(self):
+        with self.lock:
+            return len(self.pool)
+
+    def total(self):
+        return self.pool_size
+
     def get(self):
         with self.condition:
             while not self.pool:
-                # Wait until a formatter becomes available
                 self.condition.wait()
             return self.pool.pop()
 
@@ -44,7 +58,7 @@ class SimpleVariantFormatterPool:
         with self.condition:
             if len(self.pool) < self.max_pool_size:
                 self.pool.append(obj)
-                self.condition.notify()  # Notify waiting threads that a formatter is available
+                self.condition.notify()
 
 
 # Create shared object pools
