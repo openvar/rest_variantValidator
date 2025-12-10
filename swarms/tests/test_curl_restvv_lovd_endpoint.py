@@ -5,7 +5,7 @@ import os
 
 # Updated base URL
 BASE_URL = "https://www183.lamp.le.ac.uk/LOVD/lovd"
-THROTTLE_SECONDS = 0.04  # ~3 requests/sec (API allows 4/sec)
+THROTTLE_SECONDS = 0  # ~3 requests/sec (API allows 4/sec)
 
 def run_curl(
     variant,
