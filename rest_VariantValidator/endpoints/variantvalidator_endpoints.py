@@ -2,7 +2,7 @@
 from flask_restx import Namespace, Resource
 from rest_VariantValidator.utils import exceptions, request_parser, representations, input_formatting, request_parser_g2t
 from rest_VariantValidator.utils.object_pool import vval_object_pool, g2t_object_pool
-from rest_VariantValidator.utils.limiter import limiter
+from rest_VariantValidator.utils.limiter import limiter, vval_rate, g2t_rate
 # get login authentication, if needed, or dummy auth if not present
 try:
     from VariantValidator_APIs.db_auth.verify_password import auth
@@ -21,7 +21,7 @@ api = Namespace('VariantValidator', description='VariantValidator API Endpoints'
 
 @api.route("/variantvalidator/<string:genome_build>/<string:variant_description>/<string:select_transcripts>",
            strict_slashes=False)
-@api.doc(description="This endpoint has a rate limit of 2 requests per second.")
+@api.doc(description="Recommended: 3 requests/sec to avoid hitting limits; higher rates may be throttled dynamically.")
 @api.param("select_transcripts", "***Return all possible transcripts***\n"
                                  "\n***Return only 'select' transcripts***\n"
                                  ">   select\n"
@@ -56,10 +56,9 @@ api = Namespace('VariantValidator', description='VariantValidator API Endpoints'
                            ">   - hg19\n"
                            ">   - hg38")
 class VariantValidatorClass(Resource):
-    # Add documentation about the parser
     @api.expect(parser, validate=True)
     @auth.login_required()
-    @limiter.limit("2/second")
+    @limiter.limit(vval_rate)  # <- dynamic limiter
     def get(self, genome_build, variant_description, select_transcripts, user_id=None):
 
         # Import object from vval pool
@@ -100,7 +99,6 @@ class VariantValidatorClass(Resource):
                                      transcript_set=transcript_model, lovd_syntax_check=True)
             content = validate.format_as_dict(with_meta=True)
         except Exception as e:
-            # Handle the exception and customize the error response
             return {"error": str(e)}, 500
         finally:
             vval_object_pool.return_object(vval)
@@ -108,20 +106,17 @@ class VariantValidatorClass(Resource):
         # Collect Arguments
         args = parser.parse_args()
 
-        # Overrides the default response route so that the standard HTML URL can return any specified format
         if args['content-type'] == 'application/json':
-            # example: http://127.0.0.1:5000.....bob?content-type=application/json
             return representations.application_json(content, 200, None)
-        # example: http://127.0.0.1:5000.....?content-type=text/xml
         elif args['content-type'] == 'text/xml':
             return representations.xml(content, 200, None)
         else:
-            # Return the api default output
             return content
+
 
 @api.route("/variantvalidator_ensembl/<string:genome_build>/<string:variant_description>/<string:select_transcripts>",
            strict_slashes=False)
-@api.doc(description="This endpoint has a rate limit of 2 requests per second.")
+@api.doc(description="Recommended: 3 requests/sec to avoid hitting limits; higher rates may be throttled dynamically.")
 @api.param("select_transcripts", "***Return all possible transcripts***\n"
                                  "\n***Return only 'select' transcripts***\n"
                                  ">   select\n"
@@ -153,19 +148,14 @@ class VariantValidatorClass(Resource):
                            ">   - hg19\n"
                            ">   - hg38")
 class VariantValidatorEnsemblClass(Resource):
-    # Add documentation about the parser
     @api.expect(parser, validate=True)
     @auth.login_required()
-    @limiter.limit("2/second")
+    @limiter.limit(vval_rate)  # <- dynamic limiter
     def get(self, genome_build, variant_description, select_transcripts, user_id=None):
 
-        # Import object from vval pool
         vval = vval_object_pool.get_object()
-
-        # set transcript_model
         transcript_model = "ensembl"
 
-        # Switch off select_transcripts = all or raw for genomic variants
         if ("all" in select_transcripts or "raw" in select_transcripts) and "auth" not in select_transcripts:
             if "c." not in variant_description and "n." not in variant_description and "r." not in variant_description \
                     and "p." not in variant_description:
@@ -179,7 +169,6 @@ class VariantValidatorEnsemblClass(Resource):
         elif "auth_raw" in select_transcripts:
             select_transcripts = "raw"
 
-        # Convert inputs to JSON arrays
         variant_description = input_formatting.format_input(variant_description)
         select_transcripts = input_formatting.format_input(select_transcripts)
         if select_transcripts == '["all"]':
@@ -192,33 +181,26 @@ class VariantValidatorEnsemblClass(Resource):
             select_transcripts = "mane"
 
         try:
-            # Validate using the VariantValidator Python Library
             validate = vval.validate(variant_description, genome_build, select_transcripts,
                                      transcript_set=transcript_model, lovd_syntax_check=True)
             content = validate.format_as_dict(with_meta=True)
         except Exception as e:
-            # Handle the exception and customize the error response
             return {"error": str(e)}, 500
         finally:
             vval_object_pool.return_object(vval)
 
-        # Collect Arguments
         args = parser.parse_args()
-
-        # Overrides the default response route so that the standard HTML URL can return any specified format
         if args['content-type'] == 'application/json':
-            # example: http://127.0.0.1:5000.....bob?content-type=application/json
             return representations.application_json(content, 200, None)
-        # example: http://127.0.0.1:5000.....?content-type=text/xml
         elif args['content-type'] == 'text/xml':
             return representations.xml(content, 200, None)
         else:
-            # Return the api default output
             return content
 
 
 @api.route("/tools/gene2transcripts/<string:gene_query>", strict_slashes=False)
-@api.doc(description="This endpoint has a rate limit of 1 request per second.")
+# @api.doc(description="Recommended: 1 requests/sec to avoid hitting limits; higher rates may be throttled dynamically.")
+@api.doc(False)
 @api.param("gene_query", "***HGNC gene symbol, HGNC ID, or transcript ID***\n"
                          "\nCurrent supported transcript IDs"
                          "\n- RefSeq\n"
@@ -227,16 +209,12 @@ class VariantValidatorEnsemblClass(Resource):
                                  ">   HGNC:2197\n"
                                  ">   NM_000088.4\n")
 class Gene2transcriptsClass(Resource):
-    # Add documentation about the parser
     @api.expect(parser, validate=True)
     @auth.login_required()
-    @limiter.limit("1/second")
+    @limiter.limit(g2t_rate)  # <- dynamic limiter
     def get(self, gene_query, user_id=None):
 
-        # Get vvval object from pool
         vval = g2t_object_pool.get_object()
-
-        # Convert inputs to JSON arrays
         gene_query = input_formatting.format_input(gene_query)
 
         try:
@@ -248,24 +226,18 @@ class Gene2transcriptsClass(Resource):
         finally:
             g2t_object_pool.return_object(vval)
 
-        # Collect Arguments
         args = parser.parse_args()
-
-        # Overrides the default response route so that the standard HTML URL can return any specified format
         if args['content-type'] == 'application/json':
-            # example: http://127.0.0.1:5000.....bob?content-type=application/json
             return representations.application_json(content, 200, None)
-        # example: http://127.0.0.1:5000.....?content-type=text/xml
         elif args['content-type'] == 'text/xml':
             return representations.xml(content, 200, None)
         else:
-            # Return the api default output
             return content
 
 
 @api.route("/tools/gene2transcripts_v2/<string:gene_query>/<string:limit_transcripts>/<string:transcript_set>/"
            "<string:genome_build>", strict_slashes=False)
-@api.doc(description="This endpoint has a rate limit of 1 request per second.")
+@api.doc(description="Recommended: 2 requests/sec to avoid hitting limits; higher rates may be throttled dynamically.")
 @api.param("gene_query", "***HGNC gene symbol, HGNC ID, or transcript ID***\n"
                          "\nCurrent supported transcript IDs"
                          "\n- RefSeq or Ensembl\n"
@@ -290,25 +262,15 @@ class Gene2transcriptsClass(Resource):
 @api.param("genome_build", "***GRCh37 or GRCh38***\n"
                            "\nall = all builds, GRCh37 = GRCh37 only, GRCh38 = GRCh38 only")
 class Gene2transcriptsV2Class(Resource):
-    # Add documentation about the parser
     @api.expect(parser_g2t, validate=True)
     @auth.login_required()
-    @limiter.limit("1/second")
+    @limiter.limit(g2t_rate)  # <- dynamic limiter
     def get(self, gene_query, limit_transcripts, transcript_set, genome_build, user_id=None):
 
-        # Get vval object from pool
         vval = g2t_object_pool.get_object()
-
-        # Collect Arguments
         args = parser_g2t.parse_args()
-        if args['show_exon_info'] is True:
-            bypass_genomic_spans = False
-        elif args['show_exon_info'] is False:
-            bypass_genomic_spans = True
-        else:
-            bypass_genomic_spans = True
+        bypass_genomic_spans = not args.get('show_exon_info', True)
 
-        # Convert inputs to JSON arrays
         gene_query = input_formatting.format_input(gene_query)
         limit_transcripts = input_formatting.format_input(limit_transcripts)
         if len(limit_transcripts) == 1:
@@ -330,58 +292,46 @@ class Gene2transcriptsV2Class(Resource):
         finally:
             g2t_object_pool.return_object(vval)
 
-        # Overrides the default response route so that the standard HTML URL can return any specified format
         if args['content-type'] == 'application/json':
-            # example: http://127.0.0.1:5000.....bob?content-type=application/json
             return representations.application_json(content, 200, None)
-        # example: http://127.0.0.1:5000.....?content-type=text/xml
         elif args['content-type'] == 'text/xml':
             return representations.xml(content, 200, None)
         else:
-            # Return the api default output
             return content
 
 
 @api.route("/tools/hgvs2reference/<string:hgvs_description>", strict_slashes=False)
+@api.doc(description="Recommended: 3 requests/sec to avoid hitting limits; higher rates may be throttled dynamically.")
 @api.param("hgvs_description", "***hgvs_description***\n"
                                "\nSequence variation description in the HGVS format\n"
                                "\n *Intronic descriptions in the context of transcript reference sequences are currently "
                                "unsupported*")
 class Hgvs2referenceClass(Resource):
-    # Add documentation about the parser
     @api.expect(parser, validate=True)
     @auth.login_required()
-    @limiter.limit("4/second")
+    @limiter.limit(vval_rate)  # <- dynamic limiter
     def get(self, hgvs_description, user_id=None):
 
-        # Get vval object from pool
         vval = vval_object_pool.get_object()
 
         try:
             content = vval.hgvs2ref(hgvs_description)
         except Exception as e:
-            # Handle the exception and customize the error response
             return {"error": str(e)}, 500
         finally:
             vval_object_pool.return_object(vval)
 
-        # Collect Arguments
         args = parser.parse_args()
-
-        # Overrides the default response route so that the standard HTML URL can return any specified format
         if args['content-type'] == 'application/json':
-            # example: http://127.0.0.1:5000.....bob?content-type=application/json
             return representations.application_json(content, 200, None)
-        # example: http://127.0.0.1:5000.....?content-type=text/xml
         elif args['content-type'] == 'text/xml':
             return representations.xml(content, 200, None)
         else:
-            # Return the api default output
             return content
 
 
 # <LICENSE>
-# Copyright (C) 2016-2021 VariantValidator Contributors
+# Copyright (C) 2016-2025 VariantValidator Contributors
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
