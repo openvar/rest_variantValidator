@@ -2,7 +2,7 @@
 from flask_restx import Namespace, Resource
 from rest_VariantValidator.utils import request_parser, representations, input_formatting
 from rest_VariantValidator.utils.object_pool import simple_variant_formatter_pool
-from rest_VariantValidator.utils.limiter import limiter
+from rest_VariantValidator.utils.limiter import limiter, formatter_pool_limit
 # get login authentication, if needed, or dummy auth if not present
 try:
     from VariantValidator_APIs.db_auth.verify_password import auth
@@ -19,7 +19,7 @@ api = Namespace('VariantFormatter', description='Variantformatter API Endpoints'
 
 @api.route("/variantformatter/<string:genome_build>/<string:variant_description>/<string:transcript_model>/"
            "<string:select_transcripts>/<string:checkonly>", strict_slashes=False)
-@api.doc(description="This endpoint has a rate limit of 4 requests per second.")
+@api.doc(description="This endpoint uses a dynamic rate limit based on pool availability.")
 @api.param("variant_description", "***Genomic HGVS***\n"
                                   ">   - NC_000017.10:g.48275363C>A\n"
                                   "\n***Pseudo-VCF***\n"
@@ -54,18 +54,19 @@ class VariantFormatterClass(Resource):
     # Add documentation about the parser
     @api.expect(parser, validate=True)
     @auth.login_required()
-    @limiter.limit("4/second")
+    @limiter.limit(formatter_pool_limit)  # <-- dynamic limiter
     def get(self, genome_build, variant_description, transcript_model, select_transcripts, checkonly, user_id=None):
-        if transcript_model == 'None' or transcript_model == 'none':
+        # Normalize input values
+        if transcript_model in ('None', 'none'):
             transcript_model = None
-        if select_transcripts == 'None' or select_transcripts == 'none':
+        if select_transcripts in ('None', 'none'):
             select_transcripts = None
-        if checkonly == 'False' or checkonly == 'false':
+        if checkonly in ('False', 'false'):
             checkonly = False
-        if checkonly == 'True' or checkonly == 'true':
+        if checkonly in ('True', 'true'):
             checkonly = True
 
-        # Import formatter from pool
+        # Get a formatter from the pool
         simple_formatter = simple_variant_formatter_pool.get()
 
         # Convert inputs to JSON arrays
@@ -84,27 +85,23 @@ class VariantFormatterClass(Resource):
             content = simple_formatter.format(variant_description, genome_build, transcript_model,
                                               select_transcripts, checkonly)
         except Exception as e:
-            # Handle the exception and customize the error response
             return {"error": str(e)}, 500
         finally:
             simple_variant_formatter_pool.return_object(simple_formatter)
 
-        # Collect Arguments
+        # Parse query arguments
         args = parser.parse_args()
 
-        # Overrides the default response route so that the standard HTML URL can return any specified format
+        # Return content in requested format
         if args['content-type'] == 'application/json':
-            # example: http://127.0.0.1:5000.....bob?content-type=application/json
             return representations.application_json(content, 200, None)
-        # example: http://127.0.0.1:5000.....?content-type=text/xml
         elif args['content-type'] == 'text/xml':
             return representations.xml(content, 200, None)
         else:
-            # Return the api default output
             return content
 
 # <LICENSE>
-# Copyright (C) 2016-2025 VariantValidator Contributors
+# Copyright (C) 2016-2021 VariantValidator Contributors
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
