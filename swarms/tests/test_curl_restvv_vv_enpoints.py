@@ -7,7 +7,7 @@ import os
 # Base configuration
 # -------------------------------------------------------------------------
 
-BASE_URL = "https://www183.lamp.le.ac.uk/VariantValidator"
+BASE_URL = "https://www181.lamp.le.ac.uk/VariantValidator"
 THROTTLE_SECONDS = 0
 CURL_TIMEOUT = 30  # seconds
 
