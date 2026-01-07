@@ -30,6 +30,7 @@ def run_curl(
     """
     Run curl against the TerraCipher VariantValidator API and return parsed JSON.
     Uses POST with JSON body.
+    Prints variant + response time for each request.
     """
     time.sleep(THROTTLE_SECONDS)  # avoid rate limiting
 
@@ -56,8 +57,20 @@ def run_curl(
         "-s",  # silent
     ]
 
+    # ----------------------------
+    # Measure response time
+    # ----------------------------
+    start = time.perf_counter()
     result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+    end = time.perf_counter()
+
+    elapsed_ms = (end - start) * 1000
+
+    # Print variant + response time
+    print(f"[SHAIP] {variant} → {elapsed_ms:.1f} ms")
+
     return json.loads(result.stdout)
+
 
 # -----------------------------
 # Variant Inputs
@@ -120,7 +133,7 @@ class TestTranscriptSelection:
 
 
 # -----------------------------
-# Auto/Edge Case Variants
+# Auto / Edge Case Variants
 # -----------------------------
 class TestVariantAutoCases:
     def test_variant1_bad_build(self):

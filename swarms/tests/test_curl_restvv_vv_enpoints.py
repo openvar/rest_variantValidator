@@ -15,10 +15,11 @@ CURL_TIMEOUT = 30  # seconds
 # Shared curl runner
 # -------------------------------------------------------------------------
 
-def _run_curl(url, timeout=CURL_TIMEOUT):
+def _run_curl(url, variant_label=None, timeout=CURL_TIMEOUT):
     """
     Execute a curl GET request and return parsed JSON.
     Automatically includes Authorization header if RESTVV_BEARER_TOKEN is set.
+    Prints variant + response time.
     """
     time.sleep(THROTTLE_SECONDS)
 
@@ -33,8 +34,10 @@ def _run_curl(url, timeout=CURL_TIMEOUT):
         "curl", "-s", "-X", "GET", url,
         "-H", "accept: application/json",
         "-H", "Content-Type: application/json",
-        f"-H", f"Authorization: Bearer {bearer_token}"
+        "-H", f"Authorization: Bearer {bearer_token}"
     ]
+
+    start = time.perf_counter()
 
     try:
         result = subprocess.run(
@@ -42,15 +45,21 @@ def _run_curl(url, timeout=CURL_TIMEOUT):
             capture_output=True,
             text=True,
             check=True,
-            timeout=timeout  # <-- ensures curl doesn't hang indefinitely
+            timeout=timeout
         )
     except subprocess.TimeoutExpired:
-        # Kill curl if somehow still running
-        print(f"Curl request to {url} timed out after {timeout} seconds!")
+        elapsed_ms = (time.perf_counter() - start) * 1000
+        print(f"[RESTVV][TIMEOUT] {variant_label or url} → {elapsed_ms:.1f} ms")
         raise
     except subprocess.CalledProcessError as e:
+        elapsed_ms = (time.perf_counter() - start) * 1000
+        print(f"[RESTVV][ERROR] {variant_label or url} → {elapsed_ms:.1f} ms")
         print(f"Curl failed: {e.stderr}")
         raise
+
+    elapsed_ms = (time.perf_counter() - start) * 1000
+
+    print(f"[RESTVV] {variant_label or url} → {elapsed_ms:.1f} ms")
 
     try:
         return json.loads(result.stdout)
@@ -61,13 +70,18 @@ def _run_curl(url, timeout=CURL_TIMEOUT):
 # Endpoint helpers
 # -------------------------------------------------------------------------
 
-def run_variantvalidator(variant, genome_build, select_transcripts="all", endpoint="variantvalidator"):
+def run_variantvalidator(
+    variant,
+    genome_build,
+    select_transcripts="all",
+    endpoint="variantvalidator"
+):
     url = (
         f"{BASE_URL}/{endpoint}/"
         f"{genome_build}/{variant}/{select_transcripts}"
         f"?content-type=application%2Fjson"
     )
-    return _run_curl(url)
+    return _run_curl(url, variant_label=variant)
 
 # -------------------------------------------------------------------------
 # RefSeq VariantValidator test suite (validated variants)
@@ -91,18 +105,24 @@ class TestVariantValidatorRefSeqValidated:
     def _get_primary_entry(self, data):
         keys = [k for k in data if k not in ("flag", "metadata")]
         if not keys:
-            raise ValueError("No variant data returned from server. "
-                             "Check that your bearer token is valid.")
+            raise ValueError(
+                "No variant data returned from server. "
+                "Check that your bearer token is valid."
+            )
         key = keys[0]
         return key, data[key]
 
     def test_validated_NM_variants(self):
         for variant, gene, chrom in self.variants_to_test:
-            data = run_variantvalidator(variant, "GRCh38", select_transcripts="all")
+            data = run_variantvalidator(
+                variant,
+                "GRCh38",
+                select_transcripts="all"
+            )
             key, entry = self._get_primary_entry(data)
-            assert entry["gene_symbol"] == gene, f"{variant}: expected {gene}, got {entry.get('gene_symbol')}"
-            assert entry["hgvs_transcript_variant"] == variant, f"{variant}: HGVS mismatch"
-            assert entry["annotations"]["chromosome"] == chrom, f"{variant}: chromosome mismatch"
+            assert entry["gene_symbol"] == gene
+            assert entry["hgvs_transcript_variant"] == variant
+            assert entry["annotations"]["chromosome"] == chrom
             assert "refseqgene_context_intronic_sequence" in entry
 
 # -------------------------------------------------------------------------
@@ -127,8 +147,10 @@ class TestVariantValidatorEnsemblValidated:
     def _get_primary_entry(self, data):
         keys = [k for k in data if k not in ("flag", "metadata")]
         if not keys:
-            raise ValueError("No variant data returned from server. "
-                             "Check that your bearer token is valid.")
+            raise ValueError(
+                "No variant data returned from server. "
+                "Check that your bearer token is valid."
+            )
         key = keys[0]
         return key, data[key]
 
@@ -141,6 +163,6 @@ class TestVariantValidatorEnsemblValidated:
                 endpoint="variantvalidator_ensembl"
             )
             key, entry = self._get_primary_entry(data)
-            assert entry["gene_symbol"] == gene, f"{variant}: expected {gene}, got {entry.get('gene_symbol')}"
-            assert entry["hgvs_transcript_variant"] == variant, f"{variant}: HGVS mismatch"
-            assert entry["annotations"]["chromosome"] == chrom, f"{variant}: chromosome mismatch"
+            assert entry["gene_symbol"] == gene
+            assert entry["hgvs_transcript_variant"] == variant
+            assert entry["annotations"]["chromosome"] == chrom

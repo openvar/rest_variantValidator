@@ -7,6 +7,7 @@ import os
 BASE_URL = "https://www181.lamp.le.ac.uk/LOVD/lovd"
 THROTTLE_SECONDS = 0  # ~3 requests/sec (API allows 4/sec)
 
+
 def run_curl(
     variant,
     genome_build="GRCh38",
@@ -17,6 +18,7 @@ def run_curl(
     """
     Run curl against the LOVD VariantValidator API and return parsed JSON.
     Automatically includes Authorization header if RESTVV_BEARER_TOKEN is set.
+    Prints variant + response time for each request.
     """
     time.sleep(THROTTLE_SECONDS)  # avoid rate limiting
 
@@ -41,13 +43,23 @@ def run_curl(
     if bearer_token:
         cmd += ["-H", f"Authorization: Bearer {bearer_token}"]
 
-    # Run curl and parse output
+    # ----------------------------
+    # Measure response time
+    # ----------------------------
+    start = time.perf_counter()
     result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+    end = time.perf_counter()
+
+    elapsed_ms = (end - start) * 1000
+
+    # Print variant + response time
+    print(f"[LOVD] {variant} → {elapsed_ms:.1f} ms")
+
     return json.loads(result.stdout)
 
 
 # -------------------------------------------------------------------------
-# All your existing test classes stay exactly as they were
+# Tests
 # -------------------------------------------------------------------------
 
 class TestVariantInputs:
