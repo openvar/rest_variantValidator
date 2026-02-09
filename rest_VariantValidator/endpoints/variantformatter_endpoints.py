@@ -2,7 +2,8 @@
 from flask_restx import Namespace, Resource
 from rest_VariantValidator.utils import request_parser, representations, input_formatting
 from rest_VariantValidator.utils.object_pool import simple_variant_formatter_pool
-from rest_VariantValidator.utils.limiter import limiter, formatter_pool_limit
+from rest_VariantValidator.utils.limiter import limiter, fmt_rate  # <- import fmt_rate
+
 # get login authentication, if needed, or dummy auth if not present
 try:
     from VariantValidator_APIs.db_auth.verify_password import auth
@@ -19,7 +20,7 @@ api = Namespace('VariantFormatter', description='Variantformatter API Endpoints'
 
 @api.route("/variantformatter/<string:genome_build>/<string:variant_description>/<string:transcript_model>/"
            "<string:select_transcripts>/<string:checkonly>", strict_slashes=False)
-@api.doc(description="This endpoint uses a dynamic rate limit based on pool availability.")
+@api.doc(description="Recommended: 4 requests/sec to avoid hitting limits; higher rates may be throttled dynamically.")
 @api.param("variant_description", "***Genomic HGVS***\n"
                                   ">   - NC_000017.10:g.48275363C>A\n"
                                   "\n***Pseudo-VCF***\n"
@@ -51,42 +52,54 @@ api = Namespace('VariantFormatter', description='Variantformatter API Endpoints'
                         " descriptions)\n"
                         ">   - False")
 class VariantFormatterClass(Resource):
-    # Add documentation about the parser
     @api.expect(parser, validate=True)
     @auth.login_required()
-    @limiter.limit(formatter_pool_limit)  # <-- dynamic limiter
+    @limiter.limit(fmt_rate)  # <- dynamic rate limiter
     def get(self, genome_build, variant_description, transcript_model, select_transcripts, checkonly, user_id=None):
-        # Normalize input values
-        if transcript_model in ('None', 'none'):
+
+        # Normalise incoming values
+        if transcript_model.lower() == 'none':
             transcript_model = None
-        if select_transcripts in ('None', 'none'):
+        if select_transcripts.lower() == 'none':
             select_transcripts = None
-        if checkonly in ('False', 'false'):
+
+        if checkonly.lower() == 'false':
             checkonly = False
-        if checkonly in ('True', 'true'):
+        elif checkonly.lower() == 'true':
             checkonly = True
 
-        # Get a formatter from the pool
+        # Get formatter instance from pool
         simple_formatter = simple_variant_formatter_pool.get()
 
-        # Convert inputs to JSON arrays
-        variant_description = input_formatting.format_input(variant_description)
-        select_transcripts = input_formatting.format_input(select_transcripts)
-        if select_transcripts == '["all"]':
-            select_transcripts = "all"
-        if select_transcripts == '["raw"]':
-            select_transcripts = "raw"
-        if select_transcripts == '["mane"]':
-            select_transcripts = "mane"
-        if select_transcripts == '["mane_select"]':
-            select_transcripts = "mane_select"
-
         try:
-            content = simple_formatter.format(variant_description, genome_build, transcript_model,
-                                              select_transcripts, checkonly)
+            # Convert inputs to JSON arrays
+            variant_description = input_formatting.format_input(variant_description)
+            select_transcripts = input_formatting.format_input(select_transcripts)
+
+            # Apply single-value escapes
+            if select_transcripts == '["all"]':
+                select_transcripts = "all"
+            if select_transcripts == '["raw"]':
+                select_transcripts = "raw"
+            if select_transcripts == '["mane"]':
+                select_transcripts = "mane"
+            if select_transcripts == '["mane_select"]':
+                select_transcripts = "mane_select"
+
+            # Run formatter
+            content = simple_formatter.format(
+                variant_description,
+                genome_build,
+                transcript_model,
+                select_transcripts,
+                checkonly
+            )
+
         except Exception as e:
             return {"error": str(e)}, 500
+
         finally:
+            # Always return formatter to pool
             simple_variant_formatter_pool.return_object(simple_formatter)
 
         # Parse query arguments
@@ -95,13 +108,15 @@ class VariantFormatterClass(Resource):
         # Return content in requested format
         if args['content-type'] == 'application/json':
             return representations.application_json(content, 200, None)
+
         elif args['content-type'] == 'text/xml':
             return representations.xml(content, 200, None)
+
         else:
             return content
 
 # <LICENSE>
-# Copyright (C) 2016-2021 VariantValidator Contributors
+# Copyright (C) 2016-2026 VariantValidator Contributors
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as

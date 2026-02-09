@@ -2,7 +2,7 @@
 from flask_restx import Namespace, Resource
 from rest_VariantValidator.utils import exceptions, request_parser, representations, input_formatting, request_parser_g2t
 from rest_VariantValidator.utils.object_pool import vval_object_pool, g2t_object_pool
-from rest_VariantValidator.utils.limiter import limiter, vval_pool_limit, g2t_pool_limit
+from rest_VariantValidator.utils.limiter import limiter, vval_rate, g2t_rate
 # get login authentication, if needed, or dummy auth if not present
 try:
     from VariantValidator_APIs.db_auth.verify_password import auth
@@ -18,7 +18,7 @@ api = Namespace('VariantValidator', description='VariantValidator API Endpoints'
 
 @api.route("/variantvalidator/<string:genome_build>/<string:variant_description>/<string:select_transcripts>",
            strict_slashes=False)
-@api.doc(description="This endpoint uses a dynamic rate limit based on pool availability.")
+@api.doc(description="Recommended: 3 requests/sec to avoid hitting limits; higher rates may be throttled dynamically.")
 @api.param("select_transcripts", "***Return all possible transcripts***\n"
                                  "\n***Return only 'select' transcripts***\n"
                                  ">   select\n"
@@ -55,7 +55,7 @@ api = Namespace('VariantValidator', description='VariantValidator API Endpoints'
 class VariantValidatorClass(Resource):
     @api.expect(parser, validate=True)
     @auth.login_required()
-    @limiter.limit(vval_pool_limit)
+    @limiter.limit(vval_rate)  # <- dynamic limiter
     def get(self, genome_build, variant_description, select_transcripts, user_id=None):
 
         # Get object from vval pool
@@ -97,6 +97,7 @@ class VariantValidatorClass(Resource):
             vval_object_pool.return_object(vval)
 
         args = parser.parse_args()
+
         if args['content-type'] == 'application/json':
             return representations.application_json(content, 200, None)
         elif args['content-type'] == 'text/xml':
@@ -107,11 +108,43 @@ class VariantValidatorClass(Resource):
 
 @api.route("/variantvalidator_ensembl/<string:genome_build>/<string:variant_description>/<string:select_transcripts>",
            strict_slashes=False)
+@api.doc(description="Recommended: 3 requests/sec to avoid hitting limits; higher rates may be throttled dynamically.")
+@api.param("select_transcripts", "***Return all possible transcripts***\n"
+                                 "\n***Return only 'select' transcripts***\n"
+                                 ">   select\n"
+                                 ">   mane_select\n"
+                                 ">   mane (MANE and MANE Plus Clinical)\n"
+                                 ">   refseq_select\n"
+                                 "\n***Single***\n"
+                                 ">   ENST00000225964.10\n"
+                                 "\n***Multiple***\n"
+                                 ">   ENST00000225964.9|ENST00000225964.10")
+@api.param("variant_description", "***HGVS***\n"
+                                  ">   - ENST00000225964.10:c.589G>T\n"
+                                  ">   - NC_000017.10:g.48275363C>A\n"
+                                  "\n***Pseudo-VCF***\n"
+                                  ">   - 17-50198002-C-A\n"
+                                  ">   - 17:50198002:C:A\n"
+                                  ">   - GRCh38-17-50198002-C-A\n"
+                                  ">   - GRCh38:17:50198002:C:A\n"
+                                  "\n***Hybrid***\n"
+                                  ">   - chr17:50198002C>A\n "
+                                  ">   - chr17:50198002C>A(GRCh38)\n"
+                                  ">   - chr17(GRCh38):50198002C>A\n"
+                                  ">   - chr17:g.50198002C>A\n"
+                                  ">   - chr17:g.50198002C>A(GRCh38)\n"
+                                  ">   - chr17(GRCh38):g.50198002C>A")
+@api.param("genome_build", "***Accepted:***\n"
+                           ">   - GRCh37\n"
+                           ">   - GRCh38\n"
+                           ">   - hg19\n"
+                           ">   - hg38")
 class VariantValidatorEnsemblClass(Resource):
     @api.expect(parser, validate=True)
     @auth.login_required()
-    @limiter.limit(vval_pool_limit)
+    @limiter.limit(vval_rate)  # <- dynamic limiter
     def get(self, genome_build, variant_description, select_transcripts, user_id=None):
+
         vval = vval_object_pool.get_object()
         transcript_model = "ensembl"
 
@@ -157,11 +190,21 @@ class VariantValidatorEnsemblClass(Resource):
 
 
 @api.route("/tools/gene2transcripts/<string:gene_query>", strict_slashes=False)
+# @api.doc(description="Recommended: 1 requests/sec to avoid hitting limits; higher rates may be throttled dynamically.")
+@api.doc(False)
+@api.param("gene_query", "***HGNC gene symbol, HGNC ID, or transcript ID***\n"
+                         "\nCurrent supported transcript IDs"
+                         "\n- RefSeq\n"
+                                 "\n***Single***\n"
+                                 ">   COL1A1\n"
+                                 ">   HGNC:2197\n"
+                                 ">   NM_000088.4\n")
 class Gene2transcriptsClass(Resource):
     @api.expect(parser, validate=True)
     @auth.login_required()
-    @limiter.limit(g2t_pool_limit)
+    @limiter.limit(g2t_rate)  # <- dynamic limiter
     def get(self, gene_query, user_id=None):
+
         vval = g2t_object_pool.get_object()
         gene_query = input_formatting.format_input(gene_query)
         try:
@@ -183,15 +226,39 @@ class Gene2transcriptsClass(Resource):
 
 @api.route("/tools/gene2transcripts_v2/<string:gene_query>/<string:limit_transcripts>/<string:transcript_set>/"
            "<string:genome_build>", strict_slashes=False)
+@api.doc(description="Recommended: 2 requests/sec to avoid hitting limits; higher rates may be throttled dynamically.")
+@api.param("gene_query", "***HGNC gene symbol, HGNC ID, or transcript ID***\n"
+                         "\nCurrent supported transcript IDs"
+                         "\n- RefSeq or Ensembl\n"
+                                 "\n***Single***\n"
+                                 ">   COL1A1\n"
+                                 ">   HGNC:2197\n"
+                                 ">   NM_000088.4\n"
+                                 "\n***Multiple***\n"
+                                 ">   COL1A1|COL1A2|COL5A1|HGNC:2197\n")
+@api.param("limit_transcripts",  "***Return all possible transcripts***\n"
+                                 ">   False\n"
+                                 "\n***Single***\n"
+                                 ">   NM_000088.4\n"
+                                 "\n***Multiple***\n"
+                                 ">   NM_000088.4|NM_000088.3\n"
+                                 "\n***Limit to select transcripts***\n"
+                                 ">    mane_select = MANE Select transcript only\n"
+                                 ">    mane = Mane Select and MANE Plus Clinical\n"
+                                 ">    select = All transcripts that have been classified as canonical")
+@api.param("transcript_set", "***RefSeq or Ensembl***\n"
+                             "\nall = all transcripts, refseq = RefSeq only, ensembl = Ensembl only")
+@api.param("genome_build", "***GRCh37 or GRCh38***\n"
+                           "\nall = all builds, GRCh37 = GRCh37 only, GRCh38 = GRCh38 only")
 class Gene2transcriptsV2Class(Resource):
     @api.expect(parser_g2t, validate=True)
     @auth.login_required()
-    @limiter.limit(g2t_pool_limit)
+    @limiter.limit(g2t_rate)  # <- dynamic limiter
     def get(self, gene_query, limit_transcripts, transcript_set, genome_build, user_id=None):
-        vval = g2t_object_pool.get_object()
 
+        vval = g2t_object_pool.get_object()
         args = parser_g2t.parse_args()
-        bypass_genomic_spans = not bool(args['show_exon_info'])
+        bypass_genomic_spans = not args.get('show_exon_info', True)
 
         gene_query = input_formatting.format_input(gene_query)
         limit_transcripts = input_formatting.format_input(limit_transcripts)
@@ -222,11 +289,17 @@ class Gene2transcriptsV2Class(Resource):
 
 
 @api.route("/tools/hgvs2reference/<string:hgvs_description>", strict_slashes=False)
+@api.doc(description="Recommended: 3 requests/sec to avoid hitting limits; higher rates may be throttled dynamically.")
+@api.param("hgvs_description", "***hgvs_description***\n"
+                               "\nSequence variation description in the HGVS format\n"
+                               "\n *Intronic descriptions in the context of transcript reference sequences are currently "
+                               "unsupported*")
 class Hgvs2referenceClass(Resource):
     @api.expect(parser, validate=True)
     @auth.login_required()
-    @limiter.limit(vval_pool_limit)
+    @limiter.limit(vval_rate)  # <- dynamic limiter
     def get(self, hgvs_description, user_id=None):
+
         vval = vval_object_pool.get_object()
         try:
             content = vval.hgvs2ref(hgvs_description)
@@ -246,7 +319,7 @@ class Hgvs2referenceClass(Resource):
 
 
 # <LICENSE>
-# Copyright (C) 2016-2021 VariantValidator Contributors
+# Copyright (C) 2016-2026 VariantValidator Contributors
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as

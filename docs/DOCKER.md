@@ -52,6 +52,7 @@ Choose one of the following commands to build and start the rest_VariantValidaor
 - Create directories for sharing resources between your computer and the containers
 ```bash
 $ mkdir -p ~/variantvalidator_data/seqdata && mkdir -p ~/variantvalidator_data/logs
+```
 
 - Production build
 ```bash

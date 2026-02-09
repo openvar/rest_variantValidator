@@ -3,7 +3,8 @@ import ast
 from flask_restx import Namespace, Resource
 from rest_VariantValidator.utils import request_parser, representations, input_formatting
 from rest_VariantValidator.utils.object_pool import simple_variant_formatter_pool
-from rest_VariantValidator.utils.limiter import limiter, formatter_pool_limit
+from rest_VariantValidator.utils.limiter import limiter, fmt_rate  # <- import fmt_rate
+
 # get login authentication, if needed, or dummy auth if not present
 try:
     from VariantValidator_APIs.db_auth.verify_password import auth
@@ -28,7 +29,7 @@ api = Namespace('LOVD', description='LOVD API Endpoints')
 
 @api.route("/lovd/<string:genome_build>/<string:variant_description>/<string:transcript_model>/"
            "<string:select_transcripts>/<string:checkonly>/<string:liftover>", strict_slashes=False)
-@api.doc(description="This endpoint uses a dynamic rate limit based on pool availability.")
+@api.doc(description="Recommended: 4 requests/sec to avoid hitting limits; higher rates may be throttled dynamically.")
 @api.param("variant_description", "***Genomic HGVS***\n"
                                   ">   - NC_000017.10:g.48275363C>A\n"
                                   "\n***Pseudo-VCF***\n"
@@ -39,15 +40,15 @@ api = Namespace('LOVD', description='LOVD API Endpoints')
                                   ">   - *Multiple variants can be submitted, separated by the pipe '|' character*\n"
                                   ">   - *Recommended maximum is 10 variants per submission*")
 @api.param("transcript_model", "***Accepted:***\n"
-                               ">   - refseq (return data for RefSeq transcript models)\n"
-                               ">   - ensembl (return data for ensembl transcript models)\n"
+                               ">   - refseq\n"
+                               ">   - ensembl\n"
                                ">   - all")
 @api.param("select_transcripts", "***Return all possible transcripts***\n"
-                                 ">   None or all (all transcripts at the latest versions)\n"
-                                 ">   raw (all transcripts all version)\n"
-                                 ">   select (select transcripts)\n"
-                                 ">   mane (MANE Select and MANE Plus Clinical transcripts)\n"
-                                 ">   mane_select (MANE Select transcripts)\n"
+                                 ">   None or all\n"
+                                 ">   raw\n"
+                                 ">   select\n"
+                                 ">   mane\n"
+                                 ">   mane_select\n"
                                  "\n***Single***\n"
                                  ">   NM_000093.4\n"
                                  "\n***Multiple***\n"
@@ -56,74 +57,97 @@ api = Namespace('LOVD', description='LOVD API Endpoints')
                            ">   - GRCh37\n"
                            ">   - GRCh38\n"
                            ">   - hg19\n"
-                           ">   - hg38\n")
+                           ">   - hg38")
 @api.param("checkonly", "***Accepted:***\n"
-                        ">   - True (return ONLY the genomic variant descriptions and not transcript and protein"
-                        " descriptions)\n"
+                        ">   - True\n"
                         ">   - False\n"
-                        ">   - tx (Stop at transcript level, exclude protein)")
+                        ">   - tx")
 @api.param("liftover", "***Accepted***\n"
-                        ">   - True - (liftover to all genomic loci)\n"
-                        ">   - primary - (lift to primary assembly only)\n"
+                        ">   - True\n"
+                        ">   - primary\n"
                         ">   - False")
 class LOVDClass(Resource):
     @api.expect(parser, validate=True)
     @auth.login_required()
-    @limiter.limit(formatter_pool_limit)  # <-- dynamic limiter
+    @limiter.limit(fmt_rate)  # <- dynamic rate limiter
     def get(self, genome_build, variant_description, transcript_model, select_transcripts, checkonly, liftover, user_id=None):
-        # Normalize input values
-        if transcript_model in ('None', 'none'):
-            transcript_model = None
-        if select_transcripts in ('None', 'none'):
-            select_transcripts = None
-        if checkonly in ('False', 'false'):
-            checkonly = False
-        if checkonly in ('True', 'true'):
-            checkonly = True
-        if liftover in ('True', 'true'):
-            liftover = True
-        if liftover in ('False', 'false'):
-            liftover = False
 
-        # Get a formatter from the pool
+        # Normalise incoming values
+        if transcript_model.lower() == 'none':
+            transcript_model = None
+        if select_transcripts.lower() == 'none':
+            select_transcripts = None
+
+        # checkonly supports True/False/tx
+        if checkonly.lower() == 'false':
+            checkonly = False
+        elif checkonly.lower() == 'true':
+            checkonly = True
+        # 'tx' passes through unchanged
+
+        # liftover supports True/False/"primary"
+        if liftover.lower() == 'true':
+            liftover = True
+        elif liftover.lower() == 'false':
+            liftover = False
+        # 'primary' passes through unchanged
+
+        # Get formatter instance from pool
         simple_formatter = simple_variant_formatter_pool.get()
 
-        # Convert inputs to JSON arrays
-        variant_description = input_formatting.format_input(variant_description)
-        select_transcripts = input_formatting.format_input(select_transcripts)
-        if select_transcripts == '["all"]':
-            select_transcripts = "all"
-        if select_transcripts == '["raw"]':
-            select_transcripts = "raw"
-
         try:
+            # Convert multi-value inputs
+            variant_description = input_formatting.format_input(variant_description)
+            select_transcripts = input_formatting.format_input(select_transcripts)
+
+            # Escape single-value lists
+            if select_transcripts == '["all"]':
+                select_transcripts = "all"
+            if select_transcripts == '["raw"]':
+                select_transcripts = "raw"
+            if select_transcripts == '["mane"]':
+                select_transcripts = "mane"
+            if select_transcripts == '["mane_select"]':
+                select_transcripts = "mane_select"
+
+            # Format via pool object
             content = simple_formatter.format(
-                variant_description, genome_build, transcript_model,
-                select_transcripts, checkonly, liftover
+                variant_description,
+                genome_build,
+                transcript_model,
+                select_transcripts,
+                checkonly,
+                liftover
             )
+
         except Exception as e:
             return {"error": str(e)}, 500
+
         finally:
             simple_variant_formatter_pool.return_object(simple_formatter)
 
-        # Convert OrderedDict to normal dict
+        # Convert ordered dict → plain dict
         to_dict = ordereddict_to_dict(content)
-        content = ast.literal_eval(str(to_dict).replace("'", '"'))
+
+        # Fix quotes via ast (this matches your existing behaviour)
+        content = str(to_dict).replace("'", '"')
+        content = ast.literal_eval(content)
 
         # Parse query arguments
         args = parser.parse_args()
 
-        # Return content in requested format
+        # Return in requested format
         if args['content-type'] == 'application/json':
             return representations.application_json(content, 200, None)
+
         elif args['content-type'] == 'text/xml':
             return representations.xml(str(content), 200, None)
+
         else:
             return content
 
-
 # <LICENSE>
-# Copyright (C) 2016-2025 VariantValidator Contributors
+# Copyright (C) 2016-2026 VariantValidator Contributors
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
