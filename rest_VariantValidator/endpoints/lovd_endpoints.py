@@ -133,7 +133,7 @@ class LOVDClass(Resource):
         content = str(to_dict).replace("'", '"')
         content = ast.literal_eval(content)
 
-        # Collect Arguments
+        # Parse query arguments
         args = parser.parse_args()
 
         # Return in requested format

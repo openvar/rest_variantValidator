@@ -9,10 +9,7 @@ try:
 except ModuleNotFoundError:
     from rest_VariantValidator.utils.verify_password import auth
 
-
-"""
-Create a parser object locally
-"""
+# Create parser objects locally
 parser = request_parser.parser
 parser_g2t = request_parser_g2t.parser
 
@@ -61,16 +58,14 @@ class VariantValidatorClass(Resource):
     @limiter.limit(vval_rate)  # <- dynamic limiter
     def get(self, genome_build, variant_description, select_transcripts, user_id=None):
 
-        # Import object from vval pool
+        # Get object from vval pool
         vval = vval_object_pool.get_object()
 
-        # set transcript_model
         transcript_model = "refseq"
 
-        # Switch off select_transcripts = all or raw for genomic variants
+        # Deprecated check for 'all' or 'raw' for genomic variants
         if ("all" in select_transcripts or "raw" in select_transcripts) and "auth" not in select_transcripts:
-            if "c." not in variant_description and "n." not in variant_description and "r." not in variant_description \
-                    and "p." not in variant_description:
+            if not any(x in variant_description for x in ("c.", "n.", "r.", "p.")):
                 return {"Not Found": "Setting select_transcripts to 'all' or 'raw' is deprecated for genomic "
                                      "variant processing using this endpoint. Contact admin on "
                                      "https://variantvalidator.org/help/contact/ for updated instructions and"
@@ -81,7 +76,6 @@ class VariantValidatorClass(Resource):
         elif "auth_raw" in select_transcripts:
             select_transcripts = "raw"
 
-        # Convert inputs to JSON arrays
         variant_description = input_formatting.format_input(variant_description)
         select_transcripts = input_formatting.format_input(select_transcripts)
         if select_transcripts == '["all"]':
@@ -94,7 +88,6 @@ class VariantValidatorClass(Resource):
             select_transcripts = "mane"
 
         try:
-            # Validate using the VariantValidator Python Library
             validate = vval.validate(variant_description, genome_build, select_transcripts,
                                      transcript_set=transcript_model, lovd_syntax_check=True)
             content = validate.format_as_dict(with_meta=True)
@@ -103,7 +96,6 @@ class VariantValidatorClass(Resource):
         finally:
             vval_object_pool.return_object(vval)
 
-        # Collect Arguments
         args = parser.parse_args()
 
         if args['content-type'] == 'application/json':
@@ -157,8 +149,7 @@ class VariantValidatorEnsemblClass(Resource):
         transcript_model = "ensembl"
 
         if ("all" in select_transcripts or "raw" in select_transcripts) and "auth" not in select_transcripts:
-            if "c." not in variant_description and "n." not in variant_description and "r." not in variant_description \
-                    and "p." not in variant_description:
+            if not any(x in variant_description for x in ("c.", "n.", "r.", "p.")):
                 return {"Not Found": "Setting select_transcripts to 'all' or 'raw' is deprecated for genomic "
                                      "variant processing using this endpoint. Contact admin on "
                                      "https://variantvalidator.org/help/contact/ for updated instructions and"
@@ -216,13 +207,11 @@ class Gene2transcriptsClass(Resource):
 
         vval = g2t_object_pool.get_object()
         gene_query = input_formatting.format_input(gene_query)
-
         try:
             content = vval.gene2transcripts(gene_query, lovd_syntax_check=True)[0]
         except ConnectionError:
-            message = "Cannot connect to rest.genenames.org, please try again later"
             g2t_object_pool.return_object(vval)
-            raise exceptions.RemoteConnectionError(message)
+            raise exceptions.RemoteConnectionError("Cannot connect to rest.genenames.org, please try again later")
         finally:
             g2t_object_pool.return_object(vval)
 
@@ -279,16 +268,15 @@ class Gene2transcriptsV2Class(Resource):
         try:
             if genome_build not in ["GRCh37", "GRCh38"]:
                 genome_build = None
-            if "False" in limit_transcripts or "false" in limit_transcripts or limit_transcripts is False:
+            if limit_transcripts in ["False", "false", False]:
                 limit_transcripts = None
             content = vval.gene2transcripts(gene_query, select_transcripts=limit_transcripts,
                                             transcript_set=transcript_set, genome_build=genome_build,
                                             batch_output=True, validator=vval,
                                             bypass_genomic_spans=bypass_genomic_spans, lovd_syntax_check=True)
         except ConnectionError:
-            message = "Cannot connect to rest.genenames.org, please try again later"
             g2t_object_pool.return_object(vval)
-            raise exceptions.RemoteConnectionError(message)
+            raise exceptions.RemoteConnectionError("Cannot connect to rest.genenames.org, please try again later")
         finally:
             g2t_object_pool.return_object(vval)
 
@@ -313,7 +301,6 @@ class Hgvs2referenceClass(Resource):
     def get(self, hgvs_description, user_id=None):
 
         vval = vval_object_pool.get_object()
-
         try:
             content = vval.hgvs2ref(hgvs_description)
         except Exception as e:
@@ -328,6 +315,7 @@ class Hgvs2referenceClass(Resource):
             return representations.xml(content, 200, None)
         else:
             return content
+
 
 
 # <LICENSE>

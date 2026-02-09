@@ -102,10 +102,10 @@ class VariantFormatterClass(Resource):
             # Always return formatter to pool
             simple_variant_formatter_pool.return_object(simple_formatter)
 
-        # Collect Arguments
+        # Parse query arguments
         args = parser.parse_args()
 
-        # Overrides the default response route so that the standard HTML URL can return any specified format
+        # Return content in requested format
         if args['content-type'] == 'application/json':
             return representations.application_json(content, 200, None)
 
