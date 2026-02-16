@@ -51,7 +51,7 @@ api = Namespace('VariantValidator', description='VariantValidator API Endpoints'
                                   ">   - chr17:g.50198002C>A(GRCh38)\n"
                                   ">   - chr17(GRCh38):g.50198002C>A\n"
                                   "\n***Lines copied from a VCF***\n"
-                                  ">   - chr1	1000000	.	N	<DEL>	.	PASS	SVTYPE=DEL;END=1005000\n"
+                                  ">   - chr1	1000000	.	N	DEL	.	PASS	SVTYPE=DEL;END=1005000\n"
                                   "\n>  *Notes*\n"
                                   ">   - *Multiple variants in a single submission is not supported*\n "
            )
@@ -149,7 +149,7 @@ class VariantValidatorClass(Resource):
                                   ">   - chr17:g.50198002C>A(GRCh38)\n"
                                   ">   - chr17(GRCh38):g.50198002C>A\n"
                                   "\n***Lines copied from a VCF***\n"
-                                  ">   - chr1	1000000	.	N	<DEL>	.	PASS	SVTYPE=DEL;END=1005000\n"
+                                  ">   - chr1	1000000	.	N	DEL	.	PASS	SVTYPE=DEL;END=1005000\n"
                                   "\n>  *Notes*\n"
                                   ">   - *Multiple variants in a single submission is not supported*\n "
            )
