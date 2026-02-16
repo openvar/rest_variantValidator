@@ -38,7 +38,12 @@ api = Namespace('LOVD', description='LOVD API Endpoints')
                                   "\n>  *Notes*\n"
                                   ">   - *pVCF, multiple comma separated ALTs are supported*\n "
                                   ">   - *Multiple variants can be submitted, separated by the pipe '|' character*\n"
-                                  ">   - *Recommended maximum is 10 variants per submission*")
+                                  ">   - *Recommended maximum is 10 variants per submission*\n"
+                                  "\n***Lines copied from a VCF***\n"
+                                  ">   - chr1	1000000	.	N	<DEL>	.	PASS	SVTYPE=DEL;END=1005000\n"
+                                  "\n>  *Notes*\n"
+                                  ">   - *Multiple variants in a single submission is not supported*\n "
+           )
 @api.param("transcript_model", "***Accepted:***\n"
                                ">   - refseq\n"
                                ">   - ensembl\n"
