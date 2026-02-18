@@ -50,7 +50,7 @@ api = Namespace('VariantValidator', description='VariantValidator API Endpoints'
                                   "\n***Lines copied from a VCF***\n"
                                   ">   - chr1	1000000	.	N	DEL	.	PASS	SVTYPE=DEL;END=1005000\n"
                                   "\n>  *Notes*\n"
-                                  ">   - *Multiple variants in a single submission is not supported*\n "
+                                  ">   - *Multiple variants are supported, submitted as a JSON array or pipe (|) delimited*\n"
            )
 
 @api.param("genome_build", "***Accepted:***\n"
@@ -143,7 +143,7 @@ class VariantValidatorClass(Resource):
                                   "\n***Lines copied from a VCF***\n"
                                   ">   - chr1	1000000	.	N	DEL	.	PASS	SVTYPE=DEL;END=1005000\n"
                                   "\n>  *Notes*\n"
-                                  ">   - *Multiple variants in a single submission is not supported*\n "
+                                  ">   - *Multiple variants are supported, submitted as a JSON array or pipe (|) delimited*\n"
            )
 @api.param("genome_build", "***Accepted:***\n"
                            ">   - GRCh37\n"
