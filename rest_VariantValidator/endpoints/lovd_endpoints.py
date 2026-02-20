@@ -114,6 +114,8 @@ class LOVDClass(Resource):
                 select_transcripts = "mane"
             if select_transcripts == '["mane_select"]':
                 select_transcripts = "mane_select"
+            if select_transcripts == '["select"]':
+                select_transcripts = "select"
 
             # Format via pool object
             content = simple_formatter.format(
