@@ -92,6 +92,8 @@ class VariantValidatorClass(Resource):
             select_transcripts = "mane_select"
         if select_transcripts == '["mane"]':
             select_transcripts = "mane"
+        if select_transcripts == '["select"]':
+            select_transcripts = "select"
 
         try:
             validate = vval.validate(variant_description, genome_build, select_transcripts,
@@ -181,6 +183,8 @@ class VariantValidatorEnsemblClass(Resource):
             select_transcripts = "mane_select"
         if select_transcripts == '["mane"]':
             select_transcripts = "mane"
+        if select_transcripts == '["select"]':
+            select_transcripts = "select"
 
         try:
             validate = vval.validate(variant_description, genome_build, select_transcripts,

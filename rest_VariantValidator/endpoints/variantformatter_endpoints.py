@@ -85,6 +85,8 @@ class VariantFormatterClass(Resource):
                 select_transcripts = "mane"
             if select_transcripts == '["mane_select"]':
                 select_transcripts = "mane_select"
+            if select_transcripts == '["select"]':
+                select_transcripts = "select"
 
             # Run formatter
             content = simple_formatter.format(
