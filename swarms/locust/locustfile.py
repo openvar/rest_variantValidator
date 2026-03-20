@@ -1,4 +1,4 @@
-from swarms import HttpUser, TaskSet, task, between
+from locust import HttpUser, TaskSet, task, between
 import test_set
 
 
