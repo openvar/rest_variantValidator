@@ -288,8 +288,16 @@ class Gene2transcriptsV2Class(Resource):
 
         gene_query = input_formatting.format_input(gene_query)
         limit_transcripts = input_formatting.format_input(limit_transcripts)
-        if len(limit_transcripts) == 1:
-            limit_transcripts = limit_transcripts[0]
+        if limit_transcripts == '["all"]':
+            limit_transcripts = "all"
+        if limit_transcripts == '["raw"]':
+            limit_transcripts = "raw"
+        if limit_transcripts == '["mane_select"]':
+            limit_transcripts = "mane_select"
+        if limit_transcripts == '["mane"]':
+            limit_transcripts = "mane"
+        if limit_transcripts == '["select"]':
+            limit_transcripts = "select"
 
         try:
             if genome_build not in ["GRCh37", "GRCh38"]:
