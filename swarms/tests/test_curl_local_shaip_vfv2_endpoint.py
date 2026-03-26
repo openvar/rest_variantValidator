@@ -1,22 +1,13 @@
 import json
 import subprocess
 import time
-import os
 
-# -----------------------------
-# API Base and Throttling
-# -----------------------------
-BASE_URL = "https://shaipup.com/market/shaip?owner=uominnovationfactory&shaip=variantvalidatorapi"
-THROTTLE_SECONDS = 0  # ~3 requests/sec (API allows 4/sec)
-
-# Tokens from environment
-BEARER_TOKEN = os.getenv("SHAIP_BEARER_TOKEN")
-COOKIE_TOKEN = os.getenv("SHAIP_COOKIE_TOKEN")
-
-if not BEARER_TOKEN:
-    raise RuntimeError("Please set SHAIP_BEARER_TOKEN in your environment")
-if not COOKIE_TOKEN:
-    raise RuntimeError("Please set SHAIP_COOKIE_TOKEN in your environment")
+# -------------------------------------------------
+# Local API Base (Docker)
+# -------------------------------------------------
+# IMPORTANT: adjust the port if you mapped differently
+BASE_URL = "http://localhost:8080/VariantFormatter_v2"
+THROTTLE_SECONDS = 0  # no throttling needed locally
 
 
 def run_curl(
@@ -28,13 +19,14 @@ def run_curl(
     checkonly="False",
 ):
     """
-    Run curl against the TerraCipher VariantValidator API and return parsed JSON.
-    Uses POST with JSON body.
-    Prints variant + response time for each request.
+    Run curl against LOCAL VariantValidator API.
+    Pure local JSON POST.
+    No SHAIP bearer token or cookie.
     """
-    time.sleep(THROTTLE_SECONDS)  # avoid rate limiting
 
-    # Build JSON payload
+    time.sleep(THROTTLE_SECONDS)
+
+    # JSON sent to your local FastAPI endpoint
     payload = [
         {
             "select_transcripts": [select_transcripts],
@@ -42,7 +34,7 @@ def run_curl(
             "checkonly": checkonly.lower() == "true",
             "transcript_model": transcript_model,
             "genome_build": genome_build,
-            "variant_description": [variant],
+            "variant_description": variant,  # NOT a list for local API
         }
     ]
 
@@ -50,32 +42,27 @@ def run_curl(
         "curl",
         "--location",
         "--request", "POST", BASE_URL,
-        "--header", f"Authorization: Bearer {BEARER_TOKEN}",
         "--header", "Content-Type: application/json",
-        "--header", f"Cookie: {COOKIE_TOKEN}",
         "--data-raw", json.dumps(payload),
-        "-s",  # silent
+        "-s",
     ]
 
-    # ----------------------------
-    # Measure response time
-    # ----------------------------
     start = time.perf_counter()
     result = subprocess.run(cmd, capture_output=True, text=True, check=True)
     end = time.perf_counter()
 
     elapsed_ms = (end - start) * 1000
 
-    # Print variant + response time
-    print(f"[SHAIP] {variant} → {elapsed_ms:.1f} ms")
+    print(f"[LOCAL] {variant} → {elapsed_ms:.1f} ms")
 
     return json.loads(result.stdout)
 
 
-# -----------------------------
+# -------------------------------------------------
 # Variant Inputs
-# -----------------------------
+# -------------------------------------------------
 class TestVariantInputs:
+
     def test_hybrid_syntax_1(self):
         data = run_curl("chr17:50198002C>A")
         entry = data["chr17:50198002C>A"]["NC_000017.11:g.50198002C>A"]
@@ -87,55 +74,57 @@ class TestVariantInputs:
         assert entry["g_hgvs"] == "NC_000017.11:g.50198002C>A"
 
 
-# -----------------------------
+# -------------------------------------------------
 # Transcript Selection
-# -----------------------------
+# -------------------------------------------------
 class TestTranscriptSelection:
+
     def test_transcript_selection_raw(self):
         data = run_curl("NC_000005.10:g.140114829del", select_transcripts="raw")
-        hgvs_t_and_p = data["NC_000005.10:g.140114829del"]["NC_000005.10:g.140114829del"]["hgvs_t_and_p"]
-        assert "NM_005859.3" in hgvs_t_and_p
-        assert "NM_005859.4" in hgvs_t_and_p
-        assert "NM_005859.5" in hgvs_t_and_p
+        hgvs = data["NC_000005.10:g.140114829del"]["NC_000005.10:g.140114829del"]["hgvs_t_and_p"]
+        assert "NM_005859.3" in hgvs
+        assert "NM_005859.4" in hgvs
+        assert "NM_005859.5" in hgvs
 
     def test_transcript_selection_all(self):
         data = run_curl("NC_000005.10:g.140114829del", select_transcripts="all")
-        hgvs_t_and_p = data["NC_000005.10:g.140114829del"]["NC_000005.10:g.140114829del"]["hgvs_t_and_p"]
-        assert "NM_005859.5" in hgvs_t_and_p
-        assert "NM_005859.3" not in hgvs_t_and_p
-        assert "NM_005859.4" not in hgvs_t_and_p
+        hgvs = data["NC_000005.10:g.140114829del"]["NC_000005.10:g.140114829del"]["hgvs_t_and_p"]
+        assert "NM_005859.5" in hgvs
+        assert "NM_005859.3" not in hgvs
+        assert "NM_005859.4" not in hgvs
 
     def test_transcript_selection_mane_select(self):
         data = run_curl("NC_000005.10:g.140114829del", select_transcripts="mane_select")
-        hgvs_t_and_p = data["NC_000005.10:g.140114829del"]["NC_000005.10:g.140114829del"]["hgvs_t_and_p"]
-        assert "NM_005859.5" in hgvs_t_and_p
+        hgvs = data["NC_000005.10:g.140114829del"]["NC_000005.10:g.140114829del"]["hgvs_t_and_p"]
+        assert "NM_005859.5" in hgvs
 
     def test_transcript_selection_select(self):
         data = run_curl("NC_000005.10:g.140114829del", select_transcripts="select")
-        hgvs_t_and_p = data["NC_000005.10:g.140114829del"]["NC_000005.10:g.140114829del"]["hgvs_t_and_p"]
-        assert "NM_005859.4" in hgvs_t_and_p
-        assert "NM_005859.5" in hgvs_t_and_p
-        assert "NM_005859.3" not in hgvs_t_and_p
+        hgvs = data["NC_000005.10:g.140114829del"]["NC_000005.10:g.140114829del"]["hgvs_t_and_p"]
+        assert "NM_005859.4" in hgvs
+        assert "NM_005859.5" in hgvs
+        assert "NM_005859.3" not in hgvs
 
     def test_transcript_selection_nm(self):
         data = run_curl("NC_000005.10:g.140114829del", select_transcripts="NM_005859.4")
-        hgvs_t_and_p = data["NC_000005.10:g.140114829del"]["NC_000005.10:g.140114829del"]["hgvs_t_and_p"]
-        assert "NM_005859.4" in hgvs_t_and_p
-        assert "NM_005859.3" not in hgvs_t_and_p
-        assert "NM_005859.5" not in hgvs_t_and_p
+        hgvs = data["NC_000005.10:g.140114829del"]["NC_000005.10:g.140114829del"]["hgvs_t_and_p"]
+        assert "NM_005859.4" in hgvs
+        assert "NM_005859.3" not in hgvs
+        assert "NM_005859.5" not in hgvs
 
     def test_transcript_selection_mane(self):
         data = run_curl("NC_000007.14:g.140924703T>C", select_transcripts="mane")
-        hgvs_t_and_p = data["NC_000007.14:g.140924703T>C"]["NC_000007.14:g.140924703T>C"]["hgvs_t_and_p"]
-        assert "NM_004333.6" in hgvs_t_and_p
-        assert "NM_001374258.1" in hgvs_t_and_p
-        assert "NM_001354609.1" not in hgvs_t_and_p
+        hgvs = data["NC_000007.14:g.140924703T>C"]["NC_000007.14:g.140924703T>C"]["hgvs_t_and_p"]
+        assert "NM_004333.6" in hgvs
+        assert "NM_001374258.1" in hgvs
+        assert "NM_001354609.1" not in hgvs
 
 
-# -----------------------------
+# -------------------------------------------------
 # Auto / Edge Case Variants
-# -----------------------------
+# -------------------------------------------------
 class TestVariantAutoCases:
+
     def test_variant1_bad_build(self):
         v = "NC_000019.10:g.50378563_50378564insTAC"
         data = run_curl(v, genome_build="GRCh37")
