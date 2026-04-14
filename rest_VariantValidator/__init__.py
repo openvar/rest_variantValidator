@@ -9,7 +9,7 @@ try:
     if re.match(r"^\d+\.\d+\.\d+$", __version__) is not None:
         _is_released_version = True
 except importlib.metadata.PackageNotFoundError:
-    warnings.warn("can't get __version__ because VariantValidator package isn't installed", Warning)
+    warnings.warn("can't get __version__ because rest_VariantValidator package isn't installed", Warning)
     __version__ = None
 
 

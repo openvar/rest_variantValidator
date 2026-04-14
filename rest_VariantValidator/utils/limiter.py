@@ -1,17 +1,68 @@
+# limiter.py
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import threading
 from math import ceil
+from configparser import ConfigParser
+import logging
 
-# Import pools
-from rest_VariantValidator.utils.object_pool import vval_object_pool, g2t_object_pool, simple_variant_formatter_pool
+from VariantValidator import settings as vv_settings
+
+# Import existing pools (single source of truth)
+from rest_VariantValidator.utils.object_pool import (
+    vval_object_pool,
+    g2t_object_pool,
+    simple_variant_formatter_pool,
+)
+
+# -----------------------------------------------------------------------------
+# Logger (uses existing logging configuration)
+# -----------------------------------------------------------------------------
+logger = logging.getLogger("rest_VariantValidator")
+
+# -----------------------------------------------------------------------------
+# Read rate limiting configuration
+# -----------------------------------------------------------------------------
+config = ConfigParser()
+config.read(vv_settings.CONFIG_DIR)
+
+RATE_LIMITING_ENABLED = config.getboolean(
+    "rate_limiting",
+    "limit",
+    fallback=True,  # default ON for safety
+)
+
+# -----------------------------------------------------------------------------
+# No-op limiter used when rate limiting is disabled
+# -----------------------------------------------------------------------------
+class NoOpLimiter:
+    """Drop-in replacement for Flask-Limiter that disables all limits."""
+
+    def init_app(self, app):
+        return None
+
+    def limit(self, *args, **kwargs):
+        def decorator(fn):
+            return fn
+        return decorator
+
+    def exempt(self, fn):
+        return fn
 
 
-# Create Limiter instance (the app will bind this later)
-limiter = Limiter(key_func=get_remote_address)
+# -----------------------------------------------------------------------------
+# Create limiter instance
+# -----------------------------------------------------------------------------
+if RATE_LIMITING_ENABLED:
+    limiter = Limiter(key_func=get_remote_address)
+    logger.warning("Rate limiting is ENABLED via configuration")
+else:
+    limiter = NoOpLimiter()
+    logger.warning("Rate limiting is DISABLED via configuration")
 
-
+# -----------------------------------------------------------------------------
 # --- Simple exponential smoother for stability ---
+# -----------------------------------------------------------------------------
 class RateSmoother:
     def __init__(self, alpha=0.3):
         self.alpha = alpha
@@ -27,7 +78,7 @@ class RateSmoother:
             return self.value
 
 
-# One smoother per pool (keeps them stable independently)
+# One smoother per pool
 vval_smoother = RateSmoother(alpha=0.25)
 g2t_smoother = RateSmoother(alpha=0.25)
 fmt_smoother = RateSmoother(alpha=0.25)
@@ -36,30 +87,37 @@ fmt_smoother = RateSmoother(alpha=0.25)
 def _compute_rate(pool, min_rate, pool_limit, smoother):
     """
     Compute dynamic rate:
-        min_rate + (available / pool_size) * pool_limit
-    Returns a string Flask-Limiter understands, e.g. "50 per minute".
+        min_rate + (available / total) * pool_limit
+
+    Returns a Flask-Limiter compatible string, e.g. "50 per minute".
     """
+
+    # Defensive fallback (NoOpLimiter path)
+    if not RATE_LIMITING_ENABLED:
+        return "1000000 per minute"
+
     available = pool.available()
     total = max(pool.total(), 1)
 
     fraction = available / total
     raw_rate = min_rate + (fraction * pool_limit)
 
-    if smoother:
+    if smoother is not None:
         raw_rate = smoother.smooth(raw_rate)
 
     rate_val = max(min_rate, int(ceil(raw_rate)))
-
     return f"{rate_val} per minute"
 
 
-# Per-pool functions used by @limiter.limit()
+# -----------------------------------------------------------------------------
+# Per-pool rate functions (used by @limiter.limit)
+# -----------------------------------------------------------------------------
 def vval_rate():
     return _compute_rate(
         pool=vval_object_pool,
         min_rate=5,
         pool_limit=150,
-        smoother=vval_smoother
+        smoother=vval_smoother,
     )
 
 
@@ -68,7 +126,7 @@ def g2t_rate():
         pool=g2t_object_pool,
         min_rate=2,
         pool_limit=40,
-        smoother=g2t_smoother
+        smoother=g2t_smoother,
     )
 
 
@@ -77,7 +135,7 @@ def fmt_rate():
         pool=simple_variant_formatter_pool,
         min_rate=10,
         pool_limit=300,
-        smoother=fmt_smoother
+        smoother=fmt_smoother,
     )
 
 
