@@ -65,13 +65,18 @@ LOGGING_CONFIG = {
 
     "formatters": {
         "console": {
-            "format": "[%(asctime)s] %(levelname)-8s | %(name)s | %(message)s",
+            "format": (
+                "%(asctime)s | %(levelname)-8s | %(name)s | "
+                "%(filename)s:%(lineno)d | %(message)s"
+            ),
+            "datefmt": "%Y-%m-%d %H:%M:%S",
         },
         "verbose": {
             "format": (
                 "%(asctime)s | %(levelname)-8s | %(name)s | "
                 "%(filename)s:%(lineno)d | %(message)s"
             ),
+            "datefmt": "%Y-%m-%d %H:%M:%S",
         },
     },
 
@@ -117,7 +122,7 @@ LOGGING_CONFIG = {
 
     "root": {
         "handlers": ["console"],
-        "level": "INFO",
+        "level": "ERROR",
     },
 }
 
