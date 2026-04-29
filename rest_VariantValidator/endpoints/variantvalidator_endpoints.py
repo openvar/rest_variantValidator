@@ -78,9 +78,9 @@ class VariantValidatorClass(Resource):
                                      " fair usage information; use another option; or use the LOVD endpoint which is "
                                      "designed for integration into pipelines"}, 404
         elif "auth_all" in select_transcripts:
-            select_transcripts = "all"
+            select_transcripts = '["all"]'
         elif "auth_raw" in select_transcripts:
-            select_transcripts = "raw"
+            select_transcripts = '["raw"]'
 
         variant_description = input_formatting.format_input(variant_description)
         select_transcripts = input_formatting.format_input(select_transcripts)
@@ -168,10 +168,11 @@ class VariantValidatorEnsemblClass(Resource):
                                      "https://variantvalidator.org/help/contact/ for updated instructions and"
                                      " fair usage information; use another option; or use the LOVD endpoint which is "
                                      "designed for integration into pipelines"}, 404
+
         elif "auth_all" in select_transcripts:
-            select_transcripts = "all"
+            select_transcripts = '["all"]'
         elif "auth_raw" in select_transcripts:
-            select_transcripts = "raw"
+            select_transcripts = '["raw"]'
 
         variant_description = input_formatting.format_input(variant_description)
         select_transcripts = input_formatting.format_input(select_transcripts)

@@ -48,6 +48,7 @@ dependencies = [
     "flask-cors",
     "flask_httpauth",
     "flask_limiter",
+    "psutil",
 
     # Dependencies from other repositories, specified with their repository URLs and package names
     "vvhgvs@git+https://github.com/openvar/vv_hgvs@master",

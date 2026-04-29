@@ -69,7 +69,7 @@ class VariantFormatterClass(Resource):
             checkonly = True
 
         # Get formatter instance from pool
-        simple_formatter = simple_variant_formatter_pool.get()
+        simple_formatter = simple_variant_formatter_pool.get_object()
 
         try:
             # Convert inputs to JSON arrays

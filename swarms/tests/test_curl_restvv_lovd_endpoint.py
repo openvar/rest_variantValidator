@@ -73,7 +73,6 @@ class TestVariantInputs:
         entry = data["17:50198002C>A"]["NC_000017.11:g.50198002C>A"]
         assert entry["g_hgvs"] == "NC_000017.11:g.50198002C>A"
 
-
 class TestTranscriptSelection:
     def test_transcript_selection_raw(self):
         data = run_curl("NC_000005.10:g.140114829del", select_transcripts="raw")
@@ -173,3 +172,17 @@ class TestVariantAutoCases:
         entry = data[v][v]
         assert entry["p_vcf"] == v
         assert entry["genomic_variant_error"] is None
+
+    def test_variant10_tx_pipe(self):
+        v = "NC_000017.10:g.48275363C>A"
+        data = run_curl(v, genome_build="GRCh37", select_transcripts='NM_000088.3|NM_000088.4')
+        entry = data[v][v]
+        assert "NM_000088.3" in entry["hgvs_t_and_p"]
+        assert "NM_000088.4" in entry["hgvs_t_and_p"]
+
+    def test_variant10_tx_array(self):
+        v = "NC_000017.10:g.48275363C>A"
+        data = run_curl(v, genome_build="GRCh37", select_transcripts='NM_000088.3|NM_000088.4')
+        entry = data[v][v]
+        assert "NM_000088.3" in entry["hgvs_t_and_p"]
+        assert "NM_000088.4" in entry["hgvs_t_and_p"]
