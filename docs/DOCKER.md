@@ -37,6 +37,12 @@ do not update your container for more than 12 months; else leave as `None`. See
 Note: Reconfiguration can be achieved by accessing the docker container through bash. See below for entry and the 
 VariantValidator [manual](https://github.com/openvar/variantValidator/blob/master/docs/MANUAL.md) for details
 
+*** Optional Rate Limiting
+Set to True or False in the docker.ini
+
+*** Optional Logging
+Configure in the docker.ini
+
 ## Build the container
 
 *Note: some of these steps take ~1hr to complete depending on the speed of your internet connection, particularly 

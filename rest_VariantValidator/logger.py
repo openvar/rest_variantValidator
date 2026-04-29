@@ -1,17 +1,10 @@
-import importlib.metadata
-import re
-import warnings
+# logger.py
 
-# Pull in use_scm_version=True enabled version number
-_is_released_version = False
-try:
-    __version__ = importlib.metadata.version("rest_VariantValidator")
-    if re.match(r"^\d+\.\d+\.\d+$", __version__) is not None:
-        _is_released_version = True
-except importlib.metadata.PackageNotFoundError:
-    warnings.warn("can't get __version__ because rest_VariantValidator package isn't installed", Warning)
-    __version__ = None
+import logging.config
+from rest_VariantValidator.settings import LOGGING_CONFIG
 
+# Apply logging configuration
+logging.config.dictConfig(LOGGING_CONFIG)
 
 # <LICENSE>
 # Copyright (C) 2016-2026 VariantValidator Contributors

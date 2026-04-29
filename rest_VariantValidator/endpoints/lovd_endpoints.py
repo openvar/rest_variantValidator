@@ -98,7 +98,7 @@ class LOVDClass(Resource):
         # 'primary' passes through unchanged
 
         # Get formatter instance from pool
-        simple_formatter = simple_variant_formatter_pool.get()
+        simple_formatter = simple_variant_formatter_pool.get_object()
 
         try:
             # Convert multi-value inputs
