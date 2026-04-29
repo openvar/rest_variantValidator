@@ -18,7 +18,7 @@ from rest_VariantValidator.utils.object_pool import (
 # -----------------------------------------------------------------------------
 # Logger (uses existing logging configuration)
 # -----------------------------------------------------------------------------
-logger = logging.getLogger("rest_VariantValidator")
+logger = logging.getLogger(__name__)
 
 # -----------------------------------------------------------------------------
 # Read rate limiting configuration

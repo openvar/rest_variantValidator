@@ -15,8 +15,7 @@ from VariantFormatter.simpleVariantFormatter import SimpleVariantFormatter
 # -----------------------------------------------------------------------------
 # Logger
 # -----------------------------------------------------------------------------
-logger = logging.getLogger("rest_VariantValidator")
-
+logger = logging.getLogger(__name__)
 
 # =============================================================================
 # UTILS
