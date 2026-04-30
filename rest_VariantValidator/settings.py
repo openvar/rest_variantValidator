@@ -9,7 +9,7 @@ from configparser import ConfigParser
 HOME_DIR = Path.home()
 
 # Hidden VV directory in home
-LOG_DIR = HOME_DIR / ".rest_variantvalidator"
+LOG_DIR = HOME_DIR / "log"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 # Log files
