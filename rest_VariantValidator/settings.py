@@ -1,20 +1,20 @@
-# settings.py
+"""
+VVrest logging settings (fully aligned system-wide)
+"""
 
+import logging
 from pathlib import Path
 from configparser import ConfigParser
 
+
 # --------------------------------------------------
-# BASE PATHS (HOME, not project)
+# BASE PATHS
 # --------------------------------------------------
 HOME_DIR = Path.home()
 
-# Hidden VV directory in home
-LOG_DIR = HOME_DIR / ".rest_variantvalidator"
-LOG_DIR.mkdir(parents=True, exist_ok=True)
+HIDDEN_LOG_DIR = HOME_DIR / ".rest_variantvalidator"
+VISIBLE_LOG_DIR = HOME_DIR / "log"
 
-# Log files
-VV_LOG = LOG_DIR / "VariantValidator.log"
-REST_LOG = LOG_DIR / "rest_VariantValidator.log"
 
 # --------------------------------------------------
 # READ CONFIG (~/.variantvalidator)
@@ -24,13 +24,14 @@ CONFIG_FILE = HOME_DIR / ".variantvalidator"
 config = ConfigParser()
 config.read(CONFIG_FILE)
 
+
 # --------------------------------------------------
 # GLOBAL LOGGING SWITCH
 # --------------------------------------------------
-logging_enabled = True
+logging_enabled = config.get("logging", "log", fallback="true").lower() not in (
+    "false", "0", "no", "off"
+)
 
-if config.has_section("logging"):
-    logging_enabled = config.getboolean("logging", "log", fallback=True)
 
 # --------------------------------------------------
 # DEFAULT LEVELS
@@ -38,23 +39,53 @@ if config.has_section("logging"):
 console_level = "INFO"
 file_level = "ERROR"
 
+
 # --------------------------------------------------
-# APPLY CONFIG OVERRIDES (ONLY IF ENABLED)
+# APPLY CONFIG OVERRIDES (IF ENABLED)
 # --------------------------------------------------
 if logging_enabled and config.has_section("logging"):
+    console_level = config.get("logging", "console", fallback=console_level).upper()
+    file_level = config.get("logging", "file", fallback=file_level).upper()
 
-    raw_console = config.get("logging", "console", fallback=console_level)
-    raw_file = config.get("logging", "file", fallback=file_level)
-
-    console_level = raw_console.upper()
-    file_level = raw_file.upper()
 
 # --------------------------------------------------
-# FORCE LOGGING OFF
+# FORCE LOGGING OFF (MASTER OVERRIDE)
 # --------------------------------------------------
 if not logging_enabled:
     console_level = "CRITICAL"
     file_level = "CRITICAL"
+
+
+# --------------------------------------------------
+# DETERMINE NUMERIC LEVEL
+# --------------------------------------------------
+numeric_level = getattr(logging, console_level, logging.INFO)
+
+
+# --------------------------------------------------
+# SELECT LOG DIRECTORY (FINAL RULE)
+# --------------------------------------------------
+if not logging_enabled:
+    # Master override → hide logs
+    LOG_DIR = HIDDEN_LOG_DIR
+
+elif numeric_level >= logging.ERROR:
+    # Production → visible logs
+    LOG_DIR = VISIBLE_LOG_DIR
+
+else:
+    # Dev/debug → hidden logs
+    LOG_DIR = HIDDEN_LOG_DIR
+
+LOG_DIR.mkdir(parents=True, exist_ok=True)
+
+
+# --------------------------------------------------
+# LOG FILES
+# --------------------------------------------------
+VV_LOG = LOG_DIR / "VariantValidator.log"
+REST_LOG = LOG_DIR / "rest_VariantValidator.log"
+
 
 # --------------------------------------------------
 # LOGGING CONFIG
@@ -63,6 +94,7 @@ LOGGING_CONFIG = {
     "version": 1,
     "disable_existing_loggers": False,
 
+    # ---------------- FORMATTERS ----------------
     "formatters": {
         "console": {
             "format": (
@@ -80,6 +112,7 @@ LOGGING_CONFIG = {
         },
     },
 
+    # ---------------- HANDLERS ----------------
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
@@ -106,26 +139,30 @@ LOGGING_CONFIG = {
         },
     },
 
+    # ---------------- LOGGERS ----------------
     "loggers": {
+
+        # VariantValidator core
         "VariantValidator": {
             "handlers": ["console", "vv_file"],
             "level": console_level,
             "propagate": False,
         },
 
+        # REST layer
         "rest_VariantValidator": {
             "handlers": ["console", "rest_file"],
             "level": console_level,
-            "propagate": True,
+            "propagate": True,   # allow upstream logs (gunicorn, etc.)
         },
     },
 
+    # ---------------- ROOT ----------------
     "root": {
         "handlers": ["console"],
-        "level": "ERROR",
+        "level": "ERROR",  # production-safe fallback
     },
 }
-
 
 # <LICENSE>
 # Copyright (C) 2016-2026 VariantValidator Contributors
