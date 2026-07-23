@@ -6,7 +6,7 @@ from math import ceil
 from configparser import ConfigParser
 import logging
 
-from VariantValidator import settings as vv_settings
+from rest_VariantValidator import settings as vv_settings
 
 # Import existing pools (single source of truth)
 from rest_VariantValidator.utils.object_pool import (
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 # Read rate limiting configuration
 # -----------------------------------------------------------------------------
 config = ConfigParser()
-config.read(vv_settings.CONFIG_DIR)
+config.read(vv_settings.CONFIG_FILE)
 
 RATE_LIMITING_ENABLED = config.getboolean(
     "rate_limiting",

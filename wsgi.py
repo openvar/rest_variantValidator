@@ -5,7 +5,7 @@ mod_wsgi gateway wsgi file
 import logging
 from configparser import ConfigParser
 
-from VariantValidator.settings import CONFIG_DIR
+from VariantValidator.settings import CONFIG_FILE
 from rest_VariantValidator.app import application as application
 
 
@@ -13,7 +13,7 @@ from rest_VariantValidator.app import application as application
 # Load config
 # --------------------------------------------------
 config = ConfigParser()
-config.read(CONFIG_DIR)
+config.read(CONFIG_FILE)
 
 
 # --------------------------------------------------

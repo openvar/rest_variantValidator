@@ -8,7 +8,8 @@ from configparser import ConfigParser
 import psutil
 import mysql.connector
 
-from VariantValidator import Validator, settings as vv_settings
+from VariantValidator import Validator
+from rest_VariantValidator import settings as vv_settings
 from VariantFormatter.simpleVariantFormatter import SimpleVariantFormatter
 
 
@@ -83,7 +84,7 @@ def _estimate_formatter_mem_mb(validator_cost):
 
 def _mysql_max_connections_from_config():
     config = ConfigParser()
-    config.read(vv_settings.CONFIG_DIR)
+    config.read(vv_settings.CONFIG_FILE)
 
     if not config.has_section("mysql"):
         raise RuntimeError("No [mysql] section found in VariantValidator config")

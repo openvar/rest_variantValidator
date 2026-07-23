@@ -6,7 +6,7 @@ import os
 import logging
 from configparser import ConfigParser
 
-from VariantValidator.settings import CONFIG_DIR
+from rest_VariantValidator.settings import CONFIG_FILE
 from rest_VariantValidator.app import application as app
 
 
@@ -14,7 +14,7 @@ from rest_VariantValidator.app import application as app
 # Load configuration
 # -----------------------------------------------------
 config = ConfigParser()
-config.read(CONFIG_DIR)
+config.read(CONFIG_FILE)
 
 
 # -----------------------------------------------------
