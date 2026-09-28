@@ -3,32 +3,33 @@ import subprocess
 import time
 
 # -------------------------------------------------------------------------
-# Base configuration for LOCAL testing
+# Base configuration for LOCAL SHAIP testing
 # -------------------------------------------------------------------------
 
-# Use whichever port you mapped:
-# docker run -p 8080:8080 vv-local
-BASE_URL = "http://localhost:8080"
+BASE_URL = "http://localhost:8080/shaip"
 THROTTLE_SECONDS = 0
 CURL_TIMEOUT = 30  # seconds
 
 
 # -------------------------------------------------------------------------
-# Shared curl POST runner (LOCAL, no auth)
+# Shared curl POST runner
 # -------------------------------------------------------------------------
 
-def _run_local_post(url, payload, label=None, timeout=CURL_TIMEOUT):
+def _run_local_post(url, payload, variant_label=None, timeout=CURL_TIMEOUT):
     """
-    Execute a curl POST request against LOCAL VariantValidator SHAIP server.
+    Execute a curl POST request against the LOCAL VariantValidator SHAIP API.
     No bearer token. No cookies.
     Returns parsed JSON response.
     """
     time.sleep(THROTTLE_SECONDS)
 
     cmd = [
-        "curl", "-s", "-X", "POST", url,
+        "curl",
+        "-s",
+        "-X", "POST",
+        url,
         "-H", "Content-Type: application/json",
-        "--data-raw", json.dumps(payload)
+        "--data-raw", json.dumps(payload),
     ]
 
     start = time.perf_counter()
@@ -39,29 +40,41 @@ def _run_local_post(url, payload, label=None, timeout=CURL_TIMEOUT):
             capture_output=True,
             text=True,
             check=True,
-            timeout=timeout
+            timeout=timeout,
         )
     except subprocess.TimeoutExpired:
         elapsed_ms = (time.perf_counter() - start) * 1000
-        print(f"[LOCAL TIMEOUT] {label or url} → {elapsed_ms:.1f} ms")
+        print(
+            f"[LOCAL SHAIP][TIMEOUT] "
+            f"{variant_label or url} → {elapsed_ms:.1f} ms"
+        )
         raise
     except subprocess.CalledProcessError as e:
         elapsed_ms = (time.perf_counter() - start) * 1000
-        print(f"[LOCAL ERROR] {label or url} → {elapsed_ms:.1f} ms")
+        print(
+            f"[LOCAL SHAIP][ERROR] "
+            f"{variant_label or url} → {elapsed_ms:.1f} ms"
+        )
         print(f"Curl failed: {e.stderr}")
         raise
 
     elapsed_ms = (time.perf_counter() - start) * 1000
-    print(f"[LOCAL] {label or url} → {elapsed_ms:.1f} ms")
+
+    print(
+        f"[LOCAL SHAIP] "
+        f"{variant_label or url} → {elapsed_ms:.1f} ms"
+    )
 
     try:
         return json.loads(result.stdout)
     except json.JSONDecodeError:
-        raise ValueError(f"Failed to parse JSON response from {url}: {result.stdout}")
+        raise ValueError(
+            f"Failed to parse JSON response from {url}: {result.stdout}"
+        )
 
 
 # -------------------------------------------------------------------------
-# Wrapper for local VariantValidator (refseq)
+# Wrapper for local SHAIP VariantValidator
 # -------------------------------------------------------------------------
 
 def run_variantvalidator_local(
@@ -70,21 +83,30 @@ def run_variantvalidator_local(
     select_transcripts="all",
 ):
     """
-    Local POST equivalent of /variantvalidator/<build>/<variant>/<select_transcripts>
+    Local POST equivalent of the RefSeq VariantValidator SHAIP endpoint.
+
+    The REST2 API expects a one-item outer JSON array and arrays for
+    variant_description and select_transcripts.
     """
-    url = f"{BASE_URL}/VariantValidator"
+    url = f"{BASE_URL}/variantvalidator"
 
-    payload = {
-        "variant_description": variant,
-        "genome_build": genome_build,
-        "select_transcripts": select_transcripts
-    }
+    payload = [
+        {
+            "variant_description": [variant],
+            "genome_build": genome_build,
+            "select_transcripts": [select_transcripts],
+        }
+    ]
 
-    return _run_local_post(url, payload, label=variant)
+    return _run_local_post(
+        url,
+        payload,
+        variant_label=variant,
+    )
 
 
 # -------------------------------------------------------------------------
-# Wrapper for local VariantValidator (ensembl)
+# Wrapper for local SHAIP Ensembl VariantValidator
 # -------------------------------------------------------------------------
 
 def run_variantvalidator_ensembl_local(
@@ -92,15 +114,27 @@ def run_variantvalidator_ensembl_local(
     genome_build,
     select_transcripts="all",
 ):
-    url = f"{BASE_URL}/VariantValidator_ensembl"
+    """
+    Local POST equivalent of the Ensembl VariantValidator SHAIP endpoint.
 
-    payload = {
-        "variant_description": variant,
-        "genome_build": genome_build,
-        "select_transcripts": select_transcripts
-    }
+    The REST2 API expects a one-item outer JSON array and arrays for
+    variant_description and select_transcripts.
+    """
+    url = f"{BASE_URL}/variantvalidator-ensembl"
 
-    return _run_local_post(url, payload, label=variant)
+    payload = [
+        {
+            "variant_description": [variant],
+            "genome_build": genome_build,
+            "select_transcripts": [select_transcripts],
+        }
+    ]
+
+    return _run_local_post(
+        url,
+        payload,
+        variant_label=variant,
+    )
 
 
 # -------------------------------------------------------------------------
@@ -109,8 +143,12 @@ def run_variantvalidator_ensembl_local(
 
 def _get_primary_entry_local(data):
     keys = [k for k in data if k not in ("flag", "metadata")]
+
     if not keys:
-        raise ValueError("No variant data returned from local API.")
+        raise ValueError(
+            "No variant data returned from local API."
+        )
+
     key = keys[0]
     return key, data[key]
 
@@ -131,7 +169,7 @@ class TestVariantValidatorRefSeqValidated:
         ("NM_000133.4:c.1001T>G", "F9", "X"),
         ("NM_004006.2:c.9253dup", "DMD", "X"),
         ("NM_000527.5:c.1775G>A", "LDLR", "19"),
-        ("NM_000277.3:c.1222C>T", "PAH", "12")
+        ("NM_000277.3:c.1222C>T", "PAH", "12"),
     ]
 
     def test_validated_NM_variants(self):
@@ -139,9 +177,11 @@ class TestVariantValidatorRefSeqValidated:
             data = run_variantvalidator_local(
                 variant,
                 "GRCh38",
-                select_transcripts="all"
+                select_transcripts="all",
             )
+
             key, entry = _get_primary_entry_local(data)
+
             assert entry["gene_symbol"] == gene
             assert entry["hgvs_transcript_variant"] == variant
             assert entry["annotations"]["chromosome"] == chrom
@@ -164,7 +204,7 @@ class TestVariantValidatorEnsemblValidated:
         ("ENST00000218099.7:c.1001T>G", "F9", "X"),
         ("ENST00000357033.9:c.9253dup", "DMD", "X"),
         ("ENST00000558518.6:c.1775G>A", "LDLR", "19"),
-        ("ENST00000553106.6:c.1222C>T", "PAH", "12")
+        ("ENST00000553106.6:c.1222C>T", "PAH", "12"),
     ]
 
     def test_validated_ENST_variants(self):
@@ -172,9 +212,11 @@ class TestVariantValidatorEnsemblValidated:
             data = run_variantvalidator_ensembl_local(
                 variant,
                 "GRCh38",
-                select_transcripts="all"
+                select_transcripts="all",
             )
+
             key, entry = _get_primary_entry_local(data)
+
             assert entry["gene_symbol"] == gene
             assert entry["hgvs_transcript_variant"] == variant
             assert entry["annotations"]["chromosome"] == chrom
